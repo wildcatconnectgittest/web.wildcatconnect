@@ -7,8 +7,8 @@ $(function() {
   Parse.$ = jQuery;
 
   // Initialize Parse with your Parse application javascript keys
-  Parse.initialize("your-application-id",
-                   "your-javascript-key");
+  Parse.initialize("cLBOvwh6ZTQYex37DSwxL1Cvg34MMiRWYAB4vqs0",
+                   "tTcV5Ns1GFdDda44FCcG5XHBDMbLA1sxRUzSnDgW");
 
   // Todo Model
   // ----------
@@ -89,7 +89,7 @@ $(function() {
     events: {
       "click .toggle"              : "toggleDone",
       "dblclick label.todo-content" : "edit",
-      "click .todo-destroy"   : "clear",
+      //"click .todo-destroy"   : "clear",
       "keypress .edit"      : "updateOnEnter",
       "blur .edit"          : "close"
     },
@@ -133,9 +133,9 @@ $(function() {
     },
 
     // Remove the item, destroy the model.
-    clear: function() {
-      this.model.destroy();
-    }
+    //clear: function() {
+     // this.model.destroy();
+    //}
 
   });
 
@@ -151,7 +151,7 @@ $(function() {
     // Delegated events for creating new items, and clearing completed ones.
     events: {
       "keypress #new-todo":  "createOnEnter",
-      "click #clear-completed": "clearCompleted",
+      //"click #clear-completed": "clearCompleted",
       "click #toggle-all": "toggleAllComplete",
       "click .log-out": "logOut",
       "click ul#filters a": "selectFilter"
@@ -281,10 +281,10 @@ $(function() {
     },
 
     // Clear all done todo items, destroying their models.
-    clearCompleted: function() {
-      _.each(this.todos.done(), function(todo){ todo.destroy(); });
-      return false;
-    },
+    //clearCompleted: function() {
+    //  _.each(this.todos.done(), function(todo){ todo.destroy(); });
+     // return false;
+    //},
 
     toggleAllComplete: function () {
       var done = this.allCheckbox.checked;
@@ -378,25 +378,40 @@ $(function() {
 
   var AppRouter = Parse.Router.extend({
     routes: {
-      "all": "all",
-      "active": "active",
-      "completed": "completed"
+      //"all": "all",
+     // "active": "active",
+      //"completed": "completed",
+      "news": "news",
+    "ECUpdates": "ECUpdates",
+    "CSUpdates": "CSUpdates",
+    "UserPoll": "UserPoll",
+    "Alert": "Alert"
+
+                                      
     },
 
     initialize: function(options) {
     },
 
-    all: function() {
-      state.set({ filter: "all" });
+    news: function() {
+      state.set({ filter: "news" });
     },
 
-    active: function() {
-      state.set({ filter: "active" });
+    ECUpdates: function() {
+      state.set({ filter: "ECUpdates" });
     },
 
-    completed: function() {
-      state.set({ filter: "completed" });
-    }
+    CSUpdates: function() {
+      state.set({ filter: "CSUpdates" });
+    },
+    UserPoll: function() {
+    state.set({ filter: "UserPoll" });
+    },
+                                      
+     Alert: function() {
+     state.set({ filter: "Alert" });
+     }
+
   });
 
   var state = new AppState;
@@ -405,3 +420,9 @@ $(function() {
   new AppView;
   Parse.history.start();
 });
+
+
+
+
+
+

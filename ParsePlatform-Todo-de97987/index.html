@@ -3,8 +3,11 @@
   <head>
     <meta charset="utf-8">
     <title>Parse JavaScript Todo App</title>
-    <link href="css/todos.css" media="all" rel="stylesheet" type="text/css"/>
     <script src="http://code.jquery.com/jquery-2.0.3.min.js"></script>
+    <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+
+    <link href="css/todos.css" media="all" rel="stylesheet" type="text/css">
+    <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
     <script src="js/underscore.js"></script>
     <script src="http://www.parsecdn.com/js/parse-1.2.13.min.js"></script>
     <script src="js/todos.js"></script>
@@ -13,22 +16,72 @@
   <body>
 
     <!-- Todo App Interface -->
-
     <div id="todoapp">
       <div class="title">
         <h1>WildcatConnect</h1>
       </div>
 
-      <div class="content">
       </div>
     </div>
+    
+    <div class="tab-container">
+        
+        <ul class="nav nav-tabs">
+            <li><a href="#Messages">Messages</a></li>
+            <li><a href="#PicOfDay">Picture of the Day</a></li>
+            <li class="active"><a href="#News">News</a></li>
+            <li><a href="#ECUpdates">Extra Cirrucular Updates</a></li>
+            <li><a href="#CSUpdates">Community Service Updates</a></li>
+            <li><a href="#UserPoll">User Poll</a></li>
+            
+
+        </ul>
+        
+        <div class="tab-content">
+            <div id="News" class="tab-pane fade in active">
+                <h3>News</h3>
+                <p>News Articles here</p>
+            </div>
+            <div id="ECUpdates" class="tab-pane fade">
+                <h3>ECUpdates</h3>
+                <p>Yay extracirculars section!</p>
+            </div>
+            <div id="CSUpdates" class="tab-pane fade">
+                <h3>CSUpdates</h3>
+                <p>get volunteering!</p>
+            </div>
+            <div id="UserPoll" class="tab-pane fade">
+                <h3>UserPoll</h3>
+                <p>dont forget to vote:)</p>
+            </div>
+            <div id="Messages" class="tab-pane fade">
+                <h3>Messages</h3>
+                <p>message of the day:)</p>
+            </div>
+            <div id="PicOfDay" class="tab-pane fade">
+                <h3>Picture of the Day</h3>
+                <p>pics or it didnt happen:)</p>
+            </div>
+
+
+        </div>
+    </div>
+    
+    <script>
+        $(document).ready(function(){
+                          $(".nav-tabs a").click(function(){
+                                                 $(this).tab('show');
+                                                 });
+                          });
+        </script>
+    
 
     <div id="credits">
       Powered by <a href="https://www.parse.com">Parse</a> using the <a href="https://www.parse.com/docs/js_guide">JavaScript SDK</a>.<br /><br />
-      Learn how we built it in the <a href='https://parse.com/tutorials/todo-app-with-javascript'>tutorial</a>.
+      Learn how we built it in the <a href="https://parse.com/tutorials/todo-app-with-javascript">tutorial</a>.
     </div>
 
-    <!-- Templates -->
+    <!-- Templates-->
 
     <script type="text/template" id="login-template">
       <header id="header"></header>
@@ -42,11 +95,10 @@
         </form>
 
         <form class="signup-form">
-          <h2>Sign Up</h2>
+          <h2>User Token</h2>
           <div class="error" style="display:none"></div>
-          <input type="text" id="signup-username" placeholder="Username" />
-          <input type="password" id="signup-password" placeholder="Create a Password" />
-          <button>Sign Up</button>
+          <input type="text" id="signup-Token Provided" placeholder="ID" />
+        <button>Sign Up</button>
         </form>
       </div>
     </script>
@@ -87,21 +139,7 @@
     </script>
 
     <script type="text/template" id="stats-template">
-      <footer id="footer">
-	<span id="todo-count"><strong><%= remaining %></strong> <%= remaining == 1 ? 'item' : 'items' %> left</span>
-	<ul id="filters">
-	  <li>
-	    <a href="javascript:void(0)" id="all" class="selected">All</a>
-	  </li>
-	  <li>
-	    <a href="javascript:void(0)" id="active">Active</a>
-	  </li>
-	  <li>
-	    <a href="javascript:void(0)" id="completed">Completed</a>
-	  </li>
-	</ul>
-	<button id="clear-completed">Clear completed (<%= done %>)</button>
-      </footer>
+     
     </script>
 
   </body>
