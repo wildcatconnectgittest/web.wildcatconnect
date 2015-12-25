@@ -13,46 +13,126 @@
     <script src="js/todos.js"></script>
   </head>
 
-  <body>
+  <body onload="load()">
 
     <!-- Todo App Interface -->
-    <div id="todoapp">
-      <div class="title">
-        <h1>WildcatConnect</h1>
-      </div>
+    <h1 style="text-align:center; font-size:80px">WildcatConnect</h1>
 
-      </div>
-    </div>
+    <div class="main-container">
+            <form class="form-signin" role="form">
+                <h2 class="form-signin-heading">Please sign in</h2>
+                <input type="username" class="form-control" placeholder="Username" id="username" required="" autofocus="">
+                <input type="password" class="form-control" placeholder="Password" id="password"required="">
+                <button class="btn btn-lg btn-primary btn-block" onclick="logIn()" type="submit">Sign In</button>
+            </form>
+        </div>
+
+        <script>
+function logIn(e) {
+ 
+    var username = document.getElementById("username").value;
+    var password = document.getElementById("password").value;
+
+
+ 
+    // Call Parse Login function with those variables
+    Parse.User.logIn(username, password, {
+        // If the username and password matches
+        success: function(user) {
+            alert('Welcome!');
+        },
+        // If there is an error
+        error: function(user, error) {
+            console.log(error.message);
+        }
+    });
+}
+</script>
+
+<script type="text/javascript">
+function load() {
+
+  Parse.$ = jQuery;
+
+  // Initialize Parse with your Parse application javascript keys
+  Parse.initialize("cLBOvwh6ZTQYex37DSwxL1Cvg34MMiRWYAB4vqs0",
+                   "tTcV5Ns1GFdDda44FCcG5XHBDMbLA1sxRUzSnDgW");
+}
+</script>
+
+<script type="text/javascript">
+var LoginView = Parse.View.extend({
+    template: Handlebars.compile($('#login-tpl').html()),
+    events: {
+        'submit .form-signin': 'login'
+    },
+    login: function(e) {
+ 
+        // Prevent Default Submit Event
+        e.preventDefault();
+ 
+        // Get data from the form and put them into variables
+        var data = $(e.target).serializeArray(),
+            username = data[0].value,
+            password = data[1].value;
+ 
+        // Call Parse Login function with those variables
+        Parse.User.logIn(username, password, {
+            // If the username and password matches
+            success: function(user) {
+                alert('Welcome!');
+            },
+            // If there is an error
+            error: function(user, error) {
+                console.log(error);
+            }
+        });
+    },
+        render: function(){
+        this.$el.html(this.template());
+    }
+})
+</script>
+
+<script id="login-tpl" type="text/x-handlebars-template">
+    <form class="form-signin" role="form">
+        <h2 class="form-signin-heading">Please sign in</h2>
+        <input type="text" name="username" class="form-control" placeholder="Username" required="" autofocus="">
+        <input type="password" name="password" class="form-control" placeholder="Password" required="">
+        <button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
+    </form>
+</script>
+ 
+<script id="welcome-tpl" type="text/x-handlebars-template">
+    <h2>Welcome, {{username}}!</h2>
+</script>
     
     <div class="tab-container">
         
         <ul class="nav nav-tabs">
-            <li><a href="#Messages">Messages</a></li>
-            <li><a href="#PicOfDay">Picture of the Day</a></li>
-            <li class="active"><a href="#News">News</a></li>
-            <li><a href="#ECUpdates">Extra Cirrucular Updates</a></li>
-            <li><a href="#CSUpdates">Community Service Updates</a></li>
+            <li class="active"><a href="#NewsArticle">News Article</a></li>
+            <li><a href="#EC">Extra Cirrucular Update</a></li>
+            <li><a href="#CS">Community Service Update</a></li>
             <li><a href="#UserPoll">User Poll</a></li>
             
 
         </ul>
         
         <div class="tab-content">
-            <div id="News" class="tab-pane fade in active">
-                <h3>News Article</h3>
-            <form>
-              First name:<br>
-              <input type="text" name="firstname">
-              <br>
-              Last name:<br>
-              <input type="text" name="lastname">
-            </form>
+            <div id="NewsArticle" class="tab-pane fade in active">
+              <h3>Compose a News Article</h3>
+              <form>
+                Article Title:<br>
+                <input type="text" name="NAtitle">
+                <br>Last name:<br>
+                <input type="text" name="lastname">
+              </form>
             </div>
-            <div id="ECUpdates" class="tab-pane fade">
+            <div id="EC" class="tab-pane fade">
                 <h3>ECUpdates</h3>
                 <p>Yay extracirculars section!</p>
             </div>
-            <div id="CSUpdates" class="tab-pane fade">
+            <div id="CS" class="tab-pane fade">
                 <h3>CSUpdates</h3>
                 <p>get volunteering!</p>
             </div>
