@@ -8,7 +8,24 @@
     <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
     <meta name="description" content="">
     <meta name="author" content="">
-    <!--link rel="icon" href="../../favicon.ico"-->
+    <link rel="apple-touch-icon" sizes="57x57" href="./favicon/apple-touch-icon-57x57.png">
+    <link rel="apple-touch-icon" sizes="60x60" href="./favicon/apple-touch-icon-60x60.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="./favicon/apple-touch-icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="76x76" href="./favicon/apple-touch-icon-76x76.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="./favicon/apple-touch-icon-114x114.png">
+    <link rel="apple-touch-icon" sizes="120x120" href="./favicon/apple-touch-icon-120x120.png">
+    <link rel="apple-touch-icon" sizes="144x144" href="./favicon/apple-touch-icon-144x144.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="./favicon/apple-touch-icon-152x152.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="./favicon/apple-touch-icon-180x180.png">
+    <link rel="icon" type="image/png" href="./favicon/favicon-32x32.png" sizes="32x32">
+    <link rel="icon" type="image/png" href="./favicon/android-chrome-192x192.png" sizes="192x192">
+    <link rel="icon" type="image/png" href="./favicon/favicon-96x96.png" sizes="96x96">
+    <link rel="icon" type="image/png" href="./favicon/favicon-16x16.png" sizes="16x16">
+    <link rel="manifest" href="./favicon/manifest.json">
+    <link rel="mask-icon" href="./favicon/safari-pinned-tab.svg" color="#5bbad5">
+    <meta name="msapplication-TileColor" content="#da532c">
+    <meta name="msapplication-TileImage" content="/mstile-144x144.png">
+    <meta name="theme-color" content="#ffffff">
 
     <title>WildcatConnect</title>
 
@@ -16,6 +33,8 @@
     <link href="./css/bootstrap.min.css" rel="stylesheet">
 
     <link href="./css/signin.css" rel="stylesheet">
+
+    <link href="./css/sticky-footer-navbar.css" rel="stylesheet">
 
     <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
     <!--link href="./css/ie10-viewport-bug-workaround.css" rel="stylesheet">
@@ -45,14 +64,14 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </button>
-          <a class="navbar-brand">WildcatConnect Web Portal</a>
+          <a><img src="./logoTransparent.gif" alt="Logo" width="54" style="display: inline-block; vertical-align: middle;"/></a>
+          <a class="navbar-brand">WildcatConnect</a>
         </div>
         <div id="navbar" class="navbar-collapse collapse">
-          <!--ul class="nav navbar-nav">
-            <li class="active"><a href="#">Home</a></li>
-            <li><a href="#about">About</a></li>
-            <li><a href="#contact">Contact</a></li>
-          </ul-->
+          <ul class="nav navbar-nav">
+            <!--li><a href="#about">About</a></li>
+            <li><a href="#contact">Contact</a></li-->
+          </ul>
           <!--ul class="nav navbar-nav navbar-right">
             <li class="dropdown">
               <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Account<span class="caret"></span></a>
@@ -106,12 +125,34 @@
         <br>
         <button class="add-ec btn btn-lg btn-primary" style="margin-bottom:5px;">Extracurricular Update</button>
         <br>
-        <button class="add-cs btn btn-lg btn-primary">Community Service Opportunity</button>
+        <button class="add-cs btn btn-lg btn-primary" style="margin-bottom:5px;">Community Service Opportunity</button>
+        <br>
+        <button class="add-poll btn btn-lg btn-primary" style="margin-bottom:5px;">User Poll</button>
+        <br>
+        <button class="add-alert btn btn-lg btn-primary" style="margin-bottom:5px;">Alert</button>
+        <hr style="border-color:#561838";></hr>
+        <h4>You can register a new...</h4>
+        <button class="register-ec btn btn-lg btn-primary">Extracurricular Group</button>
+        <br>
+      </script>
+
+      <script type="text/template" id="faculty-welcome-tpl">
+        <h2>Welcome, {{firstName}}!</h2>
+        <h5>Logged in as {{firstName}} {{lastName}} - {{userType}}</h5>
+        <hr style="border-color:#561838";></hr>
+        <h4>You can post a new...</h4>
+        <button class="add-news btn btn-lg btn-primary" style="margin-bottom:5px;">News Article</button>
+        <br>
+        <button class="add-ec btn btn-lg btn-primary" style="margin-bottom:5px;">Extracurricular Update</button>
+        <hr style="border-color:#561838";></hr>
+        <h4>You can register a new...</h4>
+        <button class="register-ec btn btn-lg btn-primary">Extracurricular Group</button>
+        <br>
       </script>
 
       <script type="text/template" id="add-news-tpl">
         <h2>News Article</h2>
-        <form class="form-add" role="form">
+        <form class="form-add" role="form" enctype="multipart/form-data">
           <div class="form-group">
             <label for="title">Title (50 characters max)</label>
             <input type="text" name="title" class="form-control" id="title" placeholder="Title">
@@ -132,6 +173,9 @@
             <label for="content">Content</label>
             <textarea name="content" class="form-control" rows="15" style="overflow-y: scroll; resize: none;"></textarea>
           </div>
+          <label for="image">Image</label>
+          <input type="file" class="form-control" name="image" id="image" accept="image/*" enctype="multipart/form-data">
+          <br>
           <button class="btn btn-lg btn-primary btn-block" type="submit">Submit</button>
           <button class="cancel btn btn-lg btn-primary btn-block" type="cancel">Cancel</button>
         </form>
@@ -149,7 +193,18 @@
           var year = today.getFullYear();
           var dateString = month + "-" + day + "-" + year;
           dateLabel.value = dateString;
-          $("#date").attr("disabled", true); 
+          $("#date").attr("disabled", true);
+
+          var imagePicker = document.getElementById('image');
+
+          if (imagePicker) {
+            imagePicker.addEventListener('change', readFile, false);
+          };
+
+          function readFile(e) {
+            var file = e.target.files[0];
+            $(document).ready(start(file));
+          }
         </script>
       </script>
 
@@ -168,20 +223,29 @@
           <button class="cancel btn btn-lg btn-primary btn-block" type="cancel">Cancel</button>
         </form>
         <script>
-          var select = document.getElementById('ECselect');
-          var query = new Parse.Query("ExtracurricularStructure");
-          query.ascending("titleString");
-          if (! Parse.User.current().get("userType") === "Administration" && !Parse.User.current().get("userType") === "Developer") {
-            query.containedIn("extracurricularID", Parse.User.current().get("ownedEC"));
-          };
-          query.find({
-            success: function(structures) {
-              for (var i = 0; i < structures.length; i++) {
-                var option = document.createElement('option');
-                option.text = structures[i].get("titleString");
-                option.value = structures[i].get("extracurricularID");
-                select.appendChild(option);
+          Parse.User.current().fetch({
+            success: function(user) {
+              var select = document.getElementById('ECselect');
+              var query = new Parse.Query("ExtracurricularStructure");
+              query.ascending("titleString");
+              if (Parse.User.current().get("userType") === "Administration" || Parse.User.current().get("userType") === "Developer") {
+                //
+              } else {
+                query.containedIn("channelString", Parse.User.current().get("ownedEC"));
               };
+              query.find({
+                success: function(structures) {
+                  for (var i = 0; i < structures.length; i++) {
+                    var option = document.createElement('option');
+                    option.text = structures[i].get("titleString");
+                    option.value = structures[i].get("extracurricularID");
+                    select.appendChild(option);
+                  };
+                },
+                error: function(error) {
+                  alert(error);
+                }
+              });
             },
             error: function(error) {
               alert(error);
@@ -216,7 +280,149 @@
         </form>
       </script>
 
+      <script type="text/template" id="add-poll-tpl">
+        <h2>User Poll</h2>
+        <form class="form-add" role="form">
+          <div class="form-group">
+            <label for="title">Title (50 characters max)</label>
+            <input type="text" name="title" class="form-control" id="title" placeholder="Title">
+          </div>
+          <div class="form-group">
+            <label for="question">Question (140 characters max)</label>
+            <input type="question" name="question" class="form-control" id="question" placeholder="Question">
+          </div>
+          <label for="daysSelect">Number of Days Active in App</label>
+          <select id='daysSelect' name="daysSelect">
+            <option value="-1">NONE SELECTED</option>
+          </select>
+          <br>
+          <label for="numberSelect">Number of Poll Choices</label>
+          <select id='numberSelect' name="numberSelect" onchange="selectNumber(this.selectedIndex);"></select>
+          <br>
+          <label for="choices">Choices</label>
+          <div id='choices'>
+            <p>
+              <input type="text" name="choice" class="form-control" id="choice_0" placeholder="Choice 1" onkeyup="keyPress(0);">
+            </p>
+          </div>
+          <button class="btn btn-lg btn-primary btn-block" type="submit">Submit</button>
+          <button class="cancel btn btn-lg btn-primary btn-block" type="cancel">Cancel</button>
+        </form>
+        <script>
+        var select = document.getElementById('daysSelect');
+        for (var i = 1; i < 15; i++) {
+          var option = document.createElement('option');
+          option.text = option.value = i;
+          select.appendChild(option);
+        };
+        var numberSelect = document.getElementById('numberSelect');
+        for (var e = 1; e < 11; e++) {
+          var option = document.createElement('option');
+          option.text = option.value = e;
+          numberSelect.appendChild(option);
+        };
+        var choicesDiv = document.getElementById('choices');
+        var i = 1;
+        var choicesArray = [];
+        function keyPress(k) {
+          var theString = document.getElementById("choice_" + k).value;
+          if (k < choicesArray.length) {
+            choicesArray[k] = theString;
+          } else {
+            choicesArray.push(theString);
+          };
+        }
+        function selectNumber(o) {
+          choicesDiv.innerHTML = "";
+          for (var m = 0; m < o + 1; m++) {
+            if (choicesArray[m]) {
+              choicesDiv.innerHTML = choicesDiv.innerHTML + '<p><input type="text" name="choice" class="form-control" id="choice_'+m+'" value="'+choicesArray[m]+'" onkeyup="keyPress('+m+');"></p>';
+            } else {
+              choicesDiv.innerHTML = choicesDiv.innerHTML + '<p><input type="text" name="choice" class="form-control" id="choice_'+m+'" placeholder="Choice '+(m+1)+'" value="" onkeyup="keyPress('+m+');"></p>';
+            };
+          };
+        }
+        </script>
+      </script>
+
+      <script type="text/template" id="add-alert-tpl">
+        <h2>Alert</h2>
+        <form class="form-add" role="form">
+          <div class="form-group">
+            <label for="title">Title (50 characters max)</label>
+            <input type="text" name="title" class="form-control" id="title" placeholder="Title">
+          </div>
+          <div class="form-group">
+            <label for="author">Author</label>
+            <input type="text" name="author" class="form-control" id="author" placeholder="Author">
+          </div>
+          <label for="radio">Alert Timing</label>
+          <br>
+          <input checked type="radio" name="alertTiming" value="now"> Right now</input>
+          <br>
+          <input type="radio" name="alertTiming" value="time"> At certain time...</input>
+          <input type="date" name="dateDate" id="dateDate"></input>
+          <input type="time" name="dateTime" id="dateTime"></input>
+          <br>
+          <div class="form-group">
+            <label for="content">Content</label>
+            <textarea name="content" class="form-control" rows="15" style="overflow-y: scroll; resize: none;"></textarea>
+          </div>
+          <button class="btn btn-lg btn-primary btn-block" type="submit">Submit</button>
+          <button class="cancel btn btn-lg btn-primary btn-block" type="cancel">Cancel</button>
+        </form>
+        <script>
+          var authorLabel = document.getElementById('author');
+          authorLabel.value = Parse.User.current().get("firstName") + " " + Parse.User.current().get("lastName");
+          $("#author").attr("disabled", true);
+          var today = new Date();
+          document.getElementById('dateDate').valueAsDate = new Date();
+        </script>
+      </script>
+
+      <script type="text/template" id="reg-ec-tpl">
+        <h2>Register Extracurricular Group</h2>
+        <form class="form-add" role="form">
+          <div class="form-group">
+            <label for="title">Group Title</label>
+            <input type="text" name="title" class="form-control" id="title" placeholder="Title">
+          </div>
+          <div class="form-group">
+            <label for="content">Group Information (i.e. purpose, advisor(s), meeting times and locations, etc.)</label>
+            <textarea name="content" class="form-control" rows="2" style="overflow-y: scroll; resize: none;"></textarea>
+          </div>
+          <div id="checkboxes">
+            <label>Meeting Days</label><br>
+            <input type="checkbox" name="checkbox" id="checkbox" onchange="arrayEdit(0);"> Monday</li><br>
+            <input type="checkbox" name="checkbox" id="checkbox" onchange="arrayEdit(1);"> Tuesday</li><br>
+            <input type="checkbox" name="checkbox" id="checkbox" onchange="arrayEdit(2);"> Wednesday</li><br>
+            <input type="checkbox" name="checkbox" id="checkbox" onchange="arrayEdit(3;"> Thursday</li><br>
+            <input type="checkbox" name="checkbox" id="checkbox" onchange="arrayEdit(4);"> Friday</li><br><br>
+          </div>
+          <button class="btn btn-lg btn-primary btn-block" type="submit">Submit</button>
+          <button class="cancel btn btn-lg btn-primary btn-block" type="cancel">Cancel</button>
+        </form>
+        <script>
+          var daysArray = [];
+          function arrayEdit(j) {
+            if (daysArray.indexOf(j) > -1) {
+              daysArray.splice(j, 1);
+            } else {
+              daysArray.push(j);
+            };
+            $(document).ready(startTwo(daysArray));
+          }
+        </script>
+      </script>
+
     </div> <!-- /container -->
+
+    <footer class="footer">
+      <div class="container">
+        <br>
+        <p class="text-muted">Copyright &#169; WildcatConnect, 2015. All rights reserved. | <a href="mailto:support@wildcatconnect.org">Support</a> | <a href="mailto:team@wildcatconnect.org">Team</a></p>
+      </div>
+    </footer>
 
     <!-- Bootstrap core JavaScript
     ================================================== -->
