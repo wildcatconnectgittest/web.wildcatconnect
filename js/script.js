@@ -1,5 +1,10 @@
 var imageFile = null;
 var daysArray = "";
+var registerData = null;
+var userCount = 0;
+var userArray = new Array();
+var existingUserArray = new Array();
+var testObject = null;
 
 $(function() {
  
@@ -12,6 +17,7 @@ $(function() {
 			if (! title || ! author || ! date || ! summary || ! content) {
 				alert("Please ensure you have filled out all required fields!");
 			} else {
+				$("#spinnerDiv").html('<a><img src="./spinner.gif" alt="Logo" width="40" style="vertical-align: middle; padding-top:12px; padding-left:10px;"/></a>');
 				var query = new Parse.Query("NewsArticleStructure");
 				query.descending("articleID");
 				query.first({
@@ -37,14 +43,17 @@ $(function() {
 										var welcomeView = new AdminWelcomeView({ model: Parse.User.current() });
 									    welcomeView.render();
 									    $('.main-container').html(welcomeView.el);
+									    $("#spinnerDiv").html("");
 									} else {
 										var welcomeView = new FacultyWelcomeView({ model: Parse.User.current() });
 									    welcomeView.render();
 									    $('.main-container').html(welcomeView.el);
+									    $("#spinnerDiv").html("");
 									};
 								},
 								error: function(error) {
 									alert(error);
+									$("#spinnerDiv").html("");
 								}
 							});
 						} else {
@@ -66,20 +75,24 @@ $(function() {
 										var welcomeView = new AdminWelcomeView({ model: Parse.User.current() });
 									    welcomeView.render();
 									    $('.main-container').html(welcomeView.el);
+									    $("#spinnerDiv").html("");
 									} else {
 										var welcomeView = new FacultyWelcomeView({ model: Parse.User.current() });
 									    welcomeView.render();
 									    $('.main-container').html(welcomeView.el);
+									    $("#spinnerDiv").html("");
 									};
 								},
 								error: function(error) {
 									alert(error);
+									$("#spinnerDiv").html("");
 								}
 							});
 						};
 					},
 					error: function(error) {
 						alert(error);
+						$("#spinnerDiv").html("");
 					}
 				});
 			};
@@ -88,10 +101,10 @@ $(function() {
 
 	var ExtracurricularUpdateStructure = Parse.Object.extend("ExtracurricularUpdateStructure", {
 		create: function(ID, message) {
-			console.log(parseInt(ID) < 0);
 			if (parseInt(ID) < 0 || ! message) {
 				alert("Please ensure you have filled out all required fields!");
 			} else {
+				$("#spinnerDiv").html('<a><img src="./spinner.gif" alt="Logo" width="40" style="vertical-align: middle; padding-top:12px; padding-left:10px;"/></a>');
 				var query = new Parse.Query("ExtracurricularUpdateStructure");
 				query.descending("extracurricularUpdateID");
 				query.first({
@@ -109,19 +122,23 @@ $(function() {
 									var welcomeView = new AdminWelcomeView({ model: Parse.User.current() });
 								    welcomeView.render();
 								    $('.main-container').html(welcomeView.el);
+								    $("#spinnerDiv").html("");
 								} else {
 									var welcomeView = new FacultyWelcomeView({ model: Parse.User.current() });
 								    welcomeView.render();
 								    $('.main-container').html(welcomeView.el);
+								    $("#spinnerDiv").html("");
 								};
 							},
 							error: function(error) {
 								alert(error.message);
+								$("#spinnerDiv").html("");
 							}
 						});
 					},
 					error: function(error) {
 						alert(error);
+						$("#spinnerDiv").html("");
 					}
 				});
 			};
@@ -137,6 +154,7 @@ $(function() {
 			if (! title || ! startDateDate || ! startDateTime || ! endDateDate || ! startDateTime || ! message) {
 				alert("Please ensure you have filled out all required fields!");
 			} else {
+				$("#spinnerDiv").html('<a><img src="./spinner.gif" alt="Logo" width="40" style="vertical-align: middle; padding-top:12px; padding-left:10px;"/></a>');
 				var query = new Parse.Query("CommunityServiceStructure");
 				query.descending("communityServiceID");
 				query.first({
@@ -158,19 +176,23 @@ $(function() {
 									var welcomeView = new AdminWelcomeView({ model: Parse.User.current() });
 								    welcomeView.render();
 								    $('.main-container').html(welcomeView.el);
+								    $("#spinnerDiv").html("");
 								} else {
 									var welcomeView = new FacultyWelcomeView({ model: Parse.User.current() });
 								    welcomeView.render();
 								    $('.main-container').html(welcomeView.el);
+								    $("#spinnerDiv").html("");
 								};
 							},
 							error: function(error) {
 								alert(error);
+								$("#spinnerDiv").html("");
 							}
 						});
 					},
 					error: function(error) {
 						alert(error);
+						$("#spinnerDiv").html("");
 					}
 				});
 			};
@@ -182,6 +204,7 @@ $(function() {
 			if (! title || ! question || ! daysSelect || ! choicesArray) {
 				alert("Please ensure you have filled out all required fields!");
 			} else {
+				$("#spinnerDiv").html('<a><img src="./spinner.gif" alt="Logo" width="40" style="vertical-align: middle; padding-top:12px; padding-left:10px;"/></a>');
 				var dictionary = {};
 				for (var l = 0; l < choicesArray.length; l++) {
 					dictionary[choicesArray[l].toString()] = "0";
@@ -206,19 +229,23 @@ $(function() {
 									var welcomeView = new AdminWelcomeView({ model: Parse.User.current() });
 								    welcomeView.render();
 								    $('.main-container').html(welcomeView.el);
+								    $("#spinnerDiv").html("");
 								} else {
 									var welcomeView = new FacultyWelcomeView({ model: Parse.User.current() });
 								    welcomeView.render();
 								    $('.main-container').html(welcomeView.el);
+								    $("#spinnerDiv").html("");
 								};
 							},
 							error: function(error) {
 								alert(error);
+								$("#spinnerDiv").html("");
 							}
 						});
 					},
 					error: function(error) {
 						alert(error);
+						$("#spinnerDiv").html("");
 					}
 				});
 			};
@@ -233,6 +260,7 @@ $(function() {
 			if (! title || ! author || ! alertTiming || (alertTiming === "time" && (! dateDate || ! dateTime)) || before === true) {
 				alert("Please ensure you have correctly filled out all required fields!");
 			} else {
+				$("#spinnerDiv").html('<a><img src="./spinner.gif" alt="Logo" width="40" style="vertical-align: middle; padding-top:12px; padding-left:10px;"/></a>');
 				var query = new Parse.Query("AlertStructure");
 				query.descending("alertID");
 				query.first({
@@ -272,14 +300,17 @@ $(function() {
 										var welcomeView = new AdminWelcomeView({ model: Parse.User.current() });
 									    welcomeView.render();
 									    $('.main-container').html(welcomeView.el);
+									    $("#spinnerDiv").html("");
 									} else {
 										var welcomeView = new FacultyWelcomeView({ model: Parse.User.current() });
 									    welcomeView.render();
 									    $('.main-container').html(welcomeView.el);
+									    $("#spinnerDiv").html("");
 									};
 								},
 								error: function(error) {
 									alert(error);
+									$("#spinnerDiv").html("");
 								}
 							});
 						} else if (alertTiming === "time") {
@@ -302,20 +333,24 @@ $(function() {
 										var welcomeView = new AdminWelcomeView({ model: Parse.User.current() });
 									    welcomeView.render();
 									    $('.main-container').html(welcomeView.el);
+									    $("#spinnerDiv").html("");
 									} else {
 										var welcomeView = new FacultyWelcomeView({ model: Parse.User.current() });
 									    welcomeView.render();
 									    $('.main-container').html(welcomeView.el);
+									    $("#spinnerDiv").html("");
 									};
 								},
 								error: function(error) {
 									alert(error);
+									$("#spinnerDiv").html("");
 								}
 							});
 						};
 					},
 					error: function(error) {
 						alert(error);
+						$("#spinnerDiv").html("");
 					}
 				});
 			};
@@ -327,7 +362,7 @@ $(function() {
 			if (! title || ! content) {
 				alert("Please ensure you have correctly filled out all required fields!");
 			} else {
-				console.log(window.daysArray);
+				$("#spinnerDiv").html('<a><img src="./spinner.gif" alt="Logo" width="40" style="vertical-align: middle; padding-top:12px; padding-left:10px;"/></a>');
 				var query = new Parse.Query("ExtracurricularStructure");
 				query.descending("extracurricularID");
 				query.first({
@@ -349,6 +384,7 @@ $(function() {
 									var welcomeView = new AdminWelcomeView({ model: Parse.User.current() });
 								    welcomeView.render();
 								    $('.main-container').html(welcomeView.el);
+								    $("#spinnerDiv").html("");
 								} else {
 									var ownedEC = Parse.User.current().get("ownedEC");
 									ownedEC.push("E" + object.get("extracurricularID").toString());
@@ -360,34 +396,99 @@ $(function() {
 											var welcomeView = new FacultyWelcomeView({ model: Parse.User.current() });
 										    welcomeView.render();
 										    $('.main-container').html(welcomeView.el);
+										    $("#spinnerDiv").html("");
 										},
 										error: function(error) {
 											alert(error);
+											$("#spinnerDiv").html("");
 										}
 									});
 								};
 							},
 							error: function(error) {
 								alert(error);
+								$("#spinnerDiv").html("");
 							}
 						});
 					},
 					error: function(error) {
 						alert(error);
+						$("#spinnerDiv").html("");
 					}
 				});
 			};
 		}
-	}); 
+	});
+
+	var UserRegisterStructure = Parse.Object.extend("UserRegisterStructure", {
+		create: function(firstName, lastName, email, username, password) {
+			if (! firstName || ! lastName || ! username || ! password || ! email) {
+				alert("Please ensure you have correctly filled out all required fields!");
+				$("#signupButton").html("Register");
+			} else {
+				$("#spinnerDiv").html('<a><img src="./spinner.gif" alt="Logo" width="40" style="vertical-align: middle; padding-top:12px; padding-left:10px;"/></a>');
+
+	    		$("#signupButton").html("Checking availability...");
+				Parse.Cloud.run("validateUser", { "username" : username , "email" : email }, {
+					success: function(count) {
+						if (count > 0) {
+							alert("This username or e-mail has already been used. Please try again.");
+							$("#signupButton").html("Register");
+							$("#spinnerDiv").html("");
+						} else {
+							Parse.Cloud.run("encryptPassword", { "password" : password }, {
+								success: function(returnedObject) {
+									var object = new UserRegisterStructure();
+									object.save({
+										'firstName' : firstName.toString(),
+										'lastName' : lastName.toString(),
+										'email' : email.toString(),
+										'username' : username.toString(),
+										'password' : returnedObject
+									},	{
+										success: function(object) {
+											alert("You have successfully registered your WildcatConnect account! A member of administration will approve your request and you will then receive a confirmation e-mail.");
+											location.reload();
+										},
+										error: function(error) {
+											alert(error);
+											$("#signupButton").html("Register");
+											$("#spinnerDiv").html("");
+										}
+									});
+								},
+								error: function(error) {
+									alert(error);
+									$("#signupButton").html("Register");
+									$("#spinnerDiv").html("");
+								}
+							});
+						};
+					},
+					error: function(error) {
+						alert(error);
+						$("#signupButton").html("Register");
+						$("#spinnerDiv").html("");
+					}
+				});
+			};
+		}
+	});
 
 	var LoginView = Parse.View.extend({
 	    template: Handlebars.compile($('#login-tpl').html()),
 	    events: {
 	        'submit .form-signin': 'login',
-	        'click .register' : 'register'
+	        'submit .form-horizontal' : 'register'
 	    },
 	    register: function(e) {
 	    	e.preventDefault();
+
+	    	var data = $(e.target).serializeArray();
+
+	    	var USR = new UserRegisterStructure();
+
+	    	USR.create(data[0].value, data[1].value, data[2].value, data[3].value, data[4].value);
 	    },
 	    login: function(e) {
 	 
@@ -399,10 +500,13 @@ $(function() {
 	            username = data[0].value,
 	            password = data[1].value;
 	 
+	        $("#spinnerDiv").html('<a><img src="./spinner.gif" alt="Logo" width="40" style="vertical-align: middle; padding-top:12px; padding-left:10px;"/></a>');
+
 	        // Call Parse Login function with those variables
 	        Parse.User.logIn(username, password, {
 	            // If the username and password matches
 	            success: function(user) {
+	            	$("#spinnerDiv").html("");
 	                if (Parse.User.current().get("userType") === "Administration" || Parse.User.current().get("userType") === "Developer") {
 						var welcomeView = new AdminWelcomeView({ model: Parse.User.current() });
 					    welcomeView.render();
@@ -436,7 +540,8 @@ $(function() {
 	        'click .add-cs' : 'addCS',
 	        'click .add-poll' : 'addPoll',
 	        'click .add-alert' : 'addAlert',
-	        'click .register-ec' : 'registerEC'
+	        'click .register-ec' : 'registerEC',
+	        'click .user' : 'user'
 	    },
 	    addNews: function(){
 	        var addNewsView = new AddNewsView();
@@ -467,6 +572,11 @@ $(function() {
 	    	var registerECView = new RegisterECView();
 	    	registerECView.render();
 	    	$('.main-container').html(registerECView.el);
+	    },
+	    user: function() {
+	    	var userView = new UserView();
+	    	userView.render();
+	    	$('.main-container').html(userView.el);
 	    },
         render: function(){
             var attributes = this.model.toJSON();
@@ -700,6 +810,37 @@ $(function() {
 	    }
 	});
 
+	var UserView = Parse.View.extend({
+		template: Handlebars.compile($('#user-tpl').html()),
+	    events: {
+	        'submit .form-add': 'submit',
+	        'click .cancel' : 'cancel'
+	    },
+	    cancel: function(e){
+	    	e.preventDefault();
+
+	    	if (Parse.User.current().get("userType") === "Administration" || Parse.User.current().get("userType") === "Developer") {
+				var welcomeView = new AdminWelcomeView({ model: Parse.User.current() });
+			    welcomeView.render();
+			    $('.main-container').html(welcomeView.el);
+			} else {
+				var welcomeView = new FacultyWelcomeView({ model: Parse.User.current() });
+			    welcomeView.render();
+			    $('.main-container').html(welcomeView.el);
+			};
+	    },
+	    submit: function(e){
+	        e.preventDefault();
+
+	        var data = $(e.target).serializeArray();
+
+	       	//
+	    },
+	    render: function(){
+	        this.$el.html(this.template());
+	    }
+	});
+
 	if (Parse.User.current()) {
 		if (Parse.User.current().get("userType") === "Administration" || Parse.User.current().get("userType") === "Developer") {
 			var welcomeView = new AdminWelcomeView({ model: Parse.User.current() });
@@ -744,15 +885,6 @@ $(function() {
 		};
 	});
 
-	/*Parse.Cloud.run('sendTestMessage', {"key":"value"}, {
-	  success: function() {
-	    alert("Success!");
-	  },
-	  error: function(error) {
-	    alert(error);
-	  }
-	});*/
-
 });
 
 function start(parameter) {
@@ -767,4 +899,249 @@ function startTwo(parameter) {
    {
         window.daysArray = parameter;
    }
+}
+
+function loadNewUserTable() {
+	return function() {
+		$("#spinnerDiv").html('<a><img src="./spinner.gif" alt="Logo" width="40" style="vertical-align: middle; padding-top:12px; padding-left:10px;"/></a>');
+		var query = new Parse.Query("UserRegisterStructure");
+		query.ascending("lastName");
+		query.find({
+			success: function(structures) {
+
+				$("#newLabel").html("New User Requests (" + structures.length+")");
+
+				var tableDiv = document.getElementById("newUsers");
+				var table = document.createElement("TABLE");
+				var tableBody = document.createElement("TBODY");
+
+				$("#newUsers").html("");
+
+				table.appendChild(tableBody);
+				table.className = "table table-striped";
+
+				var heading = new Array();
+				heading[0] = "Last Name";
+				heading[1] = "First Name";
+				heading[2] = "E-Mail";
+				heading[3] = "Action";
+
+				//TABLE COLUMNS
+
+				var tr = document.createElement("TR");
+				tableBody.appendChild(tr);
+
+				for (var i = 0; i < heading.length; i++) {
+					var th = document.createElement("TH");
+					th.width = '25%';
+					th.appendChild(document.createTextNode(heading[i]));
+					tr.appendChild(th);
+				};
+
+				window.userArray = new Array();
+
+				for (var i = 0; i < structures.length; i++) {
+					window.userArray.push(structures[i]);
+					var tr = document.createElement("TR");
+					var tdTwo = document.createElement("TD");
+					tdTwo.appendChild(document.createTextNode(structures[i].get("lastName")));
+					tr.appendChild(tdTwo);
+					var tdOne = document.createElement("TD");
+					tdOne.appendChild(document.createTextNode(structures[i].get("firstName")));
+					tr.appendChild(tdOne);
+					var tdThree = document.createElement("TD");
+					tdThree.innerHTML = '<a href="mailto:'+structures[i].get("email")+'">'+structures[i].get("email")+'</a>';
+					tr.appendChild(tdThree);
+					var tdFour = document.createElement("TD");
+					var button =document.createElement("INPUT");
+					button.type = "button";
+					button.className = "approveUser btn btn-lg btn-primary";
+					button.value = "Approve";
+					button.name = i;
+					button.style.marginRight = "10px";
+					button.onclick = (function() {
+					    var count = i;
+
+					    return function(e) {
+					        
+					    	//Approve the user at i
+
+					    	$("#spinnerDiv").html('<a><img src="./spinner.gif" alt="Logo" width="40" style="vertical-align: middle; padding-top:12px; padding-left:10px;"/></a>');
+
+					    	var user = window.userArray[count];
+
+					    	var password = user.get("password");
+
+							Parse.Cloud.run("decryptPassword", { "password" : password }, {
+								success: function(here) {
+									Parse.Cloud.run('registerUser', { "username" : user.get("username") , "password" : here , "email" : user.get("email") , "firstName" : user.get("firstName") , "lastName" : user.get("lastName") }, {
+									  success: function() {
+									    $("#spinnerDiv").html("");
+									    alert("User approved!");
+									    $(document).ready(loadNewUserTable());
+										$(document).ready(loadExistingUserTable());
+									  },
+									  error: function(error) {
+									    alert(error);
+									  }
+									});
+								},
+								error: function(error) {
+									alert(error.message);
+								}
+							});
+					    };
+					})();
+					tdFour.appendChild(button);
+					var buttonTwo =document.createElement("INPUT");
+					buttonTwo.type = "button";
+					buttonTwo.className = "approveUser btn btn-lg btn-primary";
+					buttonTwo.value = "Deny";
+					button.name = i;
+					buttonTwo.style.marginRight = "10px";
+					buttonTwo.onclick = (function() {
+					    var count = i;
+
+					    return function(e) {
+					        
+					    	$("#spinnerDiv").html('<a><img src="./spinner.gif" alt="Logo" width="40" style="vertical-align: middle; padding-top:12px; padding-left:10px;"/></a>');
+
+					    	var user = window.userArray[count];
+
+					    	var query = new Parse.Query("UserRegisterStructure");
+					    	query.equalTo("username", user.get("username"));
+					    	query.first({
+					    		success: function(object) {
+					    			object.destroy({
+					    				success: function(object) {
+					    					alert("User successfully denied request.");
+										    $("#spinnerDiv").html("");
+										    $(document).ready(loadNewUserTable());
+											$(document).ready(loadExistingUserTable());
+					    				},
+					    				error: function(error) {
+					    					alert(error);
+					    					$("#spinnerDiv").html("");
+					    				}
+					    			});
+					    		},
+					    		error: function(error) {
+					    			alert(error);
+					    			$("#spinnerDiv").html("");
+					    		}
+					    	});
+
+					    };
+					})();
+					tdFour.appendChild(buttonTwo);
+					tr.appendChild(tdFour);
+					tableBody.appendChild(tr);
+
+					tableDiv.appendChild(table);
+				};
+			},
+			error: function(error) {
+				alert(error);
+			}
+		});
+	}
+}
+
+function loadExistingUserTable() {
+	return function() {
+		var query = new Parse.Query("User");
+		query.ascending("lastName");
+		query.find({
+			success: function(structures) {
+
+				$("#existingLabel").html("Existing Users (" + structures.length+")");
+
+				var tableDiv = document.getElementById("existingUsers");
+				var table = document.createElement("TABLE");
+				var tableBody = document.createElement("TBODY");
+
+				table.appendChild(tableBody);
+				table.className = "table table-striped";
+
+				var heading = new Array();
+				heading[0] = "Last Name";
+				heading[1] = "First Name";
+				heading[2] = "E-Mail";
+				heading[3] = "Action";
+
+				//TABLE COLUMNS
+
+				var tr = document.createElement("TR");
+				tableBody.appendChild(tr);
+
+				$("#existingUsers").html("");
+
+				for (var i = 0; i < heading.length; i++) {
+					var th = document.createElement("TH");
+					th.width = '25%';
+					th.appendChild(document.createTextNode(heading[i]));
+					tr.appendChild(th);
+				};
+
+				window.existingUserArray = new Array();
+
+				for (var i = 0; i < structures.length; i++) {
+					window.existingUserArray.push(structures[i]);
+					var tr = document.createElement("TR");
+					var tdTwo = document.createElement("TD");
+					tdTwo.appendChild(document.createTextNode(structures[i].get("lastName")));
+					tr.appendChild(tdTwo);
+					var tdOne = document.createElement("TD");
+					tdOne.appendChild(document.createTextNode(structures[i].get("firstName")));
+					tr.appendChild(tdOne);
+					var tdThree = document.createElement("TD");
+					tdThree.innerHTML = '<a href="mailto:'+structures[i].get("email")+'">'+structures[i].get("email")+'</a>';
+					tr.appendChild(tdThree);
+					var tdFour = document.createElement("TD");
+					var button =document.createElement("INPUT");
+					button.type = "button";
+					button.className = "approveUser btn btn-lg btn-primary";
+					button.value = "Delete";
+					button.name = i;
+					button.style.marginRight = "10px";
+					button.onclick = (function() {
+					    var count = i;
+
+					    return function(e) {
+					        
+					    	//Delete that user...
+
+					    	$("#spinnerDiv").html('<a><img src="./spinner.gif" alt="Logo" width="40" style="vertical-align: middle; padding-top:12px; padding-left:10px;"/></a>');
+
+					    	var user = window.existingUserArray[count];
+
+					    	Parse.Cloud.run('deleteUser', { "username" : user.get("username") }, {
+							  success: function() {
+							    alert("User successfully deleted.");
+							    $("#spinnerDiv").html("");
+							    $(document).ready(loadNewUserTable());
+								$(document).ready(loadExistingUserTable());
+							  },
+							  error: function(error) {
+							    alert(error);
+							    $("#spinnerDiv").html("");
+							  }
+							});
+
+					    };
+					})();
+					tdFour.appendChild(button);
+					tr.appendChild(tdFour);
+					tableBody.appendChild(tr);
+
+					tableDiv.appendChild(table);
+				};
+
+				$("#spinnerDiv").html("");
+			},
+			error: function(error) {
+				alert(error);
+			}
+		});
+	}
 }
