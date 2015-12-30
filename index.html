@@ -104,6 +104,7 @@
               <input type="text" name="username" class="form-control" placeholder="Username" required="" autofocus="" autocorrect="off" autocapitalize="off">
               <input type="password" name="password" class="form-control" placeholder="Password" required="">
               <button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
+              <button class="forgot btn btn-lg btn-primary btn-block" type="cancel">Forgot Username/Password</button>
           </form>
           <!--form class="form-signin" role="form">
               <h2 class="form-signin-heading">Register an Account</h2>
@@ -169,6 +170,15 @@
           </div>
           <br>
       </script>
+
+      <script id="forgot-tpl" type="text/template">
+          <form class="form-signin" role="form">
+              <h2 class="form-signin-heading">Forgot Something?</h2>
+              <input type="email" name="email" class="form-control" placeholder="E-Mail" required="" autofocus="" autocorrect="off" autocapitalize="off">
+              <button class="btn btn-lg btn-primary btn-block" type="submit">Recover Account</button>
+            <button class="cancel btn btn-lg btn-primary btn-block" type="cancel">Cancel</button>
+          </div>
+      </script>
  
       <script type="text/template" id="admin-welcome-tpl">
         <h2>Welcome, {{firstName}}!</h2>
@@ -189,8 +199,34 @@
         <button class="register-ec btn btn-lg btn-primary" style="margin-bottom:5px;">Extracurricular Group</button>
         <hr style="border-color:#561838";></hr>
         <h4>Administration Only</h4>
-        <button class="user btn btn-lg btn-primary">User Management</button>
+        <button class="user btn btn-lg btn-primary" style="margin-bottom:5px;" id="newButton">User Management</button>
         <br>
+        <button class="schedule btn btn-lg btn-primary">Schedule Management</button>
+        <br>
+        <script>
+          $("#spinnerDiv").html('<a><img src="./spinner.gif" alt="Logo" width="40" style="vertical-align: middle; padding-top:12px; padding-left:10px;"/></a>');
+          var query = new Parse.Query("UserRegisterStructure");
+          query.count({
+            success: function(count) {
+              if (count == 1) {
+                $("#newButton").html("User Management (" + count + " PENDING REQUEST)");
+                $("#newButton").css('background-color', 'red');
+                $("#newButton").css('border-color', 'red');
+              } else if (count > 1) {
+                $("#newButton").html("User Management (" + count + " PENDING REQUESTS)");
+                $("#newButton").css('background-color', 'red');
+                $("#newButton").css('border-color', 'red');
+              };
+              $("#spinnerDiv").html("");
+            },
+            error: function(error) {
+              if (error.code != 100) {
+                alert(error.code + " - " + error.message);
+              };
+              $("#spinnerDiv").html("");
+            }
+          });
+        </script>
       </script>
 
       <script type="text/template" id="faculty-welcome-tpl">
@@ -345,8 +381,12 @@
           <button class="cancel btn btn-lg btn-primary btn-block" type="cancel">Cancel</button>
         </form>
         <script>
-          document.getElementById('startDateDate').valueAsDate = new Date();
-          document.getElementById('endDateDate').valueAsDate = new Date();
+          var today = new Date();
+          document.getElementById('startDateDate').valueAsDate = today;
+          document.getElementById('endDateDate').valueAsDate = today;
+          var currentTime = today.getHours() + ':' + today.getMinutes();
+          document.getElementById('startDateTime').value = currentTime;
+          document.getElementById('endDateTime').value = currentTime;
         </script>
       </script>
 
@@ -428,11 +468,11 @@
           </div>
           <label for="radio">Alert Timing</label>
           <br>
-          <input checked type="radio" name="alertTiming" value="now"> Right now</input>
+          <input checked type="radio" name="alertTiming" value="now" id="now"> Right now</input>
           <br>
-          <input type="radio" name="alertTiming" value="time"> At certain time...</input>
-          <input type="date" name="dateDate" id="dateDate"></input>
-          <input type="time" name="dateTime" id="dateTime"></input>
+          <input type="radio" name="alertTiming" value="time" id="time"> At certain time...</input>
+          <input type="date" name="dateDate" onchange="changeFunction();" id="dateDate"></input>
+          <input type="time" name="dateTime" onchange="changeFunction();" id="dateTime"></input>
           <br>
           <div class="form-group">
             <label for="content">Content</label>
@@ -446,7 +486,15 @@
           authorLabel.value = Parse.User.current().get("firstName") + " " + Parse.User.current().get("lastName");
           $("#author").attr("disabled", true);
           var today = new Date();
-          document.getElementById('dateDate').valueAsDate = new Date();
+          document.getElementById('dateDate').valueAsDate = today;
+          var currentTime = today.getHours() + ':' + today.getMinutes();
+          document.getElementById('dateTime').value = currentTime;
+
+          function changeFunction() {
+            document.getElementById('now').checked = false;
+            document.getElementById('time').checked = true;
+          }
+
         </script>
       </script>
 
@@ -494,7 +542,8 @@
 
         </div>
         <hr style="border-color:#561838";></hr>
-        <h4 id="existingLabel">Existing Users</h4>
+        <h4 id="existingLabel">Existing Users</h4><input type="text" id="search" placeholder=" SEARCH">
+        <br><br>
         <div id="existingUsers">
 
         </div>
@@ -503,6 +552,109 @@
           $(document).ready(loadNewUserTable());
           $(document).ready(loadExistingUserTable());
 
+          $('#search').keyup(function() {
+
+            var $rows = $('#userTable tr');
+
+            $rows.splice(0, 1);
+
+              var val = $.trim($(this).val()).replace(/ +/g, ' ').toLowerCase();
+              
+              $rows.show().filter(function() {
+                  var text = $(this).text().replace(/\s+/g, ' ').toLowerCase();
+                  return !~text.indexOf(val);
+              }).hide();
+          });
+
+        </script>
+      </script>
+
+      <script type="text/template" id="schedule-tpl">
+        <h2>Schedule Management</h2>
+        <button class="cancel btn btn-lg btn-primary" type="cancel">Back</button>
+        <hr style="border-color:#561838";></hr>
+        <h4 id="mainLabel">Current Schedule Mode</h4>
+        <h2 id="modeLabel" style="color:#561838;">LOADING...</h2>
+        <select id='modeSelect' name="modeSelect" onchange="changeFunction();">
+        </select>
+        <hr style="border-color:#561838";></hr>
+        <h4 id="titleLabel">Upcoming School Days</h4>
+        <div id="schedules">
+
+        </div>
+        
+        <script>
+
+          var select = document.getElementById("modeSelect");
+
+          var arrayList = ["NORMAL", "THANKSGIVING BREAK", "HOLIDAY BREAK", "FEBRUARY BREAK", "SPRING BREAK", "SUMMER"];
+
+          for (var i = 0; i < arrayList.length; i++) {
+            var option = document.createElement('option');
+            option.text = arrayList[i];
+            option.value = i;
+            select.appendChild(option);
+          };
+
+          var query = new Parse.Query("SpecialKeyStructure");
+          query.equalTo("key", "scheduleMode");
+          query.first({
+            success: function(object) {
+              var theString = object.get("value");
+              $("#modeLabel").html(theString);
+              $('#modeSelect option[value='+arrayList.indexOf(theString)+']').attr('selected', 'selected');
+            },
+            error: function(error) {
+              response.error(error);
+            }
+          });
+
+          function changeFunction() {
+            $("#spinnerDiv").html('<a><img src="./spinner.gif" alt="Logo" width="40" style="vertical-align: middle; padding-top:12px; padding-left:10px;"/></a>');
+            var selected = $("select[name='modeSelect'] option:selected").index();
+            var newMode = arrayList[selected];
+            var query = new Parse.Query("SpecialKeyStructure");
+            query.equalTo("key", "scheduleMode");
+            query.first({
+              success: function(object) {
+                object.set("value", newMode);
+                object.save(null, {
+                  success: function() {
+                    $("#modeLabel").html(newMode);
+                    $("#spinnerDiv").html("");
+                  },
+                  error: function(error) {
+                    alert(error.code + " - " + error.message);
+                  }
+                });
+              },
+              error: function(error) {
+                response.error(error);
+              }
+            });
+          }
+
+          $(document).ready(loadScheduleTable());
+
+        </script>
+      </script>
+
+      <script type="text/template" id="custom-tpl">
+        <h2 id="topLabel">Custom Schedule</h2>
+        <form class="form-add" role="form" enctype="multipart/form-data">
+          <div class="form-group">
+            <label for="content">Content</label>
+            <textarea name="content" class="form-control" rows="15" style="overflow-y: scroll; resize: none;" id="customArea"></textarea>
+          </div>
+          <button class="btn btn-lg btn-primary btn-block" type="submit">Submit</button>
+          <button class="cancel btn btn-lg btn-primary btn-block" type="click">Cancel</button>
+        
+        <script>
+          var parts = window.customDate.split('-');
+          var date = new Date(parts[2], parts[0]-1,parts[1]);
+          var string = date.toString('dddd, MMMM d, yyyy');
+          $("#topLabel").html("Custom Schedule - " + string);
+          $('#customArea').val(window.customString);
         </script>
       </script>
 
@@ -544,6 +696,7 @@
     <script src="./js/sha384.js"></script>
     <script src="./js/sha512.js"></script>
     <script src="./js/tripledes.js"></script>
+    <script src="./js/date.js"></script>
     <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
     <!--script src="../../assets/js/ie10-viewport-bug-workaround.js"></script>
   </body>
