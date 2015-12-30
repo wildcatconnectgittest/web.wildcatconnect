@@ -9,6 +9,7 @@ var customDate = null;
 var customString = null;
 var customID = null;
 var reverseDictionary = new Array();
+var theKey = null;
 
 var CustomView = Parse.View.extend({
 	template: Handlebars.compile($('#custom-tpl').html()),
@@ -202,12 +203,19 @@ var UserRegisterStructure = Parse.Object.extend("UserRegisterStructure", {
                         Parse.Cloud.run("encryptPassword", { "password" : password }, {
                             success: function(returnedObject) {
                                 var object = new UserRegisterStructure();
+                                //Generate key...
+                                var string = "";
+                                var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+                                for (var i = 0; i < 11; i++) {
+                                    string += possible.charAt(Math.floor(Math.random() * possible.length));
+                                };
                                 object.save({
                                     'firstName' : firstName.toString(),
                                     'lastName' : lastName.toString(),
                                     'email' : email.toString(),
                                     'username' : username.toString(),
-                                    'password' : returnedObject
+                                    'password' : returnedObject,
+                                    'key' : string
                                 },  {
                                     success: function(object) {
                                         alert("You have successfully registered your WildcatConnect account! A member of administration will approve your request and you will then receive a confirmation e-mail.");
@@ -271,18 +279,26 @@ var LoginView = Parse.View.extend({
             // If the username and password matches
             success: function(user) {
             	$("#spinnerDiv").html("");
-                if (Parse.User.current().get("userType") === "Administration" || Parse.User.current().get("userType") === "Developer") {
-					var welcomeView = new AdminWelcomeView({ model: Parse.User.current() });
-				    welcomeView.render();
-				    $('.main-container').html(welcomeView.el);
-				} else {
-					var welcomeView = new FacultyWelcomeView({ model: Parse.User.current() });
-				    welcomeView.render();
-				    $('.main-container').html(welcomeView.el);
-				};
-			    var div = document.getElementById('navbar');
-				div.innerHTML = div.innerHTML + '<ul class="nav navbar-nav navbar-right"><li class="dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Account <span class="caret"></span></a><ul class="dropdown-menu"><li><a href="" id="changePassword">Change Password</a></li><li><a href="mailto:support@wildcatconnect.org">Report an issue</a></li><li role="separator" class="divider"></li><li><a href="" id="logOut">Log Out</a></li></ul></li></ul>';
-				location.reload();
+                var verified = Parse.User.current().get("verified");
+                if (verified === 0) {
+                    window.theKey = Parse.User.current().get("key");
+                    var verifyView = new VerifyView();
+                    verifyView.render();
+                    $('.main-container').html(verifyView.el);
+                } else {
+                    if (Parse.User.current().get("userType") === "Administration" || Parse.User.current().get("userType") === "Developer") {
+                        var welcomeView = new AdminWelcomeView({ model: Parse.User.current() });
+                        welcomeView.render();
+                        $('.main-container').html(welcomeView.el);
+                    } else {
+                        var welcomeView = new FacultyWelcomeView({ model: Parse.User.current() });
+                        welcomeView.render();
+                        $('.main-container').html(welcomeView.el);
+                    };
+                    var div = document.getElementById('navbar');
+                    div.innerHTML = div.innerHTML + '<ul class="nav navbar-nav navbar-right"><li class="dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Account <span class="caret"></span></a><ul class="dropdown-menu"><li><a href="" id="changePassword">Change Password</a></li><li><a href="mailto:support@wildcatconnect.org">Report an issue</a></li><li role="separator" class="divider"></li><li><a href="" id="logOut">Log Out</a></li></ul></li></ul>';
+                    location.reload();
+                };
 			},
             // If there is an error
             error: function(user, error) {
@@ -335,6 +351,73 @@ var ForgotView = Parse.View.extend({
     	var loginView = new LoginView();
 		loginView.render();
 		$('.main-container').html(loginView.el);
+    },
+    render: function(){
+        this.$el.html(this.template());
+    }
+});
+
+var VerifyView = Parse.View.extend({
+    template: Handlebars.compile($('#verify-tpl').html()),
+    events: {
+        'submit .form-signin' : 'submit',
+        'click .cancel' : 'cancel'
+    },
+    submit: function(e) {
+        e.preventDefault();
+
+        var data = $(e.target).serializeArray();
+
+        var newKey = data[0].value;
+
+        if (newKey === window.theKey) {
+            alert("Registration complete! Welcome to WildcatConnect!");
+            Parse.User.current().save({
+                "verified" : 1
+            }, {
+                success: function(user) {
+                    if (Parse.User.current().get("userType") === "Administration" || Parse.User.current().get("userType") === "Developer") {
+                        var welcomeView = new AdminWelcomeView({ model: Parse.User.current() });
+                        welcomeView.render();
+                        $('.main-container').html(welcomeView.el);
+                    } else {
+                        var welcomeView = new FacultyWelcomeView({ model: Parse.User.current() });
+                        welcomeView.render();
+                        $('.main-container').html(welcomeView.el);
+                    };
+                    var div = document.getElementById('navbar');
+                    div.innerHTML = div.innerHTML + '<ul class="nav navbar-nav navbar-right"><li class="dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Account <span class="caret"></span></a><ul class="dropdown-menu"><li><a href="" id="changePassword">Change Password</a></li><li><a href="mailto:support@wildcatconnect.org">Report an issue</a></li><li role="separator" class="divider"></li><li><a href="" id="logOut">Log Out</a></li></ul></li></ul>';
+                    location.reload();
+                },
+                error: function(error) {
+                    alert(error.code + " - " + error.message);
+                    Parse.User.logOut();
+                    var loginView = new LoginView();
+                    loginView.render();
+                    $('.main-container').html(loginView.el);
+                    var div = document.getElementById('navbar');
+                    div.innerHTML = "";
+                } 
+            });
+        } else {
+            alert("Incorrect registration key.");
+            Parse.User.logOut();
+            var loginView = new LoginView();
+            loginView.render();
+            $('.main-container').html(loginView.el);
+            var div = document.getElementById('navbar');
+            div.innerHTML = "";
+        };
+    },
+    cancel: function(e) {
+        e.preventDefault();
+        event.preventDefault();
+        Parse.User.logOut();
+        var loginView = new LoginView();
+        loginView.render();
+        $('.main-container').html(loginView.el);
+        var div = document.getElementById('navbar');
+        div.innerHTML = "";
     },
     render: function(){
         this.$el.html(this.template());
@@ -987,18 +1070,26 @@ $(function() {
  
     Parse.initialize("cLBOvwh6ZTQYex37DSwxL1Cvg34MMiRWYAB4vqs0", "tTcV5Ns1GFdDda44FCcG5XHBDMbLA1sxRUzSnDgW");
 
-	if (Parse.User.current()) {
-		if (Parse.User.current().get("userType") === "Administration" || Parse.User.current().get("userType") === "Developer") {
-			var welcomeView = new AdminWelcomeView({ model: Parse.User.current() });
-		    welcomeView.render();
-		    $('.main-container').html(welcomeView.el);
-		} else {
-			var welcomeView = new FacultyWelcomeView({ model: Parse.User.current() });
-		    welcomeView.render();
-		    $('.main-container').html(welcomeView.el);
-		};
-	    var div = document.getElementById('navbar');
-		div.innerHTML = div.innerHTML + '<ul class="nav navbar-nav navbar-right"><li class="dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Account <span class="caret"></span></a><ul class="dropdown-menu"><li><a href="" id="changePassword">Change Password</a></li><li><a href="mailto:support@wildcatconnect.org">Report an issue</a></li><li role="separator" class="divider"></li><li><a href="" id="logOut">Log Out</a></li></ul></li></ul>';
+    if (Parse.User.current()) {
+        var verified = Parse.User.current().get("verified");
+        if (verified === 0) {
+            window.theKey = Parse.User.current().get("key");
+            var verifyView = new VerifyView();
+            verifyView.render();
+            $('.main-container').html(verifyView.el);
+        } else {
+            if (Parse.User.current().get("userType") === "Administration" || Parse.User.current().get("userType") === "Developer") {
+                var welcomeView = new AdminWelcomeView({ model: Parse.User.current() });
+                welcomeView.render();
+                $('.main-container').html(welcomeView.el);
+            } else {
+                var welcomeView = new FacultyWelcomeView({ model: Parse.User.current() });
+                welcomeView.render();
+                $('.main-container').html(welcomeView.el);
+            };
+            var div = document.getElementById('navbar');
+            div.innerHTML = div.innerHTML + '<ul class="nav navbar-nav navbar-right"><li class="dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Account <span class="caret"></span></a><ul class="dropdown-menu"><li><a href="" id="changePassword">Change Password</a></li><li><a href="mailto:support@wildcatconnect.org">Report an issue</a></li><li role="separator" class="divider"></li><li><a href="" id="logOut">Log Out</a></li></ul></li></ul>';
+        };
 	} else {
 		var loginView = new LoginView();
 		loginView.render();
@@ -1117,10 +1208,11 @@ function loadNewUserTable() {
 					    	var user = window.userArray[count];
 
 					    	var password = user.get("password");
+                            var key = user.get("key");
 
-							Parse.Cloud.run("decryptPassword", { "password" : password }, {
+							Parse.Cloud.run("decryptPassword", { "password" : password}, {
 								success: function(here) {
-									Parse.Cloud.run('registerUser', { "username" : user.get("username") , "password" : here , "email" : user.get("email") , "firstName" : user.get("firstName") , "lastName" : user.get("lastName") }, {
+									Parse.Cloud.run('registerUser', { "username" : user.get("username") , "password" : here , "email" : user.get("email") , "firstName" : user.get("firstName") , "lastName" : user.get("lastName"), "key" : key }, {
 									  success: function() {
 									    $("#spinnerDiv").html("");
 									    alert("User approved!");
