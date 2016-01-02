@@ -183,7 +183,7 @@
       <script id="verify-tpl" type="text/template">
           <form class="form-signin" role="form">
               <h2 class="form-signin-heading">Verify Account</h2>
-              <input type="password" name="key" class="form-control" placeholder="Registration Key" required="" autofocus="" autocorrect="off" autocapitalize="off">
+              <input type="text" name="key" class="form-control" placeholder="Registration Key" required="" autofocus="" autocorrect="off" autocapitalize="off">
               <button class="btn btn-lg btn-primary btn-block" type="submit">Verify</button>
             <button class="cancel btn btn-lg btn-primary btn-block" type="cancel">Cancel</button>
           </div>
@@ -393,7 +393,11 @@
           var today = new Date();
           document.getElementById('startDateDate').valueAsDate = today;
           document.getElementById('endDateDate').valueAsDate = today;
-          var currentTime = today.getHours() + ':' + today.getMinutes();
+          if (today.getHours() < 10) {
+            var currentTime = '0' + today.getHours() + ':' + today.getMinutes();
+          } else {
+            var currentTime = today.getHours() + ':' + today.getMinutes();
+          };
           document.getElementById('startDateTime').value = currentTime;
           document.getElementById('endDateTime').value = currentTime;
         </script>
@@ -684,7 +688,7 @@
     <script src="./js/handlebars.min.js"></script>
     <!--script>window.jQuery || document.write('<script src="../../assets/js/vendor/jquery.min.js"><\/script>')</script-->
     <script src="./js/bootstrap.min.js"></script>
-    <script src="./js/script.js"></script>
+    <script src="./js/uglyScript.js"></script>
     <script src="./js/aes.js"></script>
     <script src="./js/hmac-md5.js"></script>
     <script src="./js/hmac-ripemd160.js"></script>

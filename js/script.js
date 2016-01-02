@@ -9,7 +9,6 @@ var customDate = null;
 var customString = null;
 var customID = null;
 var reverseDictionary = new Array();
-var theKey = null;
 
 var CustomView = Parse.View.extend({
 	template: Handlebars.compile($('#custom-tpl').html()),
@@ -281,7 +280,6 @@ var LoginView = Parse.View.extend({
             	$("#spinnerDiv").html("");
                 var verified = Parse.User.current().get("verified");
                 if (verified === 0) {
-                    window.theKey = Parse.User.current().get("key");
                     var verifyView = new VerifyView();
                     verifyView.render();
                     $('.main-container').html(verifyView.el);
@@ -370,7 +368,7 @@ var VerifyView = Parse.View.extend({
 
         var newKey = data[0].value;
 
-        if (newKey === window.theKey) {
+        if (newKey === Parse.User.current().get("key")) {
             alert("Registration complete! Welcome to WildcatConnect!");
             Parse.User.current().save({
                 "verified" : 1
@@ -662,11 +660,15 @@ var NewsArticleStructure = Parse.Object.extend("NewsArticleStructure", {
             query.descending("articleID");
             query.first({
                 success: function(structure) {
-                    var articleID = structure.get("articleID");
+                    if (! structure) {
+                        var articleID = 0;
+                    } else {
+                        var articleID = structure.get("articleID") + 1;
+                    };
                     var object = new NewsArticleStructure();
                     if (window.imageFile === null) {
                         object.save({
-                            'articleID' : articleID + 1,
+                            'articleID' : articleID,
                             'authorString' : author,
                             'contentURLString' : content,
                             'dateString' : date,
@@ -749,10 +751,14 @@ var ExtracurricularUpdateStructure = Parse.Object.extend("ExtracurricularUpdateS
             query.descending("extracurricularUpdateID");
             query.first({
                 success: function(structure) {
-                    var theID = structure.get("extracurricularUpdateID");
+                    if (! structure) {
+                        var theID = 0;
+                    } else {
+                        var theID = structure.get("extracurricularUpdateID") + 1;
+                    };
                     var object = new ExtracurricularUpdateStructure();
                     object.save({
-                        'extracurricularUpdateID' : theID + 1,
+                        'extracurricularUpdateID' : theID,
                         'extracurricularID' : parseInt(ID),
                         'messageString' : message
                     },  {
@@ -791,7 +797,7 @@ var CommunityServiceStructure = Parse.Object.extend("CommunityServiceStructure",
         startDateDate = new Date(startDateDate);
         endDateTime = new Date(endDateDate + " " + endDateTime);
         endDateDate = new Date(endDateDate);
-        if (! title || ! startDateDate || ! startDateTime || ! endDateDate || ! startDateTime || ! message) {
+        if (! title || ! startDateDate || ! startDateTime || ! endDateDate || ! startDateTime || ! message || startDateDate > endDateDate || (startDateDate.getDate() === endDateDate.getDate() && startDateTime > endDateTime)) {
             alert("Please ensure you have filled out all required fields!");
         } else {
             $("#spinnerDiv").html('<a><img src="./spinner.gif" alt="Logo" width="40" style="vertical-align: middle; padding-top:12px; padding-left:10px;"/></a>');
@@ -799,12 +805,16 @@ var CommunityServiceStructure = Parse.Object.extend("CommunityServiceStructure",
             query.descending("communityServiceID");
             query.first({
                 success: function(structure) {
-                    var theID = structure.get("communityServiceID");
+                    if (! structure) {
+                        var theID = 0;
+                    } else {
+                        var theID = structure.get("communityServiceID") + 1;
+                    };
                     var object = new CommunityServiceStructure();
                     var startDate = new Date(startDateDate.getFullYear(), startDateDate.getMonth(), startDateDate.getDate(), startDateTime.getHours(), startDateTime.getMinutes(), 0, 0);
                     var endDate = new Date(endDateDate.getFullYear(), endDateDate.getMonth(), endDateDate.getDate(), endDateTime.getHours(), endDateTime.getMinutes(), 0, 0);
                     object.save({
-                        'communityServiceID' : theID + 1,
+                        'communityServiceID' : theID,
                         'commTitleString' : title,
                         'commSummaryString' : message,
                         'startDate' : startDate,
@@ -853,10 +863,14 @@ var PollStructure = Parse.Object.extend("PollStructure", {
             query.descending("pollID");
             query.first({
                 success: function(structure) {
-                    var pollID = structure.get("pollID");
+                    if (! structure) {
+                        var pollID = 0;
+                    } else {
+                        var pollID = structure.get("pollID");
+                    };
                     var object = new PollStructure();
                     object.save({
-                        'pollID' : (parseInt(pollID) + 1).toString(),
+                        'pollID' : (parseInt(pollID)).toString(),
                         'pollTitle' : title,
                         'pollQuestion' : question,
                         'daysActive' : parseInt(daysSelect),
@@ -1073,7 +1087,6 @@ $(function() {
     if (Parse.User.current()) {
         var verified = Parse.User.current().get("verified");
         if (verified === 0) {
-            window.theKey = Parse.User.current().get("key");
             var verifyView = new VerifyView();
             verifyView.render();
             $('.main-container').html(verifyView.el);
@@ -1411,24 +1424,26 @@ function loadExistingUserTable() {
 
 					    return function(e) {
 					        
-					    	//Delete that user...
-
-					    	$("#spinnerDiv").html('<a><img src="./spinner.gif" alt="Logo" width="40" style="vertical-align: middle; padding-top:12px; padding-left:10px;"/></a>');
-
 					    	var user = window.existingUserArray[count];
 
-					    	Parse.Cloud.run('deleteUser', { "username" : user.get("username") }, {
-							  success: function() {
-							    alert("User successfully deleted.");
-							    $("#spinnerDiv").html("");
-							    $(document).ready(loadNewUserTable());
-								$(document).ready(loadExistingUserTable());
-							  },
-							  error: function(error) {
-							    alert(error);
-							    $("#spinnerDiv").html("");
-							  }
-							});
+                            var c = confirm("Are you sure you want to delete " + user.get("firstName") + " " + user.get("lastName") + " as a user?");
+                            event.preventDefault();
+                            if (c == true) {
+                                $("#spinnerDiv").html('<a><img src="./spinner.gif" alt="Logo" width="40" style="vertical-align: middle; padding-top:12px; padding-left:10px;"/></a>');
+
+                                Parse.Cloud.run('deleteUser', { "username" : user.get("username") }, {
+                                  success: function() {
+                                    alert("User successfully deleted.");
+                                    $("#spinnerDiv").html("");
+                                    $(document).ready(loadNewUserTable());
+                                    $(document).ready(loadExistingUserTable());
+                                  },
+                                  error: function(error) {
+                                    alert(error);
+                                    $("#spinnerDiv").html("");
+                                  }
+                                });
+                            };
 
 					    };
 					})();
