@@ -4,12 +4,6 @@ html {
   position: relative;
   min-height: 100%;
 }
-body {
-  /* Margin bottom by footer height */
-  margin-bottom: 120px;
-  min-height: 750px;
-  clear: both;
-}
 
 .footer {
   position: absolute;

@@ -53,7 +53,6 @@
   </head>
 
   <body>
-
     <!-- Static navbar -->
     <nav class="navbar navbar-default navbar-static-top">
       <div class="container">
@@ -85,52 +84,44 @@
               </ul>
             </li>
           </ul>
+          <!--ul class="nav navbar-nav navbar-right">
+            <li class="dropdown">
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Account<span class="caret"></span></a>
+              <ul class="dropdown-menu">
+                <li><a href="#">Change Password</a></li>
+                <li><a href="#">Report an issue</a></li>
+                <li role="separator" class="divider"></li>
+                <li><a href="#">Log Out</a></li>
+              </ul>
+            </li>
+          </ul-->
         </div--><!--/.nav-collapse -->
       </div>
     </nav>
 
     <div class="main-container" style="padding-left:20px; padding-right:20px;">
- 
-      <div id="admin">
-        <h2 id="welcomeLabel">Welcome ...</h2>
-        <h5 id="nameLabel">Logged in as ...</h5>
-        <hr style="border-color:#561838";></hr>
-        <h2 style="text-align:center;">Staff Tools</h2>
-        <table class="table">
-          <tr>
-            <td width="33%"><a href="./news.html"><button class="add-news btn btn-lg btn-primary" style="margin-bottom:5px; display: block; width: 100%;">Wildcat News Story</button></a></td>
-            <td width="33%"><a href="./groupUpdate.html"><button class="add-ec btn btn-lg btn-primary" style="margin-bottom:5px; display: block; width: 100%;">Group Update</button></a></td>
-            <td width="33%"><a href="./groupRegister.html"><button class="register-ec btn btn-lg btn-primary" style="margin-bottom:5px; display: block; width: 100%;">Register New Group</button></a></td>
-          </tr>
-          <tr>
-            <td width="33%"><a href="./community.html"><button class="add-ec btn btn-lg btn-primary" style="margin-bottom:5px; display: block; width: 100%;">Community Service Opportunity</button></a></td>
-            <td width="33%"><a href="./poll.html"><button class="add-ec btn btn-lg btn-primary" style="margin-bottom:5px; display: block; width: 100%;">User Poll</button></a></td>
-            <td width="33%"><a href="./alert.html"><button class="add-ec btn btn-lg btn-primary" style="margin-bottom:5px; display: block; width: 100%;">Alert</button></a></td>
-          </tr>
-        </table>
-        <h2 style="text-align:center;">Administration Only</h2>
-        <table class="table">
-          <tr>
-            <td width="33%"><a href="./user.html"><button class="add-news btn btn-lg btn-primary" style="margin-bottom:5px; display: block; width: 100%;">User Management</button></a></td>
-            <td width="33%"><a href="./schedule.html"><button class="add-ec btn btn-lg btn-primary" style="margin-bottom:5px; display: block; width: 100%;">Schedule Management</button></a></td>
-            <td width="33%"><a href="./schedule.html"><button class="add-ec btn btn-lg btn-primary" style="margin-bottom:5px; display: block; width: 100%;">Lunch Management</button></a></td>
-          </tr>
-        </table>
-      </div>
 
-      <div id="faculty">
-        <h2 id="welcomeLabel">Welcome ...</h2>
-        <h5 id="nameLabel">Logged in as ...</h5>
-        <hr style="border-color:#561838";></hr>
-        <h2 style="text-align:center;">Staff Tools</h2>
-        <table class="table">
-          <tr>
-            <td width="33%"><a href="./news.html"><button class="add-news btn btn-lg btn-primary" style="margin-bottom:5px; display: block; width: 100%;">Wildcat News Story</button></a></td>
-            <td width="33%"><a href="./groupUpdate.html"><button class="add-ec btn btn-lg btn-primary" style="margin-bottom:5px; display: block; width: 100%;">Group Update</button></a></td>
-            <td width="33%"><a href="./groupRegister.html"><button class="register-ec btn btn-lg btn-primary" style="margin-bottom:5px; display: block; width: 100%;">Register New Group</button></a></td>
-          </tr>
-        </table>
-      </div>
+      <button class="cancel btn btn-lg btn-primary" type="cancel">Cancel</button>
+      <h2>Register Group</h2>
+      <form class="form-add-groupRegister" role="form">
+        <div class="form-group">
+          <label for="title">Group Title</label>
+          <input type="text" name="title" class="form-control" id="title" placeholder="Title">
+        </div>
+        <div class="form-group">
+          <label for="content">Group Information (i.e. purpose, advisor(s), meeting times and locations, etc.)</label>
+          <textarea name="content" class="form-control" rows="2" style="overflow-y: scroll; resize: none;"></textarea>
+        </div>
+        <div id="checkboxes">
+          <label>Meeting Days</label><br>
+          <input type="checkbox" name="checkbox" id="checkbox" onchange="arrayEdit(0);"> Monday</li><br>
+          <input type="checkbox" name="checkbox" id="checkbox" onchange="arrayEdit(1);"> Tuesday</li><br>
+          <input type="checkbox" name="checkbox" id="checkbox" onchange="arrayEdit(2);"> Wednesday</li><br>
+          <input type="checkbox" name="checkbox" id="checkbox" onchange="arrayEdit(3);"> Thursday</li><br>
+          <input type="checkbox" name="checkbox" id="checkbox" onchange="arrayEdit(4);"> Friday</li><br><br>
+        </div>
+        <button class="btn btn-lg btn-primary btn-block" type="submit">Submit</button>
+      </form>
 
     </div> <!-- /container -->
 
@@ -148,38 +139,22 @@
       Parse.$ = jQuery;
       Parse.initialize("cLBOvwh6ZTQYex37DSwxL1Cvg34MMiRWYAB4vqs0", "tTcV5Ns1GFdDda44FCcG5XHBDMbLA1sxRUzSnDgW");
       if (Parse.User.current()) {
-        if (Parse.User.current().get("userType") === "Administration" || Parse.User.current().get("userType") === "Developer") {
-          $('.main-container').html($("#admin").html());
-          $("#spinnerDiv").html('<a><img src="./spinner.gif" alt="Logo" width="40" style="vertical-align: middle; padding-top:12px; padding-left:10px;"/></a>');
-          var query = new Parse.Query("UserRegisterStructure");
-          query.count({
-            success: function(count) {
-              if (count == 1) {
-                $("#newButton").html("User Management (" + count + " PENDING REQUEST)");
-                $("#newButton").css('background-color', 'red');
-                $("#newButton").css('border-color', 'red');
-              } else if (count > 1) {
-                $("#newButton").html("User Management (" + count + " PENDING REQUESTS)");
-                $("#newButton").css('background-color', 'red');
-                $("#newButton").css('border-color', 'red');
-              };
-              $("#spinnerDiv").html("");
-            },
-            error: function(error) {
-              if (error.code != 100) {
-                alert(error.code + " - " + error.message);
-              };
-              $("#spinnerDiv").html("");
-            }
-          });
-        } else if (Parse.User.current().get("userType") === "Faculty") {
-          $('.main-container').html($("#faculty").html());
-        };
-        $('#welcomeLabel').html("Welcome, " + Parse.User.current().get("firstName") + "!");
-        $('#nameLabel').html("Logged in as " + Parse.User.current().get("firstName") + " " + Parse.User.current().get("lastName") + " - " + Parse.User.current().get("userType"));
+        //
       } else {
         window.location.replace("./login.html");
       };
+    </script>
+
+    <script>
+      var daysArray = [];
+      function arrayEdit(j) {
+        if (daysArray.indexOf(j) > -1) {
+          daysArray.splice(j, 1);
+        } else {
+          daysArray.push(j);
+        };
+        $(document).ready(startTwo(daysArray));
+      }
     </script>
     <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
     <!--script src="../../assets/js/ie10-viewport-bug-workaround.js"></script>

@@ -9,8 +9,9 @@ var customDate = null;
 var customString = null;
 var customID = null;
 var reverseDictionary = new Array();
+var groupsArray = new Array();
 
-var CustomView = Parse.View.extend({
+/*var CustomView = Parse.View.extend({
 	template: Handlebars.compile($('#custom-tpl').html()),
     events: {
         'submit .form-add': 'submit',
@@ -100,7 +101,6 @@ var ScheduleView = Parse.View.extend({
 var AdminWelcomeView = Parse.View.extend({
     template: Handlebars.compile($('#admin-welcome-tpl').html()),
     events: {
-        'click .add-news': 'addNews',
         'click .add-ec' : 'addEC',
         'click .add-cs' : 'addCS',
         'click .add-poll' : 'addPoll',
@@ -108,11 +108,6 @@ var AdminWelcomeView = Parse.View.extend({
         'click .register-ec' : 'registerEC',
         'click .user' : 'user',
         'click .schedule' : 'schedule'
-    },
-    addNews: function(){
-        var addNewsView = new AddNewsView();
-	    addNewsView.render();
-	    $('.main-container').html(addNewsView.el);
     },
     addEC: function() {
     	var addECView = new AddECView();
@@ -181,12 +176,27 @@ var FacultyWelcomeView = Parse.View.extend({
         var attributes = this.model.toJSON();
         this.$el.html(this.template(attributes));
     }
-});
+});*/
 
 var UserRegisterStructure = Parse.Object.extend("UserRegisterStructure", {
-    create: function(firstName, lastName, email, username, password) {
+    create: function(firstName, lastName, email, confirmEmail, username, password, confirmPassword) {
         if (! firstName || ! lastName || ! username || ! password || ! email) {
             alert("Please ensure you have correctly filled out all required fields!");
+            $("#signupButton").html("Register");
+        } else if (email != confirmEmail) {
+            alert("Your e-mail addresses do not match!");
+            $("#signupButton").html("Register");
+        } else if (password != confirmPassword) {
+            alert("Your passwords do not match!");
+            $("#signupButton").html("Register");
+        } else if (email.indexOf("weymouthschools.org") === -1) {
+            alert("Your e-mail address is not a valid faculty address!");
+            $("#signupButton").html("Register");
+        } else if (username.indexOf(" ") > -1) {
+            alert("Your username cannot contain any spaces!");
+            $("#signupButton").html("Register");
+        } else if (password.indexOf(" ") > -1) {
+            alert("Your password cannot contain any spaces!");
             $("#signupButton").html("Register");
         } else {
             $("#spinnerDiv").html('<a><img src="./spinner.gif" alt="Logo" width="40" style="vertical-align: middle; padding-top:12px; padding-left:10px;"/></a>');
@@ -245,7 +255,7 @@ var UserRegisterStructure = Parse.Object.extend("UserRegisterStructure", {
     }
 });
 
-var LoginView = Parse.View.extend({
+/*var LoginView = Parse.View.extend({
     template: Handlebars.compile($('#login-tpl').html()),
     events: {
         'submit .form-signin': 'login',
@@ -649,7 +659,8 @@ var UserView = Parse.View.extend({
     render: function(){
         this.$el.html(this.template());
     }
-});
+});*/
+
 var NewsArticleStructure = Parse.Object.extend("NewsArticleStructure", {
     create: function(title, author, date, summary, content) {
         if (! title || ! author || ! date || ! summary || ! content) {
@@ -681,17 +692,7 @@ var NewsArticleStructure = Parse.Object.extend("NewsArticleStructure", {
                         },  {
                             success: function(object) {
                                 alert("Article successfully posted.");
-                                if (Parse.User.current().get("userType") === "Administration" || Parse.User.current().get("userType") === "Developer") {
-                                    var welcomeView = new AdminWelcomeView({ model: Parse.User.current() });
-                                    welcomeView.render();
-                                    $('.main-container').html(welcomeView.el);
-                                    $("#spinnerDiv").html("");
-                                } else {
-                                    var welcomeView = new FacultyWelcomeView({ model: Parse.User.current() });
-                                    welcomeView.render();
-                                    $('.main-container').html(welcomeView.el);
-                                    $("#spinnerDiv").html("");
-                                };
+                                window.location.replace("./index.html");
                             },
                             error: function(error) {
                                 alert(error);
@@ -700,7 +701,7 @@ var NewsArticleStructure = Parse.Object.extend("NewsArticleStructure", {
                         });
                     } else {
                         object.save({
-                            'articleID' : articleID + 1,
+                            'articleID' : articleID,
                             'authorString' : author,
                             'contentURLString' : content,
                             'dateString' : date,
@@ -713,17 +714,7 @@ var NewsArticleStructure = Parse.Object.extend("NewsArticleStructure", {
                         },  {
                             success: function(object) {
                                 alert("Article successfully posted.");
-                                if (Parse.User.current().get("userType") === "Administration" || Parse.User.current().get("userType") === "Developer") {
-                                    var welcomeView = new AdminWelcomeView({ model: Parse.User.current() });
-                                    welcomeView.render();
-                                    $('.main-container').html(welcomeView.el);
-                                    $("#spinnerDiv").html("");
-                                } else {
-                                    var welcomeView = new FacultyWelcomeView({ model: Parse.User.current() });
-                                    welcomeView.render();
-                                    $('.main-container').html(welcomeView.el);
-                                    $("#spinnerDiv").html("");
-                                };
+                                window.location.replace("./index.html");
                             },
                             error: function(error) {
                                 alert(error);
@@ -742,8 +733,8 @@ var NewsArticleStructure = Parse.Object.extend("NewsArticleStructure", {
 });
 
 var ExtracurricularUpdateStructure = Parse.Object.extend("ExtracurricularUpdateStructure", {
-    create: function(ID, message) {
-        if (parseInt(ID) < 0 || ! message) {
+    create: function(IDarray, message) {
+        if (IDarray.length === 0 || ! message) {
             alert("Please ensure you have filled out all required fields!");
         } else {
             $("#spinnerDiv").html('<a><img src="./spinner.gif" alt="Logo" width="40" style="vertical-align: middle; padding-top:12px; padding-left:10px;"/></a>');
@@ -756,31 +747,26 @@ var ExtracurricularUpdateStructure = Parse.Object.extend("ExtracurricularUpdateS
                     } else {
                         var theID = structure.get("extracurricularUpdateID") + 1;
                     };
-                    var object = new ExtracurricularUpdateStructure();
-                    object.save({
-                        'extracurricularUpdateID' : theID,
-                        'extracurricularID' : parseInt(ID),
-                        'messageString' : message
-                    },  {
-                        success: function(object) {
-                            alert("Update successfully posted.");
-                            if (Parse.User.current().get("userType") === "Administration" || Parse.User.current().get("userType") === "Developer") {
-                                var welcomeView = new AdminWelcomeView({ model: Parse.User.current() });
-                                welcomeView.render();
-                                $('.main-container').html(welcomeView.el);
+                    var array = new Array();
+                    for (var i = 0; i < IDarray.length; i++) {
+                        var object = new ExtracurricularUpdateStructure();
+                        object.set({
+                            'extracurricularUpdateID' : theID + i,
+                            'extracurricularID' : IDarray[i],
+                            'messageString' : message
+                        });
+                        array.push(object);
+                        Parse.Object.saveAll(array, {
+                            success: function(array) {
+                                alert("Update successfully posted.");
+                                window.location.replace("./index.html");
+                            },
+                            error: function(error) {
+                                alert(error.message);
                                 $("#spinnerDiv").html("");
-                            } else {
-                                var welcomeView = new FacultyWelcomeView({ model: Parse.User.current() });
-                                welcomeView.render();
-                                $('.main-container').html(welcomeView.el);
-                                $("#spinnerDiv").html("");
-                            };
-                        },
-                        error: function(error) {
-                            alert(error.message);
-                            $("#spinnerDiv").html("");
-                        }
-                    });
+                            }
+                        });
+                    };
                 },
                 error: function(error) {
                     alert(error);
@@ -822,17 +808,7 @@ var CommunityServiceStructure = Parse.Object.extend("CommunityServiceStructure",
                     },  {
                         success: function(object) {
                             alert("Update successfully posted.");
-                            if (Parse.User.current().get("userType") === "Administration" || Parse.User.current().get("userType") === "Developer") {
-                                var welcomeView = new AdminWelcomeView({ model: Parse.User.current() });
-                                welcomeView.render();
-                                $('.main-container').html(welcomeView.el);
-                                $("#spinnerDiv").html("");
-                            } else {
-                                var welcomeView = new FacultyWelcomeView({ model: Parse.User.current() });
-                                welcomeView.render();
-                                $('.main-container').html(welcomeView.el);
-                                $("#spinnerDiv").html("");
-                            };
+                            window.location.replace("./index.html");
                         },
                         error: function(error) {
                             alert(error);
@@ -866,7 +842,7 @@ var PollStructure = Parse.Object.extend("PollStructure", {
                     if (! structure) {
                         var pollID = 0;
                     } else {
-                        var pollID = structure.get("pollID");
+                        var pollID = structure.get("pollID") + 1;
                     };
                     var object = new PollStructure();
                     object.save({
@@ -879,17 +855,7 @@ var PollStructure = Parse.Object.extend("PollStructure", {
                     },  {
                         success: function(object) {
                             alert("Poll successfully posted.");
-                            if (Parse.User.current().get("userType") === "Administration" || Parse.User.current().get("userType") === "Developer") {
-                                var welcomeView = new AdminWelcomeView({ model: Parse.User.current() });
-                                welcomeView.render();
-                                $('.main-container').html(welcomeView.el);
-                                $("#spinnerDiv").html("");
-                            } else {
-                                var welcomeView = new FacultyWelcomeView({ model: Parse.User.current() });
-                                welcomeView.render();
-                                $('.main-container').html(welcomeView.el);
-                                $("#spinnerDiv").html("");
-                            };
+                            window.location.replace("./index.html");
                         },
                         error: function(error) {
                             alert(error);
@@ -935,7 +901,7 @@ var AlertStructure = Parse.Object.extend("AlertStructure", {
                     month[11] = "December";
                     var alertDate = new Date(dateDate.getFullYear(), dateDate.getMonth(), dateDate.getDate(), dateTime.getHours(), dateTime.getMinutes(), 0, 0);
                     var now = new Date();
-                    if (alertDate < now) {
+                    if (alertDate < now && alertTiming === "time") {
                         alert("Whoops! You can't send an alert in the past!");
                         $("#spinnerDiv").html("");
                     } else {
@@ -954,17 +920,7 @@ var AlertStructure = Parse.Object.extend("AlertStructure", {
                             },  {
                                 success: function(object) {
                                     alert("Alert successfully posted.");
-                                    if (Parse.User.current().get("userType") === "Administration" || Parse.User.current().get("userType") === "Developer") {
-                                        var welcomeView = new AdminWelcomeView({ model: Parse.User.current() });
-                                        welcomeView.render();
-                                        $('.main-container').html(welcomeView.el);
-                                        $("#spinnerDiv").html("");
-                                    } else {
-                                        var welcomeView = new FacultyWelcomeView({ model: Parse.User.current() });
-                                        welcomeView.render();
-                                        $('.main-container').html(welcomeView.el);
-                                        $("#spinnerDiv").html("");
-                                    };
+                                    window.location.replace("./index.html");
                                 },
                                 error: function(error) {
                                     alert(error);
@@ -986,17 +942,7 @@ var AlertStructure = Parse.Object.extend("AlertStructure", {
                             },  {
                                 success: function(object) {
                                     alert("Alert successfully posted.");
-                                    if (Parse.User.current().get("userType") === "Administration" || Parse.User.current().get("userType") === "Developer") {
-                                        var welcomeView = new AdminWelcomeView({ model: Parse.User.current() });
-                                        welcomeView.render();
-                                        $('.main-container').html(welcomeView.el);
-                                        $("#spinnerDiv").html("");
-                                    } else {
-                                        var welcomeView = new FacultyWelcomeView({ model: Parse.User.current() });
-                                        welcomeView.render();
-                                        $('.main-container').html(welcomeView.el);
-                                        $("#spinnerDiv").html("");
-                                    };
+                                    window.location.replace("./index.html");
                                 },
                                 error: function(error) {
                                     alert(error);
@@ -1039,22 +985,16 @@ var ExtracurricularStructure = Parse.Object.extend("ExtracurricularStructure", {
                         success: function(object) {
                             if (Parse.User.current().get("userType") === "Administration" || Parse.User.current().get("userType") === "Developer") {
                                 alert("Group successfully registered.");
-                                var welcomeView = new AdminWelcomeView({ model: Parse.User.current() });
-                                welcomeView.render();
-                                $('.main-container').html(welcomeView.el);
-                                $("#spinnerDiv").html("");
+                                window.location.replace("./index.html");
                             } else {
                                 var ownedEC = Parse.User.current().get("ownedEC");
-                                ownedEC.push("E" + object.get("extracurricularID").toString());
+                                ownedEC.push(object.get("extracurricularID"));
                                 Parse.User.current().save({
                                     'ownedEC' : ownedEC
                                 }, {
                                     success : function(user) {
                                         alert("Group successfully registered.");
-                                        var welcomeView = new FacultyWelcomeView({ model: Parse.User.current() });
-                                        welcomeView.render();
-                                        $('.main-container').html(welcomeView.el);
-                                        $("#spinnerDiv").html("");
+                                        window.location.replace("./index.html");
                                     },
                                     error: function(error) {
                                         alert(error);
@@ -1084,7 +1024,7 @@ $(function() {
  
     Parse.initialize("cLBOvwh6ZTQYex37DSwxL1Cvg34MMiRWYAB4vqs0", "tTcV5Ns1GFdDda44FCcG5XHBDMbLA1sxRUzSnDgW");
 
-    if (Parse.User.current()) {
+    /*if (Parse.User.current()) {
         var verified = Parse.User.current().get("verified");
         if (verified === 0) {
             var verifyView = new VerifyView();
@@ -1107,16 +1047,12 @@ $(function() {
 		var loginView = new LoginView();
 		loginView.render();
 		$('.main-container').html(loginView.el);
-	};
+	};*/
 
 	$('#logOut').click(function() {
 		event.preventDefault();
 		Parse.User.logOut();
-		var loginView = new LoginView();
-		loginView.render();
-		$('.main-container').html(loginView.el);
-		var div = document.getElementById('navbar');
-		div.innerHTML = "";
+		window.location.replace("./login.html");
 	});
 
 	$('#changePassword').click(function() {
@@ -1135,6 +1071,112 @@ $(function() {
 		};
 	});
 
+    $('.form-signin').submit(function() {
+        event.preventDefault();
+        var data = $(this).serializeArray(),
+            username = data[0].value,
+            password = data[1].value;
+
+        $("#logIn").html("Signing in...");
+ 
+        $("#spinnerDiv").html('<a><img src="./spinner.gif" alt="Logo" width="40" style="vertical-align: middle; padding-top:12px; padding-left:10px;"/></a>');
+
+        Parse.User.logIn(username, password, {
+            success: function(user) {
+                $("#spinnerDiv").html("");
+                var verified = Parse.User.current().get("verified");
+                if (verified === 0) {
+                    window.location.replace("./verify.html");
+                } else {
+                    window.location.replace("./index.html");
+                };
+            },
+            // If there is an error
+            error: function(user, error) {
+                if (error.code === 101) {
+                    alert("Invalid username or password. Please try again.");
+                    $("#spinnerDiv").html("");
+                };
+            }
+        });
+    });
+
+    $('.form-horizontal').submit(function() {
+        event.preventDefault();
+
+        var data = $(this).serializeArray();
+
+        var USR = new UserRegisterStructure();
+
+        USR.create(data[0].value, data[1].value, data[2].value, data[3].value, data[4].value, data[5].value, data[6].value);
+    });
+
+    $('.cancel').click(function() {
+        event.preventDefault();
+
+        history.back();
+    });
+
+    $('.form-add-news').submit(function() {
+        event.preventDefault();
+
+        var data = $(this).serializeArray();
+ 
+        var newsArticle = new NewsArticleStructure();
+
+        newsArticle.create(data[0].value, data[1].value, document.getElementById('date').value, data[2].value, data[3].value);
+    });
+
+    $('.form-add-groupUpdate').submit(function() {
+        event.preventDefault();
+
+        var data = $(this).serializeArray();
+ 
+        var ECU = new ExtracurricularUpdateStructure();
+
+        ECU.create(window.groupsArray, data[data.length - 1].value);
+    });
+
+    $('.form-add-community').submit(function() {
+        event.preventDefault();
+
+        var data = $(this).serializeArray();
+ 
+        var CS = new CommunityServiceStructure();
+
+        CS.create(data[0].value, data[1].value, data[2].value, data[3].value, data[4].value, data[5].value);
+    });
+
+    $('.form-add-poll').submit(function() {
+        event.preventDefault();
+
+        var data = $(this).serializeArray();
+ 
+        var poll = new PollStructure();
+
+        poll.create(data[0].value, data[1].value, data[2].value, choicesArray);
+    });
+
+    $('.form-add-alert').submit(function() {
+        event.preventDefault();
+
+        var data = $(this).serializeArray();
+ 
+        var alert = new AlertStructure();
+
+        alert.create(data[0].value, Parse.User.current().get("firstName") + " " + Parse.User.current().get("lastName"), data[1].value, data[2].value, data[3].value, data[4].value);
+    });
+
+    $('.form-add-groupRegister').submit(function() {
+        event.preventDefault();
+
+        var data = $(this).serializeArray();
+ 
+        var EC = new ExtracurricularStructure();
+
+        EC.create(data[0].value, data[1].value);
+    });
+
 });
 
 function start(parameter) {
@@ -1148,6 +1190,13 @@ function startTwo(parameter) {
    return function()
    {
         window.daysArray = parameter;
+   }
+}
+
+function startThree(parameter) {
+   return function()
+   {
+        window.groupsArray = parameter;
    }
 }
 
