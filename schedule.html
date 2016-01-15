@@ -109,7 +109,7 @@
       <select id='modeSelect' name="modeSelect" onchange="changeFunction();">
       </select>
       <hr style="border-color:#561838";></hr>
-      <h4 id="titleLabel">Upcoming School Days</h4>
+      <h4 id="titleLabel">Available School Days</h4>
       <div id="schedules">
 
       </div>
@@ -185,7 +185,7 @@
             });
           },
           error: function(error) {
-            response.error(error);
+            alert(error.code + " - " + error.message);
           }
         });
       }

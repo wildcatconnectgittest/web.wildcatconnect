@@ -10,6 +10,7 @@ var customString = null;
 var customID = null;
 var reverseDictionary = new Array();
 var groupsArray = new Array();
+var showYesterday = true;
 
 /*var CustomView = Parse.View.extend({
 	template: Handlebars.compile($('#custom-tpl').html()),
@@ -969,48 +970,57 @@ var ExtracurricularStructure = Parse.Object.extend("ExtracurricularStructure", {
             $("#spinnerDiv").html('<a><img src="./spinner.gif" alt="Logo" width="40" style="vertical-align: middle; padding-top:12px; padding-left:10px;"/></a>');
             var query = new Parse.Query("ExtracurricularStructure");
             query.descending("extracurricularID");
-            query.first({
-                success: function(structure) {
-                    var ECID = structure.get("extracurricularID");
-                    var object = new ExtracurricularStructure();
-                    object.save({
-                        'extracurricularID' : ECID + 1,
-                        'titleString' : title,
-                        'descriptionString' : content,
-                        'hasImage' : 0,
-                        'imageFile' : null,
-                        'meetingIDs' : window.daysArray.join(""),
-                        'channelString' : "E" + (ECID + 1).toString()
-                    },  {
-                        success: function(object) {
-                            if (Parse.User.current().get("userType") === "Administration" || Parse.User.current().get("userType") === "Developer") {
-                                alert("Group successfully registered.");
-                                window.location.replace("./index.html");
-                            } else {
-                                var ownedEC = Parse.User.current().get("ownedEC");
-                                ownedEC.push(object.get("extracurricularID"));
-                                Parse.User.current().save({
-                                    'ownedEC' : ownedEC
-                                }, {
-                                    success : function(user) {
-                                        alert("Group successfully registered.");
-                                        window.location.replace("./index.html");
+            query.equalTo("titleString", title);
+            query.count({
+                success: function(count) {
+                    if (count > 0) {
+                        alert("A group with this name has already been registered. Please enter a different name.");
+                        $("#spinnerDiv").html("");
+                    } else {
+                        var queryTwo = new Parse.Query("ExtracurricularStructure");
+                        queryTwo.descending("extracurricularID");
+                        queryTwo.first({
+                            success: function(structure) {
+                                var ECID = structure.get("extracurricularID");
+                                var object = new ExtracurricularStructure();
+                                object.save({
+                                    'extracurricularID' : ECID + 1,
+                                    'titleString' : title,
+                                    'descriptionString' : content,
+                                    'hasImage' : 0,
+                                    'meetingIDs' : window.daysArray.join("")
+                                },  {
+                                    success: function(object) {
+                                        var ownedEC = Parse.User.current().get("ownedEC");
+                                        ownedEC.push(object.get("extracurricularID"));
+                                        Parse.User.current().save({
+                                            'ownedEC' : ownedEC
+                                        }, {
+                                            success : function(user) {
+                                                alert("Group successfully registered.");
+                                                window.location.replace("./index.html");
+                                            },
+                                            error: function(error) {
+                                                alert(error);
+                                                $("#spinnerDiv").html("");
+                                            }
+                                        });
                                     },
                                     error: function(error) {
                                         alert(error);
                                         $("#spinnerDiv").html("");
                                     }
                                 });
-                            };
-                        },
-                        error: function(error) {
-                            alert(error);
-                            $("#spinnerDiv").html("");
-                        }
-                    });
+                            },
+                            error: function(error) {
+                                alert(error);
+                                $("#spinnerDiv").html("");
+                            }
+                        });
+                    };
                 },
                 error: function(error) {
-                    alert(error);
+                    alert(error.code + " - " + error.message);
                     $("#spinnerDiv").html("");
                 }
             });
@@ -1117,6 +1127,12 @@ $(function() {
         history.back();
     });
 
+    $('.cancel-schedule').click(function() {
+        event.preventDefault();
+
+        window.location.replace("./schedule.html");
+    });
+
     $('.form-add-news').submit(function() {
         event.preventDefault();
 
@@ -1177,6 +1193,43 @@ $(function() {
         EC.create(data[0].value, data[1].value);
     });
 
+    $('.form-add-custom').submit(function() {
+        event.preventDefault();
+
+        var data = $(this).serializeArray();
+ 
+        var description = data[0].value;
+        var custom = data[1].value;
+
+        if (! custom) {
+            alert("No data entered!");
+        } else {
+            $("#spinnerDiv").html('<a><img src="./spinner.gif" alt="Logo" width="40" style="vertical-align: middle; padding-top:12px; padding-left:10px;"/></a>');
+            var query = new Parse.Query("SchoolDayStructure");
+            query.equalTo("schoolDayID", parseInt(localStorage.getItem("customID")));
+            query.first({
+                success: function(object) {
+                    object.set("customString", description);
+                    object.set("customSchedule", custom);
+                    object.set("scheduleType", "*");
+                    object.save(null, {
+                        success: function() {
+                            alert("Schedule successfully updated.");
+                            $("#spinnerDiv").html("");
+                            window.location.replace("./schedule.html");
+                        },
+                        error: function(error) {
+                            alert(error.code + " - " + error.message);
+                        }
+                    });
+                },
+                error: function(error) {
+                    alert(error.code + " - " + error.message);
+                }
+            });
+        };
+    });
+
 });
 
 function start(parameter) {
@@ -1198,6 +1251,17 @@ function startThree(parameter) {
    {
         window.groupsArray = parameter;
    }
+}
+
+function customView() {
+    return function() {
+          var parts = localStorage.getItem("customDate").split('-');
+          var date = new Date(parts[2], parts[0]-1,parts[1]);
+          var string = date.toString('dddd, MMMM d, yyyy');
+          $("#topLabel").html("Custom Schedule - " + string);
+          $('#customArea').val(localStorage.getItem("customString"));
+          $('#scheduleDescription').val(localStorage.getItem("customDescription"));
+    }
 }
 
 function loadNewUserTable() {
@@ -1532,174 +1596,212 @@ function loadScheduleTable() {
 				var query = new Parse.Query("SchoolDayStructure");
 				query.equalTo("isActive", 1);
 				query.ascending("schoolDayID");
+                var structures = new Array();
 				query.find({
-					success: function(structures) {
+					success: function(theStructures) {
 
-						$("#titleLabel").html("Upcoming School Days (" + structures.length+")");
+                        var queryTwo = new Parse.Query("SchoolDayStructure");
+                        queryTwo.equalTo("isActive", 0);
+                        queryTwo.descending("schoolDayID");
 
-						var tableDiv = document.getElementById("schedules");
-						var table = document.createElement("TABLE");
-						var tableBody = document.createElement("TBODY");
+                        queryTwo.first({
+                            success: function(day) {
 
-						table.appendChild(tableBody);
-						table.className = "table table-striped";
+                                if (day.get("scheduleType") != theStructures[0].get("scheduleType")) {
+                                    structures.push(day);
+                                };
 
-						var heading = new Array();
-						heading[0] = "Date";
-						heading[1] = "Schedule Type";
-						heading[2] = "Change Type";
-						heading[3] = "Custom Action";
+                                for (var i = 0; i < theStructures.length; i++) {
+                                    structures.push(theStructures[i]);
+                                };
 
-						//TABLE COLUMNS
+                                $("#titleLabel").html("Available School Days (" + structures.length+")");
 
-						var tr = document.createElement("TR");
-						tableBody.appendChild(tr);
+                                var tableDiv = document.getElementById("schedules");
+                                var table = document.createElement("TABLE");
+                                var tableBody = document.createElement("TBODY");
 
-						$("#schedules").html("");
+                                table.appendChild(tableBody);
+                                table.className = "table table-striped";
 
-						for (var i = 0; i < heading.length; i++) {
-							var th = document.createElement("TH");
-							th.width = '25%';
-							th.appendChild(document.createTextNode(heading[i]));
-							tr.appendChild(th);
-						};
+                                var heading = new Array();
+                                heading[0] = "Date";
+                                heading[1] = "Schedule Type";
+                                heading[2] = "Change Type";
+                                heading[3] = "Custom Action";
 
-						window.existingUserArray = new Array();
+                                //TABLE COLUMNS
 
-						for (var i = 0; i < structures.length; i++) {
-							window.existingUserArray.push(structures[i]);
-							var tr = document.createElement("TR");
-							var tdTwo = document.createElement("TD");
-							var parts = structures[i].get("schoolDate").split('-');
-							var date = new Date(parts[2], parts[0]-1,parts[1]);
-							var string = date.toString('dddd, MMMM d, yyyy');
-							tdTwo.appendChild(document.createTextNode(string));
-							tr.appendChild(tdTwo);
+                                var tr = document.createElement("TR");
+                                tableBody.appendChild(tr);
 
-							//Schedule Type
+                                $("#schedules").html("");
 
-							var schedule = structures[i].get("scheduleType");
+                                for (var i = 0; i < heading.length; i++) {
+                                    var th = document.createElement("TH");
+                                    th.width = '25%';
+                                    th.appendChild(document.createTextNode(heading[i]));
+                                    tr.appendChild(th);
+                                };
 
-							if (schedule === "*") {
-								var tdOne = document.createElement("TD");
-								tdOne.appendChild(document.createTextNode("CUSTOM SCHEDULE"));
-								tr.appendChild(tdOne);
-							} else {
-								var actual = dictionary[schedule];
-								var tdOne = document.createElement("TD");
-								tdOne.appendChild(document.createTextNode(actual));
-								tr.appendChild(tdOne);
-							};
+                                window.existingUserArray = new Array();
 
-							var tdThree = document.createElement("TD");
-							var selectList = document.createElement("SELECT");
-							selectList.name = "typeSelect";
-							var option = document.createElement("option");
-						    option.value = -1;
-						    option.text = "NONE SELECTED";
-						    selectList.appendChild(option);
-							for (var j = 0; j < Object.keys(dictionary).length; j++) {
-							    var option = document.createElement("option");
-							    option.value = j;
-							    option.text = dictionary[Object.keys(dictionary)[j]];
-							    selectList.appendChild(option);
-							}
-							selectList.onchange = (function() {
+                                for (var i = 0; i < structures.length; i++) {
+                                    window.existingUserArray.push(structures[i]);
+                                    var tr = document.createElement("TR");
+                                    var tdTwo = document.createElement("TD");
+                                    var parts = structures[i].get("schoolDate").split('-');
+                                    var date = new Date(parts[2], parts[0]-1,parts[1]);
+                                    var string = date.toString('dddd, MMMM d, yyyy');
+                                    tdTwo.appendChild(document.createTextNode(string));
+                                    var today = new Date();
+                                    var todayString = today.toString('dddd, MMMM d, yyyy');
+                                    if (todayString === string) {
+                                        tdTwo.style.color = 'red';
+                                    } else if (i == 0) {
+                                        tdTwo.appendChild(document.createTextNode(" - LAST SCHOOL DAY")); 
+                                    }
+                                    tr.appendChild(tdTwo);
 
-							    var count = i;
+                                    //Schedule Type
 
-							    return function(e) {
+                                    var schedule = structures[i].get("scheduleType");
 
-							    	var key = reverseDictionary[this.selectedIndex - 1];
+                                    if (schedule === "*") {
+                                        var tdOne = document.createElement("TD");
+                                        tdOne.appendChild(document.createTextNode("CUSTOM SCHEDULE - " + structures[i].get("customString")));
+                                        tdOne.style.fontWeight = 'bold';
+                                        tr.appendChild(tdOne);
+                                    } else {
+                                        var actual = dictionary[schedule];
+                                        var tdOne = document.createElement("TD");
+                                        tdOne.appendChild(document.createTextNode(actual));
+                                        tr.appendChild(tdOne);
+                                    };
 
-							    	structures[count].set("scheduleType", key);
-							    	structures[count].set("customSchedule", "None.");
-							    	structures[count].save(null, {
-							    		success: function(object) {
-							    			alert("Schedule successfully updated.");
-										    $("#spinnerDiv").html("");
-										    $(document).ready(loadScheduleTable());
-							    		},
-							    		error: function(error) {
-							    			alert(error.code + " - " + error.message);
-							    		}
-							    	});
+                                    var tdThree = document.createElement("TD");
+                                    var selectList = document.createElement("SELECT");
+                                    selectList.name = "typeSelect";
+                                    var option = document.createElement("option");
+                                    option.value = -1;
+                                    option.text = "NONE SELECTED";
+                                    selectList.appendChild(option);
+                                    for (var j = 0; j < Object.keys(dictionary).length; j++) {
+                                        var option = document.createElement("option");
+                                        option.value = j;
+                                        option.text = dictionary[Object.keys(dictionary)[j]];
+                                        selectList.appendChild(option);
+                                    }
+                                    selectList.onchange = (function() {
 
-							    };
-							})();
-							tdThree.appendChild(selectList);
-							tr.appendChild(tdThree);
+                                        var count = i;
 
-							var tdFour = document.createElement("TD");
-							var button =document.createElement("INPUT");
-							button.type = "button";
-							button.className = "approveUser btn btn-lg btn-primary";
-							button.value = "Go Back 1 Day, Starting Here";
-							button.name = i;
-							button.style.marginBottom = "10px";
-							button.onclick = (function() {
+                                        return function(e) {
 
-							    var count = i;
+                                            var key = reverseDictionary[this.selectedIndex - 1];
 
-							    return function(e) {
+                                            structures[count].set("scheduleType", key);
+                                            structures[count].set("customSchedule", "None.");
+                                            structures[count].set("customString", "");
+                                            structures[count].save(null, {
+                                                success: function(object) {
+                                                    alert("Schedule successfully updated.");
+                                                    $("#spinnerDiv").html("");
+                                                    $(document).ready(loadScheduleTable());
+                                                },
+                                                error: function(error) {
+                                                    alert(error.code + " - " + error.message);
+                                                    $("#spinnerDiv").html("");
+                                                }
+                                            });
 
-							    	if (count != structures.length - 1) {
-							    		$("#spinnerDiv").html('<a><img src="./spinner.gif" alt="Logo" width="40" style="vertical-align: middle; padding-top:12px; padding-left:10px;"/></a>');
-							    		Parse.Cloud.run('goBackOneDayFromStructure', { "ID" : structures[count].get("schoolDayID") }, {
-										  success: function() {
-										    alert("Schedule successfully updated.");
-										    $("#spinnerDiv").html("");
-										    $(document).ready(loadScheduleTable());
-										  },
-										  error: function(error) {
-										    alert(error);
-										    $("#spinnerDiv").html("");
-										  }
-										});
-							    	} else {
-							    		alert("You can't go back one day from here! This is the last day in the available queue.");
-							    	};
+                                        };
+                                    })();
+                                    tdThree.appendChild(selectList);
+                                    tr.appendChild(tdThree);
 
-							    };
-							})();
-							tdFour.appendChild(button);
-							tr.appendChild(tdFour);
+                                    var tdFour = document.createElement("TD");
 
-							var buttonTwo =document.createElement("INPUT");
-							buttonTwo.type = "button";
-							buttonTwo.className = "approveUser btn btn-lg btn-primary";
-							buttonTwo.value = "Edit Custom Schedule";
-							button.name = i;
-							buttonTwo.style.marginRight = "10px";
-							buttonTwo.onclick = (function() {
-							    var count = i;
+                                    if (i < 2) {
+                                        var button =document.createElement("INPUT");
+                                        button.type = "button";
+                                        button.className = "approveUser btn btn-lg btn-primary";
+                                        button.value = "Snow Day";
+                                        button.name = i;
+                                        button.style.marginBottom = "10px";
+                                        button.onclick = (function() {
 
-							    return function(e) {
+                                            var count = i;
 
-							    	window.customDate = structures[count].get("schoolDate");
+                                            return function(e) {
 
-							    	if (structures[count].get("scheduleType") === "*") {
-							    		window.customString = structures[count].get("customSchedule");
-							    	} else {
-							    		window.customString = "Period 1: \nPeriod 2: \nPeriod 3: \nPeriod 4: \n1st: \n2nd: \n3rd: \nPeriod 6: \nPeriod 7: ";
-							    	};
+                                                if (count != structures.length - 1) {
+                                                    if (count === 0) {
+                                                        window.showYesterday = false;
+                                                    };
+                                                    $("#spinnerDiv").html('<a><img src="./spinner.gif" alt="Logo" width="40" style="vertical-align: middle; padding-top:12px; padding-left:10px;"/></a>');
+                                                    Parse.Cloud.run('snowDay', { "ID" : structures[count].get("schoolDayID") }, {
+                                                      success: function() {
+                                                        alert("Schedule successfully updated.");
+                                                        $("#spinnerDiv").html("");
+                                                        $(document).ready(loadScheduleTable());
+                                                      },
+                                                      error: function(error) {
+                                                        alert(error);
+                                                        $("#spinnerDiv").html("");
+                                                      }
+                                                    });
+                                                } else {
+                                                    alert("You can't go back one day from here! This is the last day in the available queue.");
+                                                };
 
-							    	window.customID = structures[count].get("schoolDayID");
+                                            };
+                                        })();
+                                        tdFour.appendChild(button);
+                                        tr.appendChild(tdFour);
+                                    };
 
-							    	var customView = new CustomView();
-							    	customView.render();
-							    	$('.main-container').html(customView.el);
+                                    var buttonTwo =document.createElement("INPUT");
+                                    buttonTwo.type = "button";
+                                    buttonTwo.className = "approveUser btn btn-lg btn-primary";
+                                    buttonTwo.value = "Edit Custom Schedule";
+                                    button.name = i;
+                                    buttonTwo.style.marginRight = "10px";
+                                    buttonTwo.onclick = (function() {
+                                        var count = i;
 
-							    };
-							})();
-							tdFour.appendChild(buttonTwo);
-							tr.appendChild(tdFour);
-							tableBody.appendChild(tr);
+                                        return function(e) {
 
-							tableDiv.appendChild(table);
-						};
+                                            if (structures[count].get("scheduleType") === "*") {
+                                                localStorage.setItem("customString", structures[count].get("customSchedule"));
+                                            } else {
+                                                localStorage.setItem("customString", "Period 1: \nPeriod 2: \nPeriod 3: \nPeriod 4: \n1st: \n2nd: \n3rd: \nPeriod 6: \nPeriod 7: ");
+                                            };
 
-						$("#spinnerDiv").html("");
+                                            localStorage.setItem("customID", structures[count].get("schoolDayID"));
+
+                                            localStorage.setItem("customDate", structures[count].get("schoolDate"));
+
+                                            localStorage.setItem("customDescription", structures[count].get("customString"));     
+
+                                            window.location.replace("./custom.html");                       
+
+                                        };
+                                    })();
+                                    tdFour.appendChild(buttonTwo);
+                                    tr.appendChild(tdFour);
+                                    tableBody.appendChild(tr);
+
+                                    tableDiv.appendChild(table);
+                                };
+
+                                $("#spinnerDiv").html("");
+                            },
+                            error: function(error) {
+                                alert(error.code + " - " + error.message);
+                                $("#spinnerDiv").html("");
+                            }
+                        });
 					},
 					error: function(error) {
 						$("#spinnerDiv").html("");
