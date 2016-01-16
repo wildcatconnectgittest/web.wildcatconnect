@@ -2,7 +2,7 @@
 
 echo "Updating the web service..."
 
-scp -P18765 ./index.html kevinaly@m32.siteground.biz:/home/kevinaly/public_html/wildcatconnect.org
+scp -P18765 ./a/* kevinaly@m32.siteground.biz:/home/kevinaly/public_html/wildcatconnect.org/a
 scp -P18765 ./css/*  kevinaly@m32.siteground.biz:/home/kevinaly/public_html/wildcatconnect.org/css
 scp -P18765 ./js/* kevinaly@m32.siteground.biz:/home/kevinaly/public_html/wildcatconnect.org/js
 

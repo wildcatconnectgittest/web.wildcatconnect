@@ -37,7 +37,7 @@ var showYesterday = true;
        	if (! custom) {
        		alert("No data entered!");
        	} else {
-       		$("#spinnerDiv").html('<a><img src="./spinner.gif" alt="Logo" width="40" style="vertical-align: middle; padding-top:12px; padding-left:10px;"/></a>');
+       		$("#spinnerDiv").html('<a><img src="./../spinner.gif" alt="Logo" width="40" style="vertical-align: middle; padding-top:12px; padding-left:10px;"/></a>');
        		var query = new Parse.Query("SchoolDayStructure");
        		query.equalTo("schoolDayID", window.customID);
        		query.first({
@@ -200,7 +200,7 @@ var UserRegisterStructure = Parse.Object.extend("UserRegisterStructure", {
             alert("Your password cannot contain any spaces!");
             $("#signupButton").html("Register");
         } else {
-            $("#spinnerDiv").html('<a><img src="./spinner.gif" alt="Logo" width="40" style="vertical-align: middle; padding-top:12px; padding-left:10px;"/></a>');
+            $("#spinnerDiv").html('<a><img src="./../spinner.gif" alt="Logo" width="40" style="vertical-align: middle; padding-top:12px; padding-left:10px;"/></a>');
 
             $("#signupButton").html("Checking availability...");
             Parse.Cloud.run("validateUser", { "username" : username , "email" : email }, {
@@ -282,7 +282,7 @@ var UserRegisterStructure = Parse.Object.extend("UserRegisterStructure", {
             username = data[0].value,
             password = data[1].value;
  
-        $("#spinnerDiv").html('<a><img src="./spinner.gif" alt="Logo" width="40" style="vertical-align: middle; padding-top:12px; padding-left:10px;"/></a>');
+        $("#spinnerDiv").html('<a><img src="./../spinner.gif" alt="Logo" width="40" style="vertical-align: middle; padding-top:12px; padding-left:10px;"/></a>');
 
         // Call Parse Login function with those variables
         Parse.User.logIn(username, password, {
@@ -667,7 +667,7 @@ var NewsArticleStructure = Parse.Object.extend("NewsArticleStructure", {
         if (! title || ! author || ! date || ! summary || ! content) {
             alert("Please ensure you have filled out all required fields!");
         } else {
-            $("#spinnerDiv").html('<a><img src="./spinner.gif" alt="Logo" width="40" style="vertical-align: middle; padding-top:12px; padding-left:10px;"/></a>');
+            $("#spinnerDiv").html('<a><img src="./../spinner.gif" alt="Logo" width="40" style="vertical-align: middle; padding-top:12px; padding-left:10px;"/></a>');
             var query = new Parse.Query("NewsArticleStructure");
             query.descending("articleID");
             query.first({
@@ -693,7 +693,7 @@ var NewsArticleStructure = Parse.Object.extend("NewsArticleStructure", {
                         },  {
                             success: function(object) {
                                 alert("Article successfully posted.");
-                                window.location.replace("./index.html");
+                                window.location.replace("./index");
                             },
                             error: function(error) {
                                 alert(error);
@@ -715,7 +715,7 @@ var NewsArticleStructure = Parse.Object.extend("NewsArticleStructure", {
                         },  {
                             success: function(object) {
                                 alert("Article successfully posted.");
-                                window.location.replace("./index.html");
+                                window.location.replace("./index");
                             },
                             error: function(error) {
                                 alert(error);
@@ -738,7 +738,7 @@ var ExtracurricularUpdateStructure = Parse.Object.extend("ExtracurricularUpdateS
         if (IDarray.length === 0 || ! message) {
             alert("Please ensure you have filled out all required fields!");
         } else {
-            $("#spinnerDiv").html('<a><img src="./spinner.gif" alt="Logo" width="40" style="vertical-align: middle; padding-top:12px; padding-left:10px;"/></a>');
+            $("#spinnerDiv").html('<a><img src="./../spinner.gif" alt="Logo" width="40" style="vertical-align: middle; padding-top:12px; padding-left:10px;"/></a>');
             var query = new Parse.Query("ExtracurricularUpdateStructure");
             query.descending("extracurricularUpdateID");
             query.first({
@@ -760,7 +760,7 @@ var ExtracurricularUpdateStructure = Parse.Object.extend("ExtracurricularUpdateS
                         Parse.Object.saveAll(array, {
                             success: function(array) {
                                 alert("Update successfully posted.");
-                                window.location.replace("./index.html");
+                                window.location.replace("./index");
                             },
                             error: function(error) {
                                 alert(error.message);
@@ -787,7 +787,7 @@ var CommunityServiceStructure = Parse.Object.extend("CommunityServiceStructure",
         if (! title || ! startDateDate || ! startDateTime || ! endDateDate || ! startDateTime || ! message || startDateDate > endDateDate || (startDateDate.getDate() === endDateDate.getDate() && startDateTime > endDateTime)) {
             alert("Please ensure you have filled out all required fields!");
         } else {
-            $("#spinnerDiv").html('<a><img src="./spinner.gif" alt="Logo" width="40" style="vertical-align: middle; padding-top:12px; padding-left:10px;"/></a>');
+            $("#spinnerDiv").html('<a><img src="./../spinner.gif" alt="Logo" width="40" style="vertical-align: middle; padding-top:12px; padding-left:10px;"/></a>');
             var query = new Parse.Query("CommunityServiceStructure");
             query.descending("communityServiceID");
             query.first({
@@ -809,7 +809,7 @@ var CommunityServiceStructure = Parse.Object.extend("CommunityServiceStructure",
                     },  {
                         success: function(object) {
                             alert("Update successfully posted.");
-                            window.location.replace("./index.html");
+                            window.location.replace("./index");
                         },
                         error: function(error) {
                             alert(error);
@@ -831,7 +831,7 @@ var PollStructure = Parse.Object.extend("PollStructure", {
         if (! title || ! question || ! daysSelect || ! choicesArray) {
             alert("Please ensure you have filled out all required fields!");
         } else {
-            $("#spinnerDiv").html('<a><img src="./spinner.gif" alt="Logo" width="40" style="vertical-align: middle; padding-top:12px; padding-left:10px;"/></a>');
+            $("#spinnerDiv").html('<a><img src="./../spinner.gif" alt="Logo" width="40" style="vertical-align: middle; padding-top:12px; padding-left:10px;"/></a>');
             var dictionary = {};
             for (var l = 0; l < choicesArray.length; l++) {
                 dictionary[choicesArray[l].toString()] = "0";
@@ -856,7 +856,7 @@ var PollStructure = Parse.Object.extend("PollStructure", {
                     },  {
                         success: function(object) {
                             alert("Poll successfully posted.");
-                            window.location.replace("./index.html");
+                            window.location.replace("./index");
                         },
                         error: function(error) {
                             alert(error);
@@ -880,7 +880,7 @@ var AlertStructure = Parse.Object.extend("AlertStructure", {
         if (! title || ! author || ! alertTiming || (alertTiming === "time" && (! dateDate || ! dateTime))) {
             alert("Please ensure you have correctly filled out all required fields!");
         } else {
-            $("#spinnerDiv").html('<a><img src="./spinner.gif" alt="Logo" width="40" style="vertical-align: middle; padding-top:12px; padding-left:10px;"/></a>');
+            $("#spinnerDiv").html('<a><img src="./../spinner.gif" alt="Logo" width="40" style="vertical-align: middle; padding-top:12px; padding-left:10px;"/></a>');
             var query = new Parse.Query("AlertStructure");
             query.descending("alertID");
             query.first({
@@ -921,7 +921,7 @@ var AlertStructure = Parse.Object.extend("AlertStructure", {
                             },  {
                                 success: function(object) {
                                     alert("Alert successfully posted.");
-                                    window.location.replace("./index.html");
+                                    window.location.replace("./index");
                                 },
                                 error: function(error) {
                                     alert(error);
@@ -943,7 +943,7 @@ var AlertStructure = Parse.Object.extend("AlertStructure", {
                             },  {
                                 success: function(object) {
                                     alert("Alert successfully posted.");
-                                    window.location.replace("./index.html");
+                                    window.location.replace("./index");
                                 },
                                 error: function(error) {
                                     alert(error);
@@ -967,7 +967,7 @@ var ExtracurricularStructure = Parse.Object.extend("ExtracurricularStructure", {
         if (! title || ! content) {
             alert("Please ensure you have correctly filled out all required fields!");
         } else {
-            $("#spinnerDiv").html('<a><img src="./spinner.gif" alt="Logo" width="40" style="vertical-align: middle; padding-top:12px; padding-left:10px;"/></a>');
+            $("#spinnerDiv").html('<a><img src="./../spinner.gif" alt="Logo" width="40" style="vertical-align: middle; padding-top:12px; padding-left:10px;"/></a>');
             var query = new Parse.Query("ExtracurricularStructure");
             query.descending("extracurricularID");
             query.equalTo("titleString", title);
@@ -998,7 +998,7 @@ var ExtracurricularStructure = Parse.Object.extend("ExtracurricularStructure", {
                                         }, {
                                             success : function(user) {
                                                 alert("Group successfully registered.");
-                                                window.location.replace("./index.html");
+                                                window.location.replace("./index");
                                             },
                                             error: function(error) {
                                                 alert(error);
@@ -1061,12 +1061,17 @@ $(function() {
 
 	$('#logOut').click(function() {
 		event.preventDefault();
-		Parse.User.logOut();
-		window.location.replace("./login.html");
+
+        var confirm = window.confirm("Are you sure you want to log out and end your session?");
+
+        if (confirm == true) {
+            Parse.User.logOut();
+            window.location.replace("./login");
+        };
 	});
 
 	$('#changePassword').click(function() {
-		var c = confirm("Are you sure you want to reset your password?");
+		var c = confirm("Are you sure you want to change your password?");
 		event.preventDefault();
 		if (c == true) {
 			Parse.User.requestPasswordReset(Parse.User.current().get("email"), {
@@ -1089,16 +1094,18 @@ $(function() {
 
         $("#logIn").html("Signing in...");
  
-        $("#spinnerDiv").html('<a><img src="./spinner.gif" alt="Logo" width="40" style="vertical-align: middle; padding-top:12px; padding-left:10px;"/></a>');
+        $("#spinnerDiv").html('<a><img src="./../spinner.gif" alt="Logo" width="40" style="vertical-align: middle; padding-top:12px; padding-left:10px;"/></a>');
 
         Parse.User.logIn(username, password, {
             success: function(user) {
                 $("#spinnerDiv").html("");
                 var verified = Parse.User.current().get("verified");
                 if (verified === 0) {
-                    window.location.replace("./verify.html");
+                    localStorage.setItem("key", Parse.User.current().get("key"));
+                    localStorage.setItem("username", Parse.User.current().get("username"));
+                    window.location.replace("./verify");
                 } else {
-                    window.location.replace("./index.html");
+                    window.location.replace("./index");
                 };
             },
             // If there is an error
@@ -1124,73 +1131,117 @@ $(function() {
     $('.cancel').click(function() {
         event.preventDefault();
 
+        var confirm = window.confirm("Are you sure you want to go back? Any unsaved progress will be lost.");
+
+        if (confirm == true) {
+            history.back();
+        };
+    });
+
+    $('.cancel-errors').click(function() {
+        event.preventDefault();
+
         history.back();
+    });
+
+    $('.cancel-verify').click(function() {
+        event.preventDefault();
+
+        window.location.replace("./login");
     });
 
     $('.cancel-schedule').click(function() {
         event.preventDefault();
 
-        window.location.replace("./schedule.html");
+        var confirm = window.confirm("Are you sure you want to go back? Any unsaved progress will be lost.");
+
+        if (confirm == true) {
+            window.location.replace("./schedule");
+        };
     });
 
     $('.form-add-news').submit(function() {
         event.preventDefault();
 
-        var data = $(this).serializeArray();
- 
-        var newsArticle = new NewsArticleStructure();
+        var confirm = window.confirm("Are you sure you want to submit this Wildcat News Story for approval?");
 
-        newsArticle.create(data[0].value, data[1].value, document.getElementById('date').value, data[2].value, data[3].value);
+        if (confirm == true) {
+            var data = $(this).serializeArray();
+ 
+            var newsArticle = new NewsArticleStructure();
+
+            newsArticle.create(data[0].value, data[1].value, document.getElementById('date').value, data[2].value, data[3].value);
+        };
     });
 
     $('.form-add-groupUpdate').submit(function() {
         event.preventDefault();
 
-        var data = $(this).serializeArray();
- 
-        var ECU = new ExtracurricularUpdateStructure();
+        var confirm = window.confirm("Are you sure you want to submit this Group Update?");
 
-        ECU.create(window.groupsArray, data[data.length - 1].value);
+        if (confirm == true) {
+            var data = $(this).serializeArray();
+ 
+            var ECU = new ExtracurricularUpdateStructure();
+
+            ECU.create(window.groupsArray, data[data.length - 1].value);
+        };
     });
 
     $('.form-add-community').submit(function() {
         event.preventDefault();
 
-        var data = $(this).serializeArray();
- 
-        var CS = new CommunityServiceStructure();
+        var confirm = window.confirm("Are you sure you want to submit this Community Service Update?");
 
-        CS.create(data[0].value, data[1].value, data[2].value, data[3].value, data[4].value, data[5].value);
+        if (confirm == true) {
+            var data = $(this).serializeArray();
+ 
+            var CS = new CommunityServiceStructure();
+
+            CS.create(data[0].value, data[1].value, data[2].value, data[3].value, data[4].value, data[5].value);
+        };
     });
 
     $('.form-add-poll').submit(function() {
         event.preventDefault();
 
-        var data = $(this).serializeArray();
- 
-        var poll = new PollStructure();
+        var confirm = window.confirm("Are you sure you want to submit this User Poll?");
 
-        poll.create(data[0].value, data[1].value, data[2].value, choicesArray);
+        if (confirm == true) {
+            var data = $(this).serializeArray();
+ 
+            var poll = new PollStructure();
+
+            poll.create(data[0].value, data[1].value, data[2].value, choicesArray);
+        };
     });
 
     $('.form-add-alert').submit(function() {
         event.preventDefault();
 
-        var data = $(this).serializeArray();
- 
-        var alert = new AlertStructure();
+        var confirm = window.confirm("Are you sure you want to submit this alert? It will be live to all app users.");
 
-        alert.create(data[0].value, Parse.User.current().get("firstName") + " " + Parse.User.current().get("lastName"), data[1].value, data[2].value, data[3].value, data[4].value);
+        if (confirm == true) {
+            var data = $(this).serializeArray();
+ 
+            var alert = new AlertStructure();
+
+            alert.create(data[0].value, Parse.User.current().get("firstName") + " " + Parse.User.current().get("lastName"), data[1].value, data[2].value, data[3].value, data[4].value);
+        };
     });
 
     $('.form-add-groupRegister').submit(function() {
         event.preventDefault();
 
-        var data = $(this).serializeArray();
- 
-        var EC = new ExtracurricularStructure();
+        var confirm = window.confirm("Are you sure you want to register this new group?");
 
-        EC.create(data[0].value, data[1].value);
+        if (confirm == true) {
+            var data = $(this).serializeArray();
+ 
+            var EC = new ExtracurricularStructure();
+
+            EC.create(data[0].value, data[1].value);
+        };
     });
 
     $('.form-add-custom').submit(function() {
@@ -1204,30 +1255,118 @@ $(function() {
         if (! custom) {
             alert("No data entered!");
         } else {
-            $("#spinnerDiv").html('<a><img src="./spinner.gif" alt="Logo" width="40" style="vertical-align: middle; padding-top:12px; padding-left:10px;"/></a>');
-            var query = new Parse.Query("SchoolDayStructure");
-            query.equalTo("schoolDayID", parseInt(localStorage.getItem("customID")));
+            var confirm = window.confirm("Are you sure you want to save this custom schedule?");
+
+            if (confirm == true) {
+                $("#spinnerDiv").html('<a><img src="./../spinner.gif" alt="Logo" width="40" style="vertical-align: middle; padding-top:12px; padding-left:10px;"/></a>');
+                var query = new Parse.Query("SchoolDayStructure");
+                query.equalTo("schoolDayID", parseInt(localStorage.getItem("customID")));
+                query.first({
+                    success: function(object) {
+                        object.set("customString", description);
+                        object.set("customSchedule", custom);
+                        object.set("scheduleType", "*");
+                        object.save(null, {
+                            success: function() {
+                                alert("Schedule successfully updated.");
+                                $("#spinnerDiv").html("");
+                                window.location.replace("./schedule");
+                            },
+                            error: function(error) {
+                                alert(error.code + " - " + error.message);
+                            }
+                        });
+                    },
+                    error: function(error) {
+                        alert(error.code + " - " + error.message);
+                    }
+                });
+            };
+            
+        };
+    });
+
+    $('.form-verify').submit(function() {
+        event.preventDefault();
+
+        var data = $(this).serializeArray();
+
+        var newKey = data[0].value;
+
+        if (newKey === localStorage.getItem("key").toString()) {
+            var query = new Parse.Query(Parse.User);
+            query.equalTo("username", localStorage.getItem("username").toString());
             query.first({
-                success: function(object) {
-                    object.set("customString", description);
-                    object.set("customSchedule", custom);
-                    object.set("scheduleType", "*");
-                    object.save(null, {
+                success: function(user) {
+                    Parse.User.current().save({
+                        "verified" : 1
+                    }, {
                         success: function() {
-                            alert("Schedule successfully updated.");
-                            $("#spinnerDiv").html("");
-                            window.location.replace("./schedule.html");
+                            Parse.User.logOut();
+                            alert("Registration complete! Welcome to WildcatConnect! Please re-enter your login credentials.");
+                            window.location.replace("./login");
                         },
                         error: function(error) {
                             alert(error.code + " - " + error.message);
+                            window.location.replace("./login");
                         }
                     });
                 },
                 error: function(error) {
                     alert(error.code + " - " + error.message);
+                    window.location.replace("./login");
+                }
+            });
+        } else {
+            alert("Incorrect registration key.");
+            Parse.User.logOut();
+            window.location.replace("./login");
+        };
+    });
+
+    $('.saveLunch').click(function() {
+        event.preventDefault();
+
+        var confirm = window.confirm("Are you sure you want to save this breakfast and lunch information?");
+
+        if (confirm == true) {
+            $("#spinnerDiv").html('<a><img src="./../spinner.gif" alt="Logo" width="40" style="vertical-align: middle; padding-top:12px; padding-left:10px;"/></a>');
+
+            var array = new Array();
+
+            var query = new Parse.Query("SchoolDayStructure");
+            query.equalTo("isActive", 1);
+            query.ascending("schoolDayID");
+            query.find({
+                success: function(structures) {
+                    for (var i = 0; i < structures.length; i++) {
+                        var ID = "#b_" + i.toString();
+                        var newBreakfast = $(ID).val();
+                        var ID2 = "#l_" + i.toString();
+                        var newLunch = $(ID2).val();
+                        structures[i].set("breakfastString", newBreakfast);
+                        structures[i].set("lunchString", newLunch);
+                        array.push(structures[i]);
+                    };
+                    Parse.Object.saveAll(array, {
+                        success: function(objects) {
+                            alert("Breakfasts and lunches successfully updated.");
+                            $("#spinnerDiv").html("");
+                            window.location.replace("./lunch");
+                        },
+                        error: function(error) {
+                            alert(error.code + " - " + error.message);
+                            $("#spinnerDiv").html("");
+                        }
+                    });
+                },
+                error: function(error) {
+                    alert(error.code + " - " + error.message);
+                    $("#spinnerDiv").html("");
                 }
             });
         };
+
     });
 
 });
@@ -1266,7 +1405,7 @@ function customView() {
 
 function loadNewUserTable() {
 	return function() {
-		$("#spinnerDiv").html('<a><img src="./spinner.gif" alt="Logo" width="40" style="vertical-align: middle; padding-top:12px; padding-left:10px;"/></a>');
+		$("#spinnerDiv").html('<a><img src="./../spinner.gif" alt="Logo" width="40" style="vertical-align: middle; padding-top:12px; padding-left:10px;"/></a>');
 		var query = new Parse.Query("UserRegisterStructure");
 		query.ascending("lastName");
 		query.find({
@@ -1329,7 +1468,7 @@ function loadNewUserTable() {
 					        
 					    	//Approve the user at i
 
-					    	$("#spinnerDiv").html('<a><img src="./spinner.gif" alt="Logo" width="40" style="vertical-align: middle; padding-top:12px; padding-left:10px;"/></a>');
+					    	$("#spinnerDiv").html('<a><img src="./../spinner.gif" alt="Logo" width="40" style="vertical-align: middle; padding-top:12px; padding-left:10px;"/></a>');
 
 					    	var user = window.userArray[count];
 
@@ -1347,11 +1486,13 @@ function loadNewUserTable() {
 									  },
 									  error: function(error) {
 									    alert(error);
+                                        $("#spinnerDiv").html("");
 									  }
 									});
 								},
 								error: function(error) {
 									alert(error.message);
+                                    $("#spinnerDiv").html("");
 								}
 							});
 					    };
@@ -1359,16 +1500,18 @@ function loadNewUserTable() {
 					tdFour.appendChild(button);
 					var buttonTwo =document.createElement("INPUT");
 					buttonTwo.type = "button";
-					buttonTwo.className = "approveUser btn btn-lg btn-primary";
+					buttonTwo.className = "btn btn-lg btn-primary";
 					buttonTwo.value = "Deny";
 					button.name = i;
 					buttonTwo.style.marginRight = "10px";
+                    buttonTwo.style.backgroundColor = "red";
+                    buttonTwo.style.borderColor = "red";
 					buttonTwo.onclick = (function() {
 					    var count = i;
 
 					    return function(e) {
 					        
-					    	$("#spinnerDiv").html('<a><img src="./spinner.gif" alt="Logo" width="40" style="vertical-align: middle; padding-top:12px; padding-left:10px;"/></a>');
+					    	$("#spinnerDiv").html('<a><img src="./../spinner.gif" alt="Logo" width="40" style="vertical-align: middle; padding-top:12px; padding-left:10px;"/></a>');
 
 					    	var user = window.userArray[count];
 
@@ -1479,7 +1622,7 @@ function loadExistingUserTable() {
                     option.text = "NONE SELECTED";
                     selectList.appendChild(option);
 
-                    var theArray = ["Developer", "Administration", "Faculty"];
+                    var theArray = ["Developer", "Administration", "Faculty", "Lunch Manager"];
 
                     for (var j = 0; j < theArray.length; j++) {
                         var option = document.createElement("option");
@@ -1493,32 +1636,36 @@ function loadExistingUserTable() {
 
                         return function(e) {
 
-                            var key = theArray[this.selectedIndex - 1];
+                            var confirm = window.confirm("Are you sure you want to update this user?");
 
-                            structures[count].set("userType", key);
-                            structures[count].save(null, {
-                                success: function(object) {
-                                    if (object.get("email") === Parse.User.current().get("email")) {
-                                        Parse.User.current().fetch({
-                                            success: function() {
-                                                alert("User successfully updated.");
-                                                $("#spinnerDiv").html("");
-                                                $(document).ready(loadExistingUserTable());
-                                            },
-                                            error: function(error) {
-                                                alert(error.code + " - " + error.message);
-                                            }
-                                        });
-                                    } else {
-                                        alert("User successfully updated.");
-                                        $("#spinnerDiv").html("");
-                                        $(document).ready(loadExistingUserTable());
-                                    };
-                                },
-                                error: function(error) {
-                                    alert(error.code + " - " + error.message);
-                                }
-                            });
+                            if (confirm == true) {
+                                var key = theArray[this.selectedIndex - 1];
+
+                                structures[count].set("userType", key);
+                                structures[count].save(null, {
+                                    success: function(object) {
+                                        if (object.get("email") === Parse.User.current().get("email")) {
+                                            Parse.User.current().fetch({
+                                                success: function() {
+                                                    alert("User successfully updated.");
+                                                    $("#spinnerDiv").html("");
+                                                    $(document).ready(loadExistingUserTable());
+                                                },
+                                                error: function(error) {
+                                                    alert(error.code + " - " + error.message);
+                                                }
+                                            });
+                                        } else {
+                                            alert("User successfully updated.");
+                                            $("#spinnerDiv").html("");
+                                            $(document).ready(loadExistingUserTable());
+                                        };
+                                    },
+                                    error: function(error) {
+                                        alert(error.code + " - " + error.message);
+                                    }
+                                });
+                            };
 
                         };
                     })();
@@ -1528,10 +1675,12 @@ function loadExistingUserTable() {
 					var tdFour = document.createElement("TD");
 					var button =document.createElement("INPUT");
 					button.type = "button";
-					button.className = "approveUser btn btn-lg btn-primary";
+					button.className = "btn btn-lg btn-primary";
 					button.value = "Delete";
 					button.name = i;
 					button.style.marginRight = "10px";
+                    button.style.backgroundColor = "red";
+                    button.style.borderColor = "red";
 					button.onclick = (function() {
 					    var count = i;
 
@@ -1539,23 +1688,28 @@ function loadExistingUserTable() {
 					        
 					    	var user = window.existingUserArray[count];
 
-                            var c = confirm("Are you sure you want to delete " + user.get("firstName") + " " + user.get("lastName") + " as a user?");
-                            event.preventDefault();
-                            if (c == true) {
-                                $("#spinnerDiv").html('<a><img src="./spinner.gif" alt="Logo" width="40" style="vertical-align: middle; padding-top:12px; padding-left:10px;"/></a>');
+                            if (user.get("username") != Parse.User.current().get("username").toString()) {
+                                var c = confirm("Are you sure you want to delete " + user.get("firstName") + " " + user.get("lastName") + " as a user?");
+                                event.preventDefault();
+                                if (c == true) {
+                                    $("#spinnerDiv").html('<a><img src="./../spinner.gif" alt="Logo" width="40" style="vertical-align: middle; padding-top:12px; padding-left:10px;"/></a>');
 
-                                Parse.Cloud.run('deleteUser', { "username" : user.get("username") }, {
-                                  success: function() {
-                                    alert("User successfully deleted.");
-                                    $("#spinnerDiv").html("");
-                                    $(document).ready(loadNewUserTable());
-                                    $(document).ready(loadExistingUserTable());
-                                  },
-                                  error: function(error) {
-                                    alert(error);
-                                    $("#spinnerDiv").html("");
-                                  }
-                                });
+                                    Parse.Cloud.run('deleteUser', { "username" : user.get("username") }, {
+                                      success: function() {
+                                        alert("User successfully deleted.");
+                                        $("#spinnerDiv").html("");
+                                        $(document).ready(loadNewUserTable());
+                                        $(document).ready(loadExistingUserTable());
+                                      },
+                                      error: function(error) {
+                                        alert(error);
+                                        $("#spinnerDiv").html("");
+                                      }
+                                    });
+                                };
+                            } else {
+                                alert("You cannot delete yourself as a user!");
+                                $("#spinnerDiv").html("");
                             };
 
 					    };
@@ -1576,29 +1730,241 @@ function loadExistingUserTable() {
 	}
 }
 
-function loadScheduleTable() {
+function loadLunchTable() {
 	return function() {
 
-		$("#spinnerDiv").html('<a><img src="./spinner.gif" alt="Logo" width="40" style="vertical-align: middle; padding-top:12px; padding-left:10px;"/></a>');
+		$("#spinnerDiv").html('<a><img src="./../spinner.gif" alt="Logo" width="40" style="vertical-align: middle; padding-top:12px; padding-left:10px;"/></a>');
 
-		var dictionary = [];
+		var query = new Parse.Query("SchoolDayStructure");
+        query.equalTo("isActive", 1);
+        query.ascending("schoolDayID");
+        var structures = new Array();
+        query.find({
+            success: function(structures) {
 
-		var firstQuery = new Parse.Query("ScheduleType");
-		firstQuery.ascending("typeID");
-		firstQuery.find({
-			success: function(objects) {
-				for (var j = 0; j < objects.length; j++) {
-					var key = objects[j].get("typeID");
-					var value = objects[j].get("fullScheduleString");
-					dictionary[key] = value;
-					reverseDictionary[j] = key;
-				};
-				var query = new Parse.Query("SchoolDayStructure");
-				query.equalTo("isActive", 1);
-				query.ascending("schoolDayID");
+                $("#titleLabel").html("Available School Days (" + structures.length+")");
+
+                var tableDiv = document.getElementById("schedules");
+                var table = document.createElement("TABLE");
+                var tableBody = document.createElement("TBODY");
+
+                table.appendChild(tableBody);
+                table.className = "table table-striped";
+
+                var heading = new Array();
+                heading[0] = "Date";
+                heading[1] = "Breakfast";
+                heading[2] = "Lunch";
+
+                //TABLE COLUMNS
+
+                var tr = document.createElement("TR");
+                tableBody.appendChild(tr);
+
+                $("#schedules").html("");
+
+                for (var i = 0; i < heading.length; i++) {
+                    var th = document.createElement("TH");
+                    if (i == 0) {
+                        th.width = '20%';
+                    } else {
+                        th.width = '40%';
+                    };
+                    th.appendChild(document.createTextNode(heading[i]));
+                    tr.appendChild(th);
+                };
+
+                window.existingUserArray = new Array();
+
+                for (var i = 0; i < structures.length; i++) {
+                    window.existingUserArray.push(structures[i]);
+                    var tr = document.createElement("TR");
+                    var tdTwo = document.createElement("TD");
+                    var parts = structures[i].get("schoolDate").split('-');
+                    var date = new Date(parts[2], parts[0]-1,parts[1]);
+                    var string = date.toString('dddd, MMMM d, yyyy');
+                    tdTwo.appendChild(document.createTextNode(string));
+                    tr.appendChild(tdTwo);
+
+                    var tdOne = document.createElement("TD");
+                    var breakfastText = document.createElement("TEXTAREA");
+                    breakfastText.value = structures[i].get("breakfastString");
+                    breakfastText.class = "form-control";
+                    breakfastText.style.display = "block";
+                    breakfastText.style.width = "100%";
+                    breakfastText.style.overflowY = "scroll";
+                    breakfastText.style.resize = "none";
+                    breakfastText.id = "b_" + i;
+                    tdOne.appendChild(breakfastText);
+                    tr.appendChild(tdOne);
+
+                    var tdThree = document.createElement("TD");
+                    var lunchText = document.createElement("TEXTAREA");
+                    lunchText.value = structures[i].get("lunchString");
+                    lunchText.class = "form-control";
+                    lunchText.style.display = "block";
+                    lunchText.style.width = "100%";
+                    lunchText.style.overflowY = "scroll";
+                    lunchText.style.resize = "none";
+                    lunchText.id = "l_" + i;
+                    tdThree.appendChild(lunchText);
+                    tr.appendChild(tdThree);
+
+                    tableBody.appendChild(tr);
+
+                    tableDiv.appendChild(table);
+                };
+
+                $("#spinnerDiv").html("");
+
+            },
+            error: function(error) {
+                $("#spinnerDiv").html("");
+                alert(error);
+            }
+        });
+	}
+}
+
+function loadErrorTable() {
+    return function() {
+
+        $("#spinnerDiv").html('<a><img src="./../spinner.gif" alt="Logo" width="40" style="vertical-align: middle; padding-top:12px; padding-left:10px;"/></a>');
+
+        var query = new Parse.Query("ErrorStructure");
+        query.descending("createdAt");
+        query.find({
+            success: function(structures) {
+
+                $("#titleLabel").html("Recent iOS App Errors and Crashes (" + structures.length+")");
+
+                var tableDiv = document.getElementById("errors");
+                var table = document.createElement("TABLE");
+                var tableBody = document.createElement("TBODY");
+
+                table.appendChild(tableBody);
+                table.className = "table table-striped";
+
+                var heading = new Array();
+                heading[0] = "Date";
+                heading[1] = "Name";
+                heading[2] = "Message";
+                heading[3] = "Device Token";
+                heading[4] = "Username";
+                heading[5] = "Action";
+
+                //TABLE COLUMNS
+
+                var tr = document.createElement("TR");
+                tableBody.appendChild(tr);
+
+                $("#errors").html("");
+
+                for (var i = 0; i < heading.length; i++) {
+                    var th = document.createElement("TH");
+                    th.width = '16%';
+                    th.appendChild(document.createTextNode(heading[i]));
+                    tr.appendChild(th);
+                };
+
+                for (var i = 0; i < structures.length; i++) {
+                    var tr = document.createElement("TR");
+                    var tdTwo = document.createElement("TD");
+                    var date = structures[i].createdAt;
+                    var string = date.toString('dddd, MMMM d, yyyy @ h:mm tt');
+                    tdTwo.appendChild(document.createTextNode(string));
+                    tr.appendChild(tdTwo);
+
+                    var tdOne = document.createElement("TD");
+                    tdOne.appendChild(document.createTextNode(structures[i].get("nameString")));
+                    tr.appendChild(tdOne);
+
+                    var tdOne = document.createElement("TD");
+                    tdOne.appendChild(document.createTextNode(structures[i].get("infoString")));
+                    tr.appendChild(tdOne);
+
+                    var tdOne = document.createElement("TD");
+                    tdOne.appendChild(document.createTextNode(structures[i].get("deviceToken")));
+                    tr.appendChild(tdOne);
+
+                    var tdOne = document.createElement("TD");
+                    tdOne.appendChild(document.createTextNode(structures[i].get("username")));
+                    tr.appendChild(tdOne);
+
+                    var tdOne = document.createElement("TD");
+                    var button =document.createElement("INPUT");
+                    button.type = "button";
+                    button.className = "btn btn-lg btn-primary";
+                    button.value = "Delete";
+                    button.name = i;
+                    button.style.marginBottom = "10px";
+                    button.style.backgroundColor = "red";
+                    button.style.borderColor = "red";
+                    button.onclick = (function() {
+
+                        var count = i;
+
+                        return function(e) {
+
+                            var confirm = window.confirm("Are you sure you want to delete this error?");
+
+                            if (confirm == true) {
+                                structures[count].destroy({
+                                    success: function() {
+                                        alert("Error successfully deleted.");
+                                        $(document).ready(loadErrorTable());
+                                    },
+                                    error: function(error) {
+                                        alert(error.code + " - " + error.message);
+                                        $("#spinnerDiv").html("");
+                                    }
+                                });
+                            };
+
+                        };
+                    })();
+                    tdOne.appendChild(button);
+                    tr.appendChild(tdOne);
+
+                    tableBody.appendChild(tr);
+
+                    tableDiv.appendChild(table);
+                };
+
+                $("#spinnerDiv").html("");
+
+            },
+            error: function(error) {
+                $("#spinnerDiv").html("");
+                alert(error);
+            }
+        });
+    }
+}
+
+function loadScheduleTable() {
+    return function() {
+
+        $("#spinnerDiv").html('<a><img src="./../spinner.gif" alt="Logo" width="40" style="vertical-align: middle; padding-top:12px; padding-left:10px;"/></a>');
+
+        var dictionary = [];
+
+        var firstQuery = new Parse.Query("ScheduleType");
+        firstQuery.ascending("typeID");
+        firstQuery.find({
+            success: function(objects) {
+                for (var j = 0; j < objects.length; j++) {
+                    var key = objects[j].get("typeID");
+                    var value = objects[j].get("fullScheduleString");
+                    dictionary[key] = value;
+                    reverseDictionary[j] = key;
+                };
+                var query = new Parse.Query("SchoolDayStructure");
+                query.equalTo("isActive", 1);
+                query.ascending("schoolDayID");
                 var structures = new Array();
-				query.find({
-					success: function(theStructures) {
+                query.find({
+                    success: function(theStructures) {
 
                         var queryTwo = new Parse.Query("SchoolDayStructure");
                         queryTwo.equalTo("isActive", 0);
@@ -1698,22 +2064,26 @@ function loadScheduleTable() {
 
                                         return function(e) {
 
-                                            var key = reverseDictionary[this.selectedIndex - 1];
+                                            var confirm = window.confirm("Are you sure you want to edit this day's schedule?");
 
-                                            structures[count].set("scheduleType", key);
-                                            structures[count].set("customSchedule", "None.");
-                                            structures[count].set("customString", "");
-                                            structures[count].save(null, {
-                                                success: function(object) {
-                                                    alert("Schedule successfully updated.");
-                                                    $("#spinnerDiv").html("");
-                                                    $(document).ready(loadScheduleTable());
-                                                },
-                                                error: function(error) {
-                                                    alert(error.code + " - " + error.message);
-                                                    $("#spinnerDiv").html("");
-                                                }
-                                            });
+                                            if (confirm == true) {
+                                                var key = reverseDictionary[this.selectedIndex - 1];
+
+                                                structures[count].set("scheduleType", key);
+                                                structures[count].set("customSchedule", "None.");
+                                                structures[count].set("customString", "");
+                                                structures[count].save(null, {
+                                                    success: function(object) {
+                                                        alert("Schedule successfully updated.");
+                                                        $("#spinnerDiv").html("");
+                                                        $(document).ready(loadScheduleTable());
+                                                    },
+                                                    error: function(error) {
+                                                        alert(error.code + " - " + error.message);
+                                                        $("#spinnerDiv").html("");
+                                                    }
+                                                });
+                                            };
 
                                         };
                                     })();
@@ -1725,7 +2095,7 @@ function loadScheduleTable() {
                                     if (i < 2) {
                                         var button =document.createElement("INPUT");
                                         button.type = "button";
-                                        button.className = "approveUser btn btn-lg btn-primary";
+                                        button.className = "btn btn-lg btn-primary";
                                         button.value = "Snow Day";
                                         button.name = i;
                                         button.style.marginBottom = "10px";
@@ -1736,21 +2106,26 @@ function loadScheduleTable() {
                                             return function(e) {
 
                                                 if (count != structures.length - 1) {
-                                                    if (count === 0) {
-                                                        window.showYesterday = false;
+
+                                                    var confirm = window.confirm("Are you sure you want to make this day a snow day? This will affect all schedules after this date.");
+
+                                                    if (confirm == true) {
+                                                        if (count === 0) {
+                                                            window.showYesterday = false;
+                                                        };
+                                                        $("#spinnerDiv").html('<a><img src="./../spinner.gif" alt="Logo" width="40" style="vertical-align: middle; padding-top:12px; padding-left:10px;"/></a>');
+                                                        Parse.Cloud.run('snowDay', { "ID" : structures[count].get("schoolDayID") }, {
+                                                          success: function() {
+                                                            alert("Schedule successfully updated.");
+                                                            $("#spinnerDiv").html("");
+                                                            $(document).ready(loadScheduleTable());
+                                                          },
+                                                          error: function(error) {
+                                                            alert(error);
+                                                            $("#spinnerDiv").html("");
+                                                          }
+                                                        });
                                                     };
-                                                    $("#spinnerDiv").html('<a><img src="./spinner.gif" alt="Logo" width="40" style="vertical-align: middle; padding-top:12px; padding-left:10px;"/></a>');
-                                                    Parse.Cloud.run('snowDay', { "ID" : structures[count].get("schoolDayID") }, {
-                                                      success: function() {
-                                                        alert("Schedule successfully updated.");
-                                                        $("#spinnerDiv").html("");
-                                                        $(document).ready(loadScheduleTable());
-                                                      },
-                                                      error: function(error) {
-                                                        alert(error);
-                                                        $("#spinnerDiv").html("");
-                                                      }
-                                                    });
                                                 } else {
                                                     alert("You can't go back one day from here! This is the last day in the available queue.");
                                                 };
@@ -1763,7 +2138,7 @@ function loadScheduleTable() {
 
                                     var buttonTwo =document.createElement("INPUT");
                                     buttonTwo.type = "button";
-                                    buttonTwo.className = "approveUser btn btn-lg btn-primary";
+                                    buttonTwo.className = "btn btn-lg btn-primary";
                                     buttonTwo.value = "Edit Custom Schedule";
                                     button.name = i;
                                     buttonTwo.style.marginRight = "10px";
@@ -1784,7 +2159,7 @@ function loadScheduleTable() {
 
                                             localStorage.setItem("customDescription", structures[count].get("customString"));     
 
-                                            window.location.replace("./custom.html");                       
+                                            window.location.replace("./custom");                       
 
                                         };
                                     })();
@@ -1802,17 +2177,17 @@ function loadScheduleTable() {
                                 $("#spinnerDiv").html("");
                             }
                         });
-					},
-					error: function(error) {
-						$("#spinnerDiv").html("");
-						alert(error);
-					}
-				});
-			},
-			error: function(error) {
-				$("#spinnerDiv").html("");
-				alert(error);
-			}
-		});
-	}
+                    },
+                    error: function(error) {
+                        $("#spinnerDiv").html("");
+                        alert(error);
+                    }
+                });
+            },
+            error: function(error) {
+                $("#spinnerDiv").html("");
+                alert(error);
+            }
+        });
+    }
 }

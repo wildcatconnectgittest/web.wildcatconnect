@@ -7,21 +7,21 @@
     <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
     <meta name="description" content="">
     <meta name="author" content="">
-    <link rel="apple-touch-icon" sizes="57x57" href="./favicon/apple-touch-icon-57x57.png">
-    <link rel="apple-touch-icon" sizes="60x60" href="./favicon/apple-touch-icon-60x60.png">
-    <link rel="apple-touch-icon" sizes="72x72" href="./favicon/apple-touch-icon-72x72.png">
-    <link rel="apple-touch-icon" sizes="76x76" href="./favicon/apple-touch-icon-76x76.png">
-    <link rel="apple-touch-icon" sizes="114x114" href="./favicon/apple-touch-icon-114x114.png">
-    <link rel="apple-touch-icon" sizes="120x120" href="./favicon/apple-touch-icon-120x120.png">
-    <link rel="apple-touch-icon" sizes="144x144" href="./favicon/apple-touch-icon-144x144.png">
-    <link rel="apple-touch-icon" sizes="152x152" href="./favicon/apple-touch-icon-152x152.png">
-    <link rel="apple-touch-icon" sizes="180x180" href="./favicon/apple-touch-icon-180x180.png">
-    <link rel="icon" type="image/png" href="./favicon/favicon-32x32.png" sizes="32x32">
-    <link rel="icon" type="image/png" href="./favicon/android-chrome-192x192.png" sizes="192x192">
-    <link rel="icon" type="image/png" href="./favicon/favicon-96x96.png" sizes="96x96">
-    <link rel="icon" type="image/png" href="./favicon/favicon-16x16.png" sizes="16x16">
-    <link rel="manifest" href="./favicon/manifest.json">
-    <link rel="mask-icon" href="./favicon/safari-pinned-tab.svg" color="#5bbad5">
+    <link rel="apple-touch-icon" sizes="57x57" href="./../favicon/apple-touch-icon-57x57.png">
+    <link rel="apple-touch-icon" sizes="60x60" href="./../favicon/apple-touch-icon-60x60.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="./../favicon/apple-touch-icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="76x76" href="./../favicon/apple-touch-icon-76x76.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="./../favicon/apple-touch-icon-114x114.png">
+    <link rel="apple-touch-icon" sizes="120x120" href="./..//favicon/apple-touch-icon-120x120.png">
+    <link rel="apple-touch-icon" sizes="144x144" href="./../favicon/apple-touch-icon-144x144.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="./../favicon/apple-touch-icon-152x152.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="./../favicon/apple-touch-icon-180x180.png">
+    <link rel="icon" type="image/png" href="./../favicon/favicon-32x32.png" sizes="32x32">
+    <link rel="icon" type="image/png" href="./../favicon/android-chrome-192x192.png" sizes="192x192">
+    <link rel="icon" type="image/png" href="./../favicon/favicon-96x96.png" sizes="96x96">
+    <link rel="icon" type="image/png" href="./../favicon/favicon-16x16.png" sizes="16x16">
+    <link rel="manifest" href="./../favicon/manifest.json">
+    <link rel="mask-icon" href="./../favicon/safari-pinned-tab.svg" color="#5bbad5">
     <meta name="msapplication-TileColor" content="#da532c">
     <meta name="msapplication-TileImage" content="/mstile-144x144.png">
     <meta name="theme-color" content="#ffffff">
@@ -29,11 +29,11 @@
     <title>WildcatConnect</title>
 
     <!-- Bootstrap core CSS -->
-    <link href="./css/bootstrap.min.css" rel="stylesheet">
+    <link href="./../css/bootstrap.min.css" rel="stylesheet">
 
-    <link href="./css/signin.css" rel="stylesheet">
+    <link href="./../css/signin.css" rel="stylesheet">
 
-    <link href="./css/sticky-footer-navbar.css" rel="stylesheet">
+    <link href="./../css/sticky-footer-navbar.css" rel="stylesheet">
 
     <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
     <!--link href="./css/ie10-viewport-bug-workaround.css" rel="stylesheet">
@@ -63,7 +63,7 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </button>
-          <a><img src="./logoTransparent.gif" alt="Logo" width="54" style="display: inline-block; vertical-align: middle;"/></a>
+          <a><img src="./../logoTransparent.gif" alt="Logo" width="54" style="display: inline-block; vertical-align: middle;"/></a>
           <a class="navbar-brand">WildcatConnect</a>
         </div>
         <div id="navbar" class="navbar-collapse collapse">
@@ -100,44 +100,64 @@
     </nav>
 
     <div class="main-container" style="padding-left:20px; padding-right:20px;">
-      <button class="cancel-schedule btn btn-lg btn-primary" type="cancel">Back</button>
-      <h2 id="topLabel">Custom Schedule</h2>
-      <form class="form-add-custom" role="form" enctype="multipart/form-data">
+
+      <button class="cancel btn btn-lg btn-primary" type="cancel">Cancel</button>
+      <h2>Community Service Opportunity</h2>
+      <form class="form-add-community" role="form">
         <div class="form-group">
-          <label for="title">Schedule Name (i.e. "Day D, Wildcat Way Period")</label>
-          <input type="text" name="title" class="form-control" id="scheduleDescription" placeholder="Schedule Name">
+          <label for="title">Title (60 characters max)</label>
+          <input type="text" name="title" class="form-control" id="title" placeholder="Title" maxlength="60">
         </div>
+        <h6><i>NOTE: If you are unsure of the exact start or end time for this opportunity, please leave adequate time in the dates below.</i></h6>
+        <label for="startDateDate">Select Start Date</label>
+        <input type="date" name="startDateDate" id="startDateDate"></input>
+        <label for="startDateTime">Select Start Time</label>
+        <input type="time" name="startDateTime" id="startDateTime"></input>
+        <br><br>
+        <label for="endDateDate">Select End Date</label>
+        <input type="date" name="endDateDate" id="endDateDate"></input>
+        <label for="endDateTime">Select End Time</label>
+        <input type="time" name="endDateTime" id="endDateTime"></input>
+        <br><br>
         <div class="form-group">
-          <label for="content">Schedule</label>
-          <textarea name="content" class="form-control" rows="15" style="overflow-y: scroll; resize: none;" id="customArea"></textarea>
+          <label for="message">Message (300 characters max)</label>
+          <textarea name="message" class="form-control" rows="4" maxlength="300"></textarea>
         </div>
         <button class="btn btn-lg btn-primary btn-block" type="submit">Submit</button>
       </form>
+      <script>
+        var today = new Date();
+        document.getElementById('startDateDate').valueAsDate = today;
+        document.getElementById('endDateDate').valueAsDate = today;
+        if (today.getHours() < 10) {
+          var currentTime = '0' + today.getHours() + ':' + today.getMinutes();
+        } else {
+          var currentTime = today.getHours() + ':' + today.getMinutes();
+        };
+        document.getElementById('startDateTime').value = currentTime;
+        document.getElementById('endDateTime').value = currentTime;
+      </script>
 
     </div> <!-- /container -->
 
     <!-- Bootstrap core JavaScript
     ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->
-    <script src="./js/jquery.min.js"></script>
-    <script src="./js/parse-1.2.19.min.js"></script>
+    <script src="./../js/jquery.min.js"></script>
+    <script src="./../js/parse-1.2.19.min.js"></script>
     <!--script>window.jQuery || document.write('<script src="../../assets/js/vendor/jquery.min.js"><\/script>')</script-->
-    <script src="./js/bootstrap.min.js"></script>
-    <script src="./js/script.js"></script>
-    <script src="./js/date.js"></script>
+    <script src="./../js/bootstrap.min.js"></script>
+    <script src="./../js/uglyScript.js"></script>
+    <script src="./../js/date.js"></script>
 
     <script type="text/javascript">
       Parse.$ = jQuery;
       Parse.initialize("cLBOvwh6ZTQYex37DSwxL1Cvg34MMiRWYAB4vqs0", "tTcV5Ns1GFdDda44FCcG5XHBDMbLA1sxRUzSnDgW");
-      if (Parse.User.current() && (Parse.User.current().get("userType") === "Administration" || Parse.User.current().get("userType") === "Developer")) {
-        //
+      if (Parse.User.current()) {
+        console.log("Logged in!!!");
       } else {
-        window.location.replace("./login.html");
+        window.location.replace("./login");
       };
-    </script>
-    
-    <script>
-      $(document).ready(customView());
     </script>
     <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
     <!--script src="../../assets/js/ie10-viewport-bug-workaround.js"></script>
