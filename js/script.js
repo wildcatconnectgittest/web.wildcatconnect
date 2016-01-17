@@ -190,10 +190,10 @@ var UserRegisterStructure = Parse.Object.extend("UserRegisterStructure", {
         } else if (password != confirmPassword) {
             alert("Your passwords do not match!");
             $("#signupButton").html("Register");
-        } else if (email.indexOf("weymouthschools.org") === -1) {
+        } /*else if (email.indexOf("weymouthschools.org") === -1) {
             alert("Your e-mail address is not a valid faculty address!");
             $("#signupButton").html("Register");
-        } else if (username.indexOf(" ") > -1) {
+        }*/ else if (username.indexOf(" ") > -1) {
             alert("Your username cannot contain any spaces!");
             $("#signupButton").html("Register");
         } else if (password.indexOf(" ") > -1) {
@@ -689,10 +689,11 @@ var NewsArticleStructure = Parse.Object.extend("NewsArticleStructure", {
                             'likes' : 0,
                             'summaryString' : summary,
                             'titleString' : title,
-                            'views' : 0
+                            'views' : 0,
+                            'isApproved' : 0
                         },  {
                             success: function(object) {
-                                alert("Article successfully posted.");
+                                alert("Wildcat News Story successfully submitted for approval. Please allow 1-2 days for processing.");
                                 window.location.replace("./index");
                             },
                             error: function(error) {
@@ -711,10 +712,11 @@ var NewsArticleStructure = Parse.Object.extend("NewsArticleStructure", {
                             'likes' : 0,
                             'summaryString' : summary,
                             'titleString' : title,
-                            'views' : 0
+                            'views' : 0,
+                            'isApproved' : 0
                         },  {
                             success: function(object) {
-                                alert("Article successfully posted.");
+                                alert("Wildcat News Story successfully submitted for approval. Please allow 1-2 days for processing.");
                                 window.location.replace("./index");
                             },
                             error: function(error) {
@@ -1163,7 +1165,7 @@ $(function() {
     $('.form-add-news').submit(function() {
         event.preventDefault();
 
-        var confirm = window.confirm("Are you sure you want to submit this Wildcat News Story for approval?");
+        var confirm = window.confirm("Are you sure you want to submit this Wildcat News Story for administrative approval?");
 
         if (confirm == true) {
             var data = $(this).serializeArray();
@@ -1455,93 +1457,102 @@ function loadNewUserTable() {
 					tdThree.innerHTML = '<a href="mailto:'+structures[i].get("email")+'">'+structures[i].get("email")+'</a>';
 					tr.appendChild(tdThree);
 					var tdFour = document.createElement("TD");
-					var button =document.createElement("INPUT");
-					button.type = "button";
-					button.className = "approveUser btn btn-lg btn-primary";
-					button.value = "Approve";
-					button.name = i;
-					button.style.marginRight = "10px";
-					button.onclick = (function() {
-					    var count = i;
+                    var button =document.createElement("INPUT");
+                    button.type = "button";
+                    button.className = "approveUser btn btn-lg btn-primary";
+                    button.value = "Approve";
+                    button.name = i;
+                    button.style.marginBottom = "10px";
+                    button.onclick = (function() {
+                        var count = i;
 
-					    return function(e) {
-					        
-					    	//Approve the user at i
+                        return function(e) {
+                            
+                            //Approve the user at i
 
-					    	$("#spinnerDiv").html('<a><img src="./../spinner.gif" alt="Logo" width="40" style="vertical-align: middle; padding-top:12px; padding-left:10px;"/></a>');
+                            var confirm = window.confirm("Are you sure you want to approve this user?");
 
-					    	var user = window.userArray[count];
+                            if (confirm == true) {
+                                $("#spinnerDiv").html('<a><img src="./../spinner.gif" alt="Logo" width="40" style="vertical-align: middle; padding-top:12px; padding-left:10px;"/></a>');
 
-					    	var password = user.get("password");
-                            var key = user.get("key");
+                                var user = window.userArray[count];
 
-							Parse.Cloud.run("decryptPassword", { "password" : password}, {
-								success: function(here) {
-									Parse.Cloud.run('registerUser', { "username" : user.get("username") , "password" : here , "email" : user.get("email") , "firstName" : user.get("firstName") , "lastName" : user.get("lastName"), "key" : key }, {
-									  success: function() {
-									    $("#spinnerDiv").html("");
-									    alert("User approved!");
-									    $(document).ready(loadNewUserTable());
-										$(document).ready(loadExistingUserTable());
-									  },
-									  error: function(error) {
-									    alert(error);
+                                var password = user.get("password");
+                                var key = user.get("key");
+
+                                Parse.Cloud.run("decryptPassword", { "password" : password}, {
+                                    success: function(here) {
+                                        Parse.Cloud.run('registerUser', { "username" : user.get("username") , "password" : here , "email" : user.get("email") , "firstName" : user.get("firstName") , "lastName" : user.get("lastName"), "key" : key }, {
+                                          success: function() {
+                                            $("#spinnerDiv").html("");
+                                            alert("User approved!");
+                                            $(document).ready(loadNewUserTable());
+                                            $(document).ready(loadExistingUserTable());
+                                          },
+                                          error: function(error) {
+                                            alert(error);
+                                            $("#spinnerDiv").html("");
+                                          }
+                                        });
+                                    },
+                                    error: function(error) {
+                                        alert(error.message);
                                         $("#spinnerDiv").html("");
-									  }
-									});
-								},
-								error: function(error) {
-									alert(error.message);
-                                    $("#spinnerDiv").html("");
-								}
-							});
-					    };
-					})();
-					tdFour.appendChild(button);
-					var buttonTwo =document.createElement("INPUT");
-					buttonTwo.type = "button";
-					buttonTwo.className = "btn btn-lg btn-primary";
-					buttonTwo.value = "Deny";
-					button.name = i;
-					buttonTwo.style.marginRight = "10px";
+                                    }
+                                });
+                            };
+                        };
+                    })();
+                    tdFour.appendChild(button);
+
+                    var buttonTwo =document.createElement("INPUT");
+                    buttonTwo.type = "button";
+                    buttonTwo.className = "btn btn-lg btn-primary";
+                    buttonTwo.value = "Deny";
+                    button.name = i;
+                    buttonTwo.style.marginRight = "10px";
                     buttonTwo.style.backgroundColor = "red";
                     buttonTwo.style.borderColor = "red";
-					buttonTwo.onclick = (function() {
-					    var count = i;
+                    buttonTwo.onclick = (function() {
+                        var count = i;
 
-					    return function(e) {
-					        
-					    	$("#spinnerDiv").html('<a><img src="./../spinner.gif" alt="Logo" width="40" style="vertical-align: middle; padding-top:12px; padding-left:10px;"/></a>');
+                        return function(e) {
 
-					    	var user = window.userArray[count];
+                            var confirm = window.confirm("Are you sure you want to deny this user?");
 
-					    	var query = new Parse.Query("UserRegisterStructure");
-					    	query.equalTo("username", user.get("username"));
-					    	query.first({
-					    		success: function(object) {
-					    			object.destroy({
-					    				success: function(object) {
-					    					alert("User successfully denied request.");
-										    $("#spinnerDiv").html("");
-										    $(document).ready(loadNewUserTable());
-											$(document).ready(loadExistingUserTable());
-					    				},
-					    				error: function(error) {
-					    					alert(error);
-					    					$("#spinnerDiv").html("");
-					    				}
-					    			});
-					    		},
-					    		error: function(error) {
-					    			alert(error);
-					    			$("#spinnerDiv").html("");
-					    		}
-					    	});
+                            if (confirm == true) {
+                                $("#spinnerDiv").html('<a><img src="./../spinner.gif" alt="Logo" width="40" style="vertical-align: middle; padding-top:12px; padding-left:10px;"/></a>');
 
-					    };
-					})();
-					tdFour.appendChild(buttonTwo);
-					tr.appendChild(tdFour);
+                                var user = window.userArray[count];
+
+                                var query = new Parse.Query("UserRegisterStructure");
+                                query.equalTo("username", user.get("username"));
+                                query.first({
+                                    success: function(object) {
+                                        object.destroy({
+                                            success: function(object) {
+                                                alert("User successfully denied request.");
+                                                $("#spinnerDiv").html("");
+                                                $(document).ready(loadNewUserTable());
+                                                $(document).ready(loadExistingUserTable());
+                                            },
+                                            error: function(error) {
+                                                alert(error);
+                                                $("#spinnerDiv").html("");
+                                            }
+                                        });
+                                    },
+                                    error: function(error) {
+                                        alert(error);
+                                        $("#spinnerDiv").html("");
+                                    }
+                                });
+                            };
+
+                        };
+                    })();
+                    tdFour.appendChild(buttonTwo);
+                    tr.appendChild(tdFour);
 					tableBody.appendChild(tr);
 
 					tableDiv.appendChild(table);
@@ -1826,6 +1837,163 @@ function loadLunchTable() {
 	}
 }
 
+function loadNewsTable() {
+    return function() {
+
+        $("#spinnerDiv").html('<a><img src="./../spinner.gif" alt="Logo" width="40" style="vertical-align: middle; padding-top:12px; padding-left:10px;"/></a>');
+
+        var query = new Parse.Query("NewsArticleStructure");
+        query.equalTo("isApproved", 0);
+        query.ascending("createdAt");
+        var structures = new Array();
+        query.find({
+            success: function(structures) {
+
+                $("#titleLabel").html("Pending Wildcat News Requests (" + structures.length+")");
+
+                var tableDiv = document.getElementById("newsRequests");
+                var table = document.createElement("TABLE");
+                var tableBody = document.createElement("TBODY");
+
+                table.appendChild(tableBody);
+                table.className = "table table-striped";
+
+                var heading = new Array();
+                heading[0] = "Date Submitted";
+                heading[1] = "Author";
+                heading[2] = "Summary";
+                heading[3] = "Content";
+                heading[4] = "Action";
+
+                //TABLE COLUMNS
+
+                var tr = document.createElement("TR");
+                tableBody.appendChild(tr);
+
+                $("#newsRequests").html("");
+
+                for (var i = 0; i < heading.length; i++) {
+                    var th = document.createElement("TH");
+                    if (i != 3) {
+                        th.width = '10%';
+                    } else {
+                        th.width = '60%';
+                    };
+                    th.appendChild(document.createTextNode(heading[i]));
+                    tr.appendChild(th);
+                };
+
+                window.existingUserArray = new Array();
+
+                for (var i = 0; i < structures.length; i++) {
+                    window.existingUserArray.push(structures[i]);
+                    var tr = document.createElement("TR");
+                    var tdTwo = document.createElement("TD");
+                    var date = structures[i].createdAt;
+                    var string = date.toString('dddd, MMMM d, yyyy @ h:mm tt');
+                    tdTwo.appendChild(document.createTextNode(string));
+                    tr.appendChild(tdTwo);
+
+                    var tdOne = document.createElement("TD");
+                    tdOne.appendChild(document.createTextNode(structures[i].get("authorString")));
+                    tr.appendChild(tdOne);
+
+                    var tdOne = document.createElement("TD");
+                    tdOne.appendChild(document.createTextNode(structures[i].get("summaryString")));
+                    tr.appendChild(tdOne);
+
+                    var tdOne = document.createElement("TD");
+                    tdOne.appendChild(document.createTextNode(structures[i].get("contentURLString")));
+                    tr.appendChild(tdOne);
+
+                    var tdFour = document.createElement("TD");
+                    var button =document.createElement("INPUT");
+                    button.type = "button";
+                    button.className = "approveUser btn btn-lg btn-primary";
+                    button.value = "Approve";
+                    button.name = i;
+                    button.style.marginBottom = "10px";
+                    button.onclick = (function() {
+                        var count = i;
+
+                        return function(e) {
+                            
+                            //Approve the user at i
+
+                            var confirm = window.confirm("Are you sure you want to approve this Wildcat News Story? It will be live to all app users.");
+
+                            if (confirm == true) {
+                                $("#spinnerDiv").html('<a><img src="./../spinner.gif" alt="Logo" width="40" style="vertical-align: middle; padding-top:12px; padding-left:10px;"/></a>');
+
+                                structures[count].set("isApproved", 1);
+                                structures[count].save({
+                                    success: function() {
+                                        $("#spinnerDiv").html("");
+                                        alert("Story successfully approved.");
+                                        $(document).ready(loadNewsTable());
+                                      },
+                                      error: function(error) {
+                                        alert(error);
+                                        $("#spinnerDiv").html("");
+                                      }
+                                });
+                            };
+                        };
+                    })();
+                    tdFour.appendChild(button);
+
+                    var buttonTwo =document.createElement("INPUT");
+                    buttonTwo.type = "button";
+                    buttonTwo.className = "btn btn-lg btn-primary";
+                    buttonTwo.value = "Deny";
+                    button.name = i;
+                    buttonTwo.style.marginRight = "10px";
+                    buttonTwo.style.backgroundColor = "red";
+                    buttonTwo.style.borderColor = "red";
+                    buttonTwo.onclick = (function() {
+                        var count = i;
+
+                        return function(e) {
+
+                            var confirm = window.confirm("Are you sure you want to deny this user?");
+
+                            if (confirm == true) {
+                                $("#spinnerDiv").html('<a><img src="./../spinner.gif" alt="Logo" width="40" style="vertical-align: middle; padding-top:12px; padding-left:10px;"/></a>');
+
+                                structures[count].destroy({
+                                    success: function() {
+                                        $("#spinnerDiv").html("");
+                                        alert("Story successfully denied.");
+                                        $(document).ready(loadNewsTable());
+                                      },
+                                      error: function(error) {
+                                        alert(error);
+                                        $("#spinnerDiv").html("");
+                                      }
+                                });
+                            };
+
+                        };
+                    })();
+                    tdFour.appendChild(buttonTwo);
+                    tr.appendChild(tdFour);
+
+                    tableBody.appendChild(tr);
+
+                    tableDiv.appendChild(table);
+                };
+
+                $("#spinnerDiv").html("");
+
+            },
+            error: function(error) {
+                $("#spinnerDiv").html("");
+                alert(error);
+            }
+        });
+    }
+}
+
 function loadErrorTable() {
     return function() {
 
@@ -1851,7 +2019,8 @@ function loadErrorTable() {
                 heading[2] = "Message";
                 heading[3] = "Device Token";
                 heading[4] = "Username";
-                heading[5] = "Action";
+                heading[5] = "Version";
+                heading[6] = "Action";
 
                 //TABLE COLUMNS
 
@@ -1862,7 +2031,7 @@ function loadErrorTable() {
 
                 for (var i = 0; i < heading.length; i++) {
                     var th = document.createElement("TH");
-                    th.width = '16%';
+                    th.width = '14%';
                     th.appendChild(document.createTextNode(heading[i]));
                     tr.appendChild(th);
                 };
@@ -1889,6 +2058,10 @@ function loadErrorTable() {
 
                     var tdOne = document.createElement("TD");
                     tdOne.appendChild(document.createTextNode(structures[i].get("username")));
+                    tr.appendChild(tdOne);
+
+                    var tdOne = document.createElement("TD");
+                    tdOne.appendChild(document.createTextNode(structures[i].get("version")));
                     tr.appendChild(tdOne);
 
                     var tdOne = document.createElement("TD");
@@ -2020,11 +2193,9 @@ function loadScheduleTable() {
                                     var date = new Date(parts[2], parts[0]-1,parts[1]);
                                     var string = date.toString('dddd, MMMM d, yyyy');
                                     tdTwo.appendChild(document.createTextNode(string));
-                                    var today = new Date();
-                                    var todayString = today.toString('dddd, MMMM d, yyyy');
-                                    if (todayString === string) {
+                                    if (i === 1) {
                                         tdTwo.style.color = 'red';
-                                    } else if (i == 0) {
+                                    } else if (i === 0) {
                                         tdTwo.appendChild(document.createTextNode(" - LAST SCHOOL DAY")); 
                                     }
                                     tr.appendChild(tdTwo);

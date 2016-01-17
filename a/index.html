@@ -115,6 +115,11 @@
             <td width="33%"><a href="./schedule"><button class="add-ec btn btn-lg btn-primary" style="margin-bottom:5px; display: block; width: 100%;">Schedule Management</button></a></td>
             <td width="33%"><a href="./schedule"><button class="add-ec btn btn-lg btn-primary" style="margin-bottom:5px; display: block; width: 100%;">Lunch Management</button></a></td>
           </tr>
+          <tr>
+            <td width="33%"></td>
+            <td width="33%"><a href="./newsApprove"><button class="add-ec btn btn-lg btn-primary" style="margin-bottom:5px; display: block; width: 100%;" id="newsApproveButton">News Management</button></a></td>
+            <td width="33%"></td>
+          </tr>
         </table>
       </div>
 
@@ -129,18 +134,23 @@
             <td width="33%"><a href="./groupUpdate"><button class="add-ec btn btn-lg btn-primary" style="margin-bottom:5px; display: block; width: 100%;">Group Update</button></a></td>
             <td width="33%"><a href="./groupRegister"><button class="register-ec btn btn-lg btn-primary" style="margin-bottom:5px; display: block; width: 100%;">Register New Group</button></a></td>
           </tr>
+        </table>
+        <h2 style="text-align:center;">Administrative Tools</h2>
+        <table class="table">
           <tr>
             <td width="33%"><a href="./community"><button class="add-ec btn btn-lg btn-primary" style="margin-bottom:5px; display: block; width: 100%;">Community Service Opportunity</button></a></td>
             <td width="33%"><a href="./poll"><button class="add-ec btn btn-lg btn-primary" style="margin-bottom:5px; display: block; width: 100%;">User Poll</button></a></td>
             <td width="33%"><a href="./alert"><button class="add-ec btn btn-lg btn-primary" style="margin-bottom:5px; display: block; width: 100%;">Alert</button></a></td>
           </tr>
-        </table>
-        <h2 style="text-align:center;">Administrative Tools</h2>
-        <table class="table">
           <tr>
             <td width="33%"><a href="./user"><button class="add-news btn btn-lg btn-primary" style="margin-bottom:5px; display: block; width: 100%;" id="newButton">User Management</button></a></td>
             <td width="33%"><a href="./schedule"><button class="add-ec btn btn-lg btn-primary" style="margin-bottom:5px; display: block; width: 100%;">Schedule Management</button></a></td>
             <td width="33%"><a href="./lunch"><button class="add-ec btn btn-lg btn-primary" style="margin-bottom:5px; display: block; width: 100%;">Breakfast/Lunch Management</button></a></td>
+          </tr>
+          <tr>
+            <td width="33%"></td>
+            <td width="33%"><a href="./newsApprove"><button class="add-ec btn btn-lg btn-primary" style="margin-bottom:5px; display: block; width: 100%;" id="newsApproveButton">News Management</button></a></td>
+            <td width="33%"></td>
           </tr>
         </table>
         <h2 style="text-align:center;">Developer Tools</h2>
@@ -183,7 +193,7 @@
     <script src="./../js/parse-1.2.19.min.js"></script>
     <!--script>window.jQuery || document.write('<script src="../../assets/js/vendor/jquery.min.js"><\/script>')</script-->
     <script src="./../js/bootstrap.min.js"></script>
-    <script src="./../js/uglyScript.js"></script>
+    <script src="./../js/script.js"></script>
     <script src="./../js/date.js"></script>
 
     <script type="text/javascript">
@@ -229,6 +239,28 @@
                 $("#errorButton").html("Error Management (" + count + " UNRESOLVED ERRORS)");
                 $("#errorButton").css('background-color', 'red');
                 $("#errorButton").css('border-color', 'red');
+              };
+              $("#spinnerDiv").html("");
+            },
+            error: function(error) {
+              if (error.code != 100) {
+                alert(error.code + " - " + error.message);
+              };
+              $("#spinnerDiv").html("");
+            }
+          });
+          var queryThree = new Parse.Query("NewsArticleStructure");
+          queryThree.equalTo("isApproved", 0);
+          queryThree.count({
+            success: function(count) {
+              if (count == 1) {
+                $("#newsApproveButton").html("News Management (" + count + " PENDING REQUEST)");
+                $("#newsApproveButton").css('background-color', 'red');
+                $("#newsApproveButton").css('border-color', 'red');
+              } else if (count > 1) {
+                $("#newsApproveButton").html("News Management (" + count + " PENDING REQUESTS)");
+                $("#newsApproveButton").css('background-color', 'red');
+                $("#newsApproveButton").css('border-color', 'red');
               };
               $("#spinnerDiv").html("");
             },

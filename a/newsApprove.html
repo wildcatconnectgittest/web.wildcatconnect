@@ -101,33 +101,13 @@
 
     <div class="main-container" style="padding-left:20px; padding-right:20px;">
 
-      <button class="cancel btn btn-lg btn-primary" type="cancel">Cancel</button>
-      <h2>User Poll</h2>
-      <form class="form-add-poll" role="form">
-        <div class="form-group">
-          <label for="title">Title (50 characters max)</label>
-          <input type="text" name="title" class="form-control" id="title" placeholder="Title" maxlength="50">
-        </div>
-        <div class="form-group">
-          <label for="question">Question (140 characters max)</label>
-          <input type="question" name="question" class="form-control" id="question" placeholder="Question" maxlength="140">
-        </div>
-        <label for="daysSelect">Number of Days Active in App</label>
-        <select id='daysSelect' name="daysSelect">
-          <option value="-1">NONE SELECTED</option>
-        </select>
-        <br>
-        <label for="numberSelect">Number of Poll Choices</label>
-        <select id='numberSelect' name="numberSelect" onchange="selectNumber(this.selectedIndex);"></select>
-        <br>
-        <label for="choices">Choices</label>
-        <div id='choices'>
-          <p>
-            <input type="text" name="choice" class="form-control" id="choice_0" placeholder="Choice 1" onkeyup="keyPress(0);">
-          </p>
-        </div>
-        <button class="btn btn-lg btn-primary btn-block" type="submit">Submit</button>
-      </form>
+      <h2>News Management</h2>
+      <button class="cancel btn btn-lg btn-primary" type="cancel">Back</button>
+      <hr style="border-color:#561838";></hr>
+      <h4 id="titleLabel">Pending Wildcat News Requests</h4>
+      <div id="newsRequests">
+
+      </div>
 
     </div> <!-- /container -->
 
@@ -144,63 +124,20 @@
     <script type="text/javascript">
       Parse.$ = jQuery;
       Parse.initialize("cLBOvwh6ZTQYex37DSwxL1Cvg34MMiRWYAB4vqs0", "tTcV5Ns1GFdDda44FCcG5XHBDMbLA1sxRUzSnDgW");
-      if (Parse.User.current()) {
+      if ((Parse.User.current().get("userType") === "Administration" || Parse.User.current().get("userType") === "Developer") || Parse.User.current() && (Parse.User.current().get("userType") === "Lunch Manager")) {
         //
       } else {
         window.location.replace("./login");
       };
     </script>
-
+    
     <script>
-      var select = document.getElementById('daysSelect');
-      for (var i = 1; i < 15; i++) {
-        var option = document.createElement('option');
-        option.text = option.value = i;
-        select.appendChild(option);
-      };
-      var numberSelect = document.getElementById('numberSelect');
-      for (var e = 1; e < 11; e++) {
-        var option = document.createElement('option');
-        option.text = option.value = e;
-        numberSelect.appendChild(option);
-      };
-      var choicesDiv = document.getElementById('choices');
-      var i = 1;
-      var choicesArray = [];
-      function keyPress(k) {
-        var theString = document.getElementById("choice_" + k).value;
-        if (k < choicesArray.length) {
-          choicesArray[k] = theString;
-        } else {
-          choicesArray.push(theString);
-        };
-      }
 
-      var currentCount = 0;
+      Parse.$ = jQuery;
+      Parse.initialize("cLBOvwh6ZTQYex37DSwxL1Cvg34MMiRWYAB4vqs0", "tTcV5Ns1GFdDda44FCcG5XHBDMbLA1sxRUzSnDgW");
 
-      function selectNumber(o) {
-        choicesDiv.innerHTML = "";
-        for (var m = 0; m < o + 1; m++) {
-          if (choicesArray[m]) {
-            choicesDiv.innerHTML = choicesDiv.innerHTML + '<p><input type="text" name="choice" class="form-control" id="choice_'+m+'" value="'+choicesArray[m]+'" onkeyup="keyPress('+m+');"></p>';
-          } else {
-            choicesDiv.innerHTML = choicesDiv.innerHTML + '<p><input type="text" name="choice" class="form-control" id="choice_'+m+'" placeholder="Choice '+(m+1)+'" value="" onkeyup="keyPress('+m+');"></p>';
-          };
-        };
-        console.log(currentCount + " - " + (o + 1));
-        if (o + 1 < currentCount) {
-          for (var m = o + 1; m < choicesArray.length; m++) {
-            if (choicesArray[m]) {
-              choicesArray.splice(m, 1);
-              m--;
-            } else {
-              break;
-            }
-          };
-        };
-        currentCount = o + 1;
-        console.log(choicesArray);
-      }
+      $(document).ready(loadNewsTable());
+
     </script>
     <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
     <!--script src="../../assets/js/ie10-viewport-bug-workaround.js"></script>
