@@ -101,16 +101,20 @@
 
     <div class="main-container" style="padding-left:20px; padding-right:20px;">
 
-      <h2>Lunch Management</h2>
-      <h6><b><i>NOTE: You must press "Save All Changes" to avoid losing the breakfast and lunch information you enter.</i></b></h6>
-      <button class="cancel-schedule btn btn-lg btn-primary" type="cancel">Back</button>
-      <button class="saveLunch btn btn-lg btn-primary" type="click" style="float:right;">Save All Changes</button>
+      <h2>Event Management</h2>
+      <button class="cancel btn btn-lg btn-primary" type="cancel">Back</button>
       <hr style="border-color:#561838";></hr>
-      <h4 id="titleLabel">Available School Days</h4>
-      <div id="schedules">
+      <h4 id="titleLabel">Pending Event Requests</h4>
+      <div id="eventRequests">
 
       </div>
-      <button class="saveLunch btn btn-lg btn-primary btn-block" type="click">Save All Changes</button>
+      <hr style="border-color:#561838";></hr>
+      <h6 style="float:right;"><i><b>NOTE: If an event needs to be edited in any way, it should be deleted and a new event should be created with the correct information.</b></i></h6>
+      <h4 id="existingLabel">Current Active Events</h4><input type="text" id="search" placeholder=" SEARCH">
+      <br><br>
+      <div id="currentEvents">
+
+      </div>
 
     </div> <!-- /container -->
 
@@ -144,7 +148,22 @@
       Parse.$ = jQuery;
       Parse.initialize("cLBOvwh6ZTQYex37DSwxL1Cvg34MMiRWYAB4vqs0", "tTcV5Ns1GFdDda44FCcG5XHBDMbLA1sxRUzSnDgW");
 
-      $(document).ready(loadLunchTable());
+      $(document).ready(loadEventTable());
+      $(document).ready(loadExistingEventTable());
+
+      $('#search').keyup(function() {
+
+        var $rows = $('#eventTable tr');
+
+        $rows.splice(0, 1);
+
+          var val = $.trim($(this).val()).replace(/ +/g, ' ').toLowerCase();
+          
+          $rows.show().filter(function() {
+              var text = $(this).text().replace(/\s+/g, ' ').toLowerCase();
+              return !~text.indexOf(val);
+          }).hide();
+      });
 
     </script>
     <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->

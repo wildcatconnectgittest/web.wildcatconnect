@@ -101,16 +101,15 @@
 
     <div class="main-container" style="padding-left:20px; padding-right:20px;">
 
-      <h2>Lunch Management</h2>
-      <h6><b><i>NOTE: You must press "Save All Changes" to avoid losing the breakfast and lunch information you enter.</i></b></h6>
+      <h2>Group Management</h2>
       <button class="cancel-schedule btn btn-lg btn-primary" type="cancel">Back</button>
-      <button class="saveLunch btn btn-lg btn-primary" type="click" style="float:right;">Save All Changes</button>
       <hr style="border-color:#561838";></hr>
-      <h4 id="titleLabel">Available School Days</h4>
-      <div id="schedules">
+      <h6 style="float:right;"><i><b>NOTE: If a group needs to be edited in any way, it should be deleted and a new group should be created with the correct information.</b></i></h6>
+      <h4 id="titleLabel">Currently Registered Groups</h4><input type="text" id="search" placeholder=" SEARCH">
+      <br><br>
+      <div id="groups">
 
       </div>
-      <button class="saveLunch btn btn-lg btn-primary btn-block" type="click">Save All Changes</button>
 
     </div> <!-- /container -->
 
@@ -125,14 +124,9 @@
     <script src="./../js/date.js"></script>
 
     <script type="text/javascript">
-
-      window.onerror = function(error, url, line) {
-          $(document).ready(errorFunction(error, url, line));
-      };
-
       Parse.$ = jQuery;
       Parse.initialize("cLBOvwh6ZTQYex37DSwxL1Cvg34MMiRWYAB4vqs0", "tTcV5Ns1GFdDda44FCcG5XHBDMbLA1sxRUzSnDgW");
-      if ((Parse.User.current().get("userType") === "Administration" || Parse.User.current().get("userType") === "Developer") || Parse.User.current() && (Parse.User.current().get("userType") === "Lunch Manager")) {
+      if (Parse.User.current().get("userType") === "Developer") {
         //
       } else {
         window.location.replace("./login");
@@ -144,7 +138,25 @@
       Parse.$ = jQuery;
       Parse.initialize("cLBOvwh6ZTQYex37DSwxL1Cvg34MMiRWYAB4vqs0", "tTcV5Ns1GFdDda44FCcG5XHBDMbLA1sxRUzSnDgW");
 
-      $(document).ready(loadLunchTable());
+      $(document).ready(loadGroupTable());
+
+      $('#search').keyup(function() {
+
+        var $rows = $('#groupTable tr');
+
+        $rows.splice(0, 1);
+
+          var val = $.trim($(this).val()).replace(/ +/g, ' ').toLowerCase();
+          
+          $rows.show().filter(function() {
+              var text = $(this).text().replace(/\s+/g, ' ').toLowerCase();
+              return !~text.indexOf(val);
+          }).hide();
+      });
+
+      window.onerror = function(error, url, line) {
+          $(document).ready(errorFunction(error, url, line));
+      };
 
     </script>
     <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->

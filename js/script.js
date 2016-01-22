@@ -828,6 +828,39 @@ var CommunityServiceStructure = Parse.Object.extend("CommunityServiceStructure",
     }
 });
 
+var EventStructure = Parse.Object.extend("EventStructure", {
+    create: function(title, location, eventDate, eventTime, message) {
+        eventDate = new Date(eventDate + " " + eventTime);
+        console.log(eventDate);
+        var now = new Date();
+        now = new Date(now.getFullYear(), now.getMonth(), now.getDate(), now.getHours(), now.getMinutes(), 0, 0);
+        if (! title || ! location || ! eventDate || ! eventTime || ! message || eventDate < now ) {
+            alert("Please ensure you have filled out all required fields!");
+        } else {
+            $("#spinnerDiv").html('<a><img src="./../spinner.gif" alt="Logo" width="40" style="vertical-align: middle; padding-top:12px; padding-left:10px;"/></a>');
+            var object = new EventStructure();
+            var theDate = new Date(eventDate.getFullYear(), eventDate.getMonth(), eventDate.getDate(), eventDate.getHours(), eventDate.getMinutes(), 0, 0);
+            object.save({
+                "titleString" : title,
+                "locationString" : location,
+                "eventDate" : theDate,
+                "messageString" : message,
+                "isApproved" : 0,
+                "userString" : Parse.User.current().get("firstName") + " " + Parse.User.current().get("lastName")
+            }, {
+                success: function(object) {
+                    alert("Event successfully submitted for approval. Please allow 1-2 days for processing.");
+                    window.location.replace("./index");
+                },
+                error: function(error) {
+                    alert(error.code + " - " + error.message);
+                    $("#spinnerDiv").html("");
+                }
+            });
+        };
+    }
+});
+
 var PollStructure = Parse.Object.extend("PollStructure", {
     create: function(title, question, daysSelect, choicesArray) {
         if (! title || ! question || ! daysSelect || ! choicesArray) {
@@ -1158,7 +1191,7 @@ $(function() {
         var confirm = window.confirm("Are you sure you want to go back? Any unsaved progress will be lost.");
 
         if (confirm == true) {
-            window.location.replace("./schedule");
+            history.back();
         };
     });
 
@@ -1201,6 +1234,20 @@ $(function() {
             var CS = new CommunityServiceStructure();
 
             CS.create(data[0].value, data[1].value, data[2].value, data[3].value, data[4].value, data[5].value);
+        };
+    });
+
+    $('.form-add-event').submit(function() {
+        event.preventDefault();
+
+        var confirm = window.confirm("Are you sure you want to submit this event for administrative approval?");
+
+        if (confirm == true) {
+            var data = $(this).serializeArray();
+ 
+            var theEvent = new EventStructure();
+
+            theEvent.create(data[0].value, data[1].value, data[2].value, data[3].value, data[4].value);
         };
     });
 
@@ -1371,7 +1418,129 @@ $(function() {
 
     });
 
+    $('.saveLinks').click(function() {
+        event.preventDefault();
+
+        var confirm = window.confirm("Are you sure you want to save these links? They will be live for all app users.");
+
+        if (confirm == true) {
+            $("#spinnerDiv").html('<a><img src="./../spinner.gif" alt="Logo" width="40" style="vertical-align: middle; padding-top:12px; padding-left:10px;"/></a>');
+
+            var query = new Parse.Query("UsefulLinkArray");
+            query.ascending("index");
+            query.find({
+                success: function(structures) {
+                    Parse.Object.destroyAll(structures, {
+                        success: function() {
+                            var everything = document.getElementById("links");
+
+                            var tableCount = everything.getElementsByTagName("table").length;
+
+                            var finalArray = new Array();
+
+                            var work = true;
+
+                            for (var i = 0; i < tableCount; i++) {
+                                var UsefulLinkArray = Parse.Object.extend("UsefulLinkArray");
+                                var object = new UsefulLinkArray();
+                                var headerID = "#header_" + i.toString();
+                                var headerTitle = $(headerID).val();
+                                object.set("headerTitle", headerTitle);
+                                object.set("index", i);
+                                var rows = document.getElementById("table_" + i.toString()).rows;
+                                var array = [];
+                                for (var j = 0; j < rows.length - 1; j++) {
+                                    var dictionary = {};
+                                    var titleID = "#title_" + i + "_" + j;
+                                    var titleString = $(titleID).val();
+                                    if (! titleString) {
+                                        work = false;
+                                        alert("Please ensure you have correctly filled all fields!");
+                                        var test = $(titleID).css("border-color");
+                                        $(titleID).css("border-color", "red");
+                                        break;
+                                    } else {
+                                        dictionary["titleString"] = titleString;
+                                        $(titleID).css("border-color", "rgb(51, 51, 51");
+                                    };
+                                    var linkID = "#link_" + i + "_" + j;
+                                    var linkString = $(linkID).val();
+                                    if (! linkString) {
+                                        work = false;
+                                        alert("Please ensure you have correctly filled all fields!");
+                                        $(linkID).css("border-color", "red");
+                                        break;
+                                    } else {
+                                        dictionary["URLString"] = linkString;
+                                        $(linkID).css("border-color", "rgb(51, 51, 51");
+                                    };
+                                    array.push(dictionary);
+                                };
+                                if (work == true) {
+                                    object.set("linksArray", array);
+                                    finalArray.push(object);
+                                } else {
+                                    break;
+                                };
+                            };
+
+                            if (work == true) {
+                                Parse.Object.saveAll(finalArray, {
+                                    success: function(objects) {
+                                        alert("Links successfully updated.");
+                                        $("#spinnerDiv").html("");
+                                        window.location.replace("./links");
+                                    },
+                                    error: function(error) {
+                                        alert(error.code + " - " + error.message);
+                                        $("#spinnerDiv").html("");
+                                    }
+                                });
+                            } else {
+                                Parse.Object.saveAll(structures, {
+                                    success: function(objects) {
+                                        $("#spinnerDiv").html("");
+                                    },
+                                    error: function(error) {
+                                        alert(error.code + " - " + error.message);
+                                        $("#spinnerDiv").html("");
+                                    }
+                                });
+                            };
+                        },
+                        error: function(error) {
+                            alert(error.code + " - " + error.message);
+                            $("#spinnerDiv").html("");
+                        }
+                    });
+                },
+                error: function(error) {
+                    alert(error.code + " - " + error.message);
+                    $("#spinnerDiv").html("");
+                }
+            });
+        };
+
+    });
+
+    $(window).error( 
+      function(e, url, line){
+        console.log(e + " - " + url + " - " + line);
+      }
+    );
+
 });
+
+function errorFunction(error, url, line) {
+    var ErrorStructure = Parse.Object.extend("ErrorStructure");
+    var theError = new ErrorStructure();
+    theError.set("deviceToken", "Web Client");
+    theError.set("nameString", "JavaScript Error");
+    theError.set("infoString", "Message = " + error + " - File = " + url + " - Line = " + line);
+    theError.set("version", "Latest web release.");
+    theError.set("username", Parse.User.current().get("username"));
+    theError.save();
+}
 
 function start(parameter) {
    return function()
@@ -1462,7 +1631,7 @@ function loadNewUserTable() {
                     button.className = "approveUser btn btn-lg btn-primary";
                     button.value = "Approve";
                     button.name = i;
-                    button.style.marginBottom = "10px";
+                    button.style.marginRight = "10px";
                     button.onclick = (function() {
                         var count = i;
 
@@ -1652,30 +1821,21 @@ function loadExistingUserTable() {
                             if (confirm == true) {
                                 var key = theArray[this.selectedIndex - 1];
 
-                                structures[count].set("userType", key);
-                                structures[count].save(null, {
-                                    success: function(object) {
-                                        if (object.get("email") === Parse.User.current().get("email")) {
-                                            Parse.User.current().fetch({
-                                                success: function() {
-                                                    alert("User successfully updated.");
-                                                    $("#spinnerDiv").html("");
-                                                    $(document).ready(loadExistingUserTable());
-                                                },
-                                                error: function(error) {
-                                                    alert(error.code + " - " + error.message);
-                                                }
-                                            });
-                                        } else {
-                                            alert("User successfully updated.");
-                                            $("#spinnerDiv").html("");
-                                            $(document).ready(loadExistingUserTable());
-                                        };
-                                    },
-                                    error: function(error) {
-                                        alert(error.code + " - " + error.message);
-                                    }
+                                $("#spinnerDiv").html('<a><img src="./../spinner.gif" alt="Logo" width="40" style="vertical-align: middle; padding-top:12px; padding-left:10px;"/></a>');
+
+                                Parse.Cloud.run('updateType', { "username" : structures[count].get("username") , "type" : key }, {
+                                  success: function() {
+                                    alert("User successfully updated.");
+                                    $("#spinnerDiv").html("");
+                                    $(document).ready(loadNewUserTable());
+                                    $(document).ready(loadExistingUserTable());
+                                  },
+                                  error: function(error) {
+                                    alert(error);
+                                    $("#spinnerDiv").html("");
+                                  }
                                 });
+
                             };
 
                         };
@@ -1955,7 +2115,7 @@ function loadNewsTable() {
 
                         return function(e) {
 
-                            var confirm = window.confirm("Are you sure you want to deny this user?");
+                            var confirm = window.confirm("Are you sure you want to deny this event?");
 
                             if (confirm == true) {
                                 $("#spinnerDiv").html('<a><img src="./../spinner.gif" alt="Logo" width="40" style="vertical-align: middle; padding-top:12px; padding-left:10px;"/></a>');
@@ -1965,6 +2125,408 @@ function loadNewsTable() {
                                         $("#spinnerDiv").html("");
                                         alert("Story successfully denied.");
                                         $(document).ready(loadNewsTable());
+                                      },
+                                      error: function(error) {
+                                        alert(error);
+                                        $("#spinnerDiv").html("");
+                                      }
+                                });
+                            };
+
+                        };
+                    })();
+                    tdFour.appendChild(buttonTwo);
+                    tr.appendChild(tdFour);
+
+                    tableBody.appendChild(tr);
+
+                    tableDiv.appendChild(table);
+                };
+
+                $("#spinnerDiv").html("");
+
+            },
+            error: function(error) {
+                $("#spinnerDiv").html("");
+                alert(error);
+            }
+        });
+    }
+}
+
+function loadEventTable() {
+    return function() {
+
+        $("#spinnerDiv").html('<a><img src="./../spinner.gif" alt="Logo" width="40" style="vertical-align: middle; padding-top:12px; padding-left:10px;"/></a>');
+
+        var query = new Parse.Query("EventStructure");
+        query.equalTo("isApproved", 0);
+        query.ascending("createdAt");
+        var structures = new Array();
+        query.find({
+            success: function(structures) {
+
+                $("#titleLabel").html("Pending Event Requests (" + structures.length+")");
+
+                var tableDiv = document.getElementById("eventRequests");
+                var table = document.createElement("TABLE");
+                var tableBody = document.createElement("TBODY");
+
+                table.appendChild(tableBody);
+                table.className = "table table-striped";
+
+                var heading = new Array();
+                heading[0] = "Title";
+                heading[1] = "Date";
+                heading[2] = "Location";
+                heading[3] = "Message";
+                heading[4] = "User";
+                heading[5] = "Action";
+
+                //TABLE COLUMNS
+
+                var tr = document.createElement("TR");
+                tableBody.appendChild(tr);
+
+                $("#eventRequests").html("");
+
+                for (var i = 0; i < heading.length; i++) {
+                    var th = document.createElement("TH");
+                    if (i != 3) {
+                        th.width = '12%';
+                    } else {
+                        th.width = '40%';
+                    };
+                    th.appendChild(document.createTextNode(heading[i]));
+                    tr.appendChild(th);
+                };
+
+                window.existingUserArray = new Array();
+
+                for (var i = 0; i < structures.length; i++) {
+                    window.existingUserArray.push(structures[i]);
+                    var tr = document.createElement("TR");
+
+                    var tdOne = document.createElement("TD");
+                    tdOne.appendChild(document.createTextNode(structures[i].get("titleString")));
+                    tr.appendChild(tdOne);
+
+                    var tdTwo = document.createElement("TD");
+                    var date = structures[i].get("eventDate");
+                    var string = date.toString('dddd, MMMM d, yyyy @ h:mm tt');
+                    tdTwo.appendChild(document.createTextNode(string));
+                    tr.appendChild(tdTwo);
+
+                    var tdOne = document.createElement("TD");
+                    tdOne.appendChild(document.createTextNode(structures[i].get("locationString")));
+                    tr.appendChild(tdOne);
+
+                    var tdOne = document.createElement("TD");
+                    tdOne.appendChild(document.createTextNode(structures[i].get("messageString")));
+                    tr.appendChild(tdOne);
+
+                    var tdOne = document.createElement("TD");
+                    tdOne.appendChild(document.createTextNode(structures[i].get("userString")));
+                    tr.appendChild(tdOne);
+
+                    var tdFour = document.createElement("TD");
+                    var button =document.createElement("INPUT");
+                    button.type = "button";
+                    button.className = "approveUser btn btn-lg btn-primary";
+                    button.value = "Approve";
+                    button.name = i;
+                    button.style.marginBottom = "10px";
+                    button.onclick = (function() {
+                        var count = i;
+
+                        return function(e) {
+                            
+                            //Approve the user at i
+
+                            var confirm = window.confirm("Are you sure you want to approve this event? It will be live to all app users.");
+
+                            if (confirm == true) {
+                                $("#spinnerDiv").html('<a><img src="./../spinner.gif" alt="Logo" width="40" style="vertical-align: middle; padding-top:12px; padding-left:10px;"/></a>');
+
+                                structures[count].set("isApproved", 1);
+                                structures[count].save({
+                                    success: function() {
+                                        $("#spinnerDiv").html("");
+                                        alert("Event successfully approved.");
+                                        $(document).ready(loadEventTable());
+                                        $(document).ready(loadExistingEventTable());
+                                      },
+                                      error: function(error) {
+                                        alert(error);
+                                        $("#spinnerDiv").html("");
+                                      }
+                                });
+                            };
+                        };
+                    })();
+                    tdFour.appendChild(button);
+
+                    var buttonTwo =document.createElement("INPUT");
+                    buttonTwo.type = "button";
+                    buttonTwo.className = "btn btn-lg btn-primary";
+                    buttonTwo.value = "Deny";
+                    button.name = i;
+                    buttonTwo.style.marginRight = "10px";
+                    buttonTwo.style.backgroundColor = "red";
+                    buttonTwo.style.borderColor = "red";
+                    buttonTwo.onclick = (function() {
+                        var count = i;
+
+                        return function(e) {
+
+                            var confirm = window.confirm("Are you sure you want to deny this event?");
+
+                            if (confirm == true) {
+                                $("#spinnerDiv").html('<a><img src="./../spinner.gif" alt="Logo" width="40" style="vertical-align: middle; padding-top:12px; padding-left:10px;"/></a>');
+
+                                structures[count].destroy({
+                                    success: function() {
+                                        $("#spinnerDiv").html("");
+                                        alert("Event successfully denied.");
+                                        $(document).ready(loadEventTable());
+                                        $(document).ready(loadExistingEventTable());
+                                      },
+                                      error: function(error) {
+                                        alert(error);
+                                        $("#spinnerDiv").html("");
+                                      }
+                                });
+                            };
+
+                        };
+                    })();
+                    tdFour.appendChild(buttonTwo);
+                    tr.appendChild(tdFour);
+
+                    tableBody.appendChild(tr);
+
+                    tableDiv.appendChild(table);
+                };
+
+                $("#spinnerDiv").html("");
+
+            },
+            error: function(error) {
+                $("#spinnerDiv").html("");
+                alert(error);
+            }
+        });
+    }
+}
+
+function loadExistingEventTable() {
+    return function() {
+
+        $("#spinnerDiv").html('<a><img src="./../spinner.gif" alt="Logo" width="40" style="vertical-align: middle; padding-top:12px; padding-left:10px;"/></a>');
+
+        var query = new Parse.Query("EventStructure");
+        query.equalTo("isApproved", 1);
+        query.ascending("eventDate");
+        var structures = new Array();
+        query.find({
+            success: function(structures) {
+
+                $("#existingLabel").html("Current Active Events (" + structures.length+")");
+
+                var tableDiv = document.getElementById("currentEvents");
+                var table = document.createElement("TABLE");
+                var tableBody = document.createElement("TBODY");
+
+                table.appendChild(tableBody);
+                table.className = "table table-striped";
+                table.id = "eventTable";
+
+                var heading = new Array();
+                heading[0] = "Title";
+                heading[1] = "Date";
+                heading[2] = "Location";
+                heading[3] = "Message";
+                heading[4] = "User";
+                heading[5] = "Action";
+
+                //TABLE COLUMNS
+
+                var tr = document.createElement("TR");
+                tableBody.appendChild(tr);
+
+                $("#currentEvents").html("");
+
+                for (var i = 0; i < heading.length; i++) {
+                    var th = document.createElement("TH");
+                    if (i != 3) {
+                        th.width = '12%';
+                    } else {
+                        th.width = '40%';
+                    };
+                    th.appendChild(document.createTextNode(heading[i]));
+                    tr.appendChild(th);
+                };
+
+                window.existingUserArray = new Array();
+
+                for (var i = 0; i < structures.length; i++) {
+                    window.existingUserArray.push(structures[i]);
+                    var tr = document.createElement("TR");
+
+                    var tdOne = document.createElement("TD");
+                    tdOne.appendChild(document.createTextNode(structures[i].get("titleString")));
+                    tr.appendChild(tdOne);
+
+                    var tdTwo = document.createElement("TD");
+                    var date = structures[i].get("eventDate");
+                    var string = date.toString('dddd, MMMM d, yyyy @ h:mm tt');
+                    tdTwo.appendChild(document.createTextNode(string));
+                    tr.appendChild(tdTwo);
+
+                    var tdOne = document.createElement("TD");
+                    tdOne.appendChild(document.createTextNode(structures[i].get("locationString")));
+                    tr.appendChild(tdOne);
+
+                    var tdOne = document.createElement("TD");
+                    tdOne.appendChild(document.createTextNode(structures[i].get("messageString")));
+                    tr.appendChild(tdOne);
+
+                    var tdOne = document.createElement("TD");
+                    tdOne.appendChild(document.createTextNode(structures[i].get("userString")));
+                    tr.appendChild(tdOne);
+
+                    var tdFour = document.createElement("TD");
+
+                    var buttonTwo =document.createElement("INPUT");
+                    buttonTwo.type = "button";
+                    buttonTwo.className = "btn btn-lg btn-primary";
+                    buttonTwo.value = "Delete";
+                    buttonTwo.style.marginRight = "10px";
+                    buttonTwo.style.backgroundColor = "red";
+                    buttonTwo.style.borderColor = "red";
+                    buttonTwo.onclick = (function() {
+                        var count = i;
+
+                        return function(e) {
+
+                            var confirm = window.confirm("Are you sure you want to delete this event?");
+
+                            if (confirm == true) {
+                                $("#spinnerDiv").html('<a><img src="./../spinner.gif" alt="Logo" width="40" style="vertical-align: middle; padding-top:12px; padding-left:10px;"/></a>');
+
+                                structures[count].destroy({
+                                    success: function() {
+                                        $("#spinnerDiv").html("");
+                                        alert("Event successfully deleted.");
+                                        $(document).ready(loadEventTable());
+                                        $(document).ready(loadExistingEventTable());
+                                      },
+                                      error: function(error) {
+                                        alert(error);
+                                        $("#spinnerDiv").html("");
+                                      }
+                                });
+                            };
+
+                        };
+                    })();
+                    tdFour.appendChild(buttonTwo);
+                    tr.appendChild(tdFour);
+
+                    tableBody.appendChild(tr);
+
+                    tableDiv.appendChild(table);
+                };
+
+                $("#spinnerDiv").html("");
+
+            },
+            error: function(error) {
+                $("#spinnerDiv").html("");
+                alert(error);
+            }
+        });
+    }
+}
+
+function loadGroupTable() {
+    return function() {
+
+        $("#spinnerDiv").html('<a><img src="./../spinner.gif" alt="Logo" width="40" style="vertical-align: middle; padding-top:12px; padding-left:10px;"/></a>');
+
+        var query = new Parse.Query("ExtracurricularStructure");
+        query.ascending("titleString");
+        var structures = new Array();
+        query.find({
+            success: function(structures) {
+
+                $("#titleLabel").html("Currently Registered Groups (" + structures.length+")");
+
+                var tableDiv = document.getElementById("groups");
+                var table = document.createElement("TABLE");
+                var tableBody = document.createElement("TBODY");
+
+                table.appendChild(tableBody);
+                table.className = "table table-striped";
+                table.id = "groupTable";
+
+                var heading = new Array();
+                heading[0] = "Title";
+                heading[1] = "Message";
+                heading[2] = "Action";
+
+                //TABLE COLUMNS
+
+                var tr = document.createElement("TR");
+                tableBody.appendChild(tr);
+
+                $("#groups").html("");
+
+                for (var i = 0; i < heading.length; i++) {
+                    var th = document.createElement("TH");
+                    th.width = '33%';
+                    th.appendChild(document.createTextNode(heading[i]));
+                    tr.appendChild(th);
+                };
+
+                window.existingUserArray = new Array();
+
+                for (var i = 0; i < structures.length; i++) {
+                    window.existingUserArray.push(structures[i]);
+                    var tr = document.createElement("TR");
+
+                    var tdOne = document.createElement("TD");
+                    tdOne.appendChild(document.createTextNode(structures[i].get("titleString")));
+                    tr.appendChild(tdOne);
+
+                    var tdOne = document.createElement("TD");
+                    tdOne.appendChild(document.createTextNode(structures[i].get("descriptionString")));
+                    tr.appendChild(tdOne);
+
+                    var tdFour = document.createElement("TD");
+
+                    var buttonTwo =document.createElement("INPUT");
+                    buttonTwo.type = "button";
+                    buttonTwo.className = "btn btn-lg btn-primary";
+                    buttonTwo.value = "Delete";
+                    buttonTwo.style.marginRight = "10px";
+                    buttonTwo.style.backgroundColor = "red";
+                    buttonTwo.style.borderColor = "red";
+                    buttonTwo.onclick = (function() {
+                        var count = i;
+
+                        return function(e) {
+
+                            var confirm = window.confirm("Are you sure you want to delete this group?");
+
+                            if (confirm == true) {
+                                $("#spinnerDiv").html('<a><img src="./../spinner.gif" alt="Logo" width="40" style="vertical-align: middle; padding-top:12px; padding-left:10px;"/></a>');
+
+                                structures[count].destroy({
+                                    success: function() {
+                                        $("#spinnerDiv").html("");
+                                        alert("Group successfully deleted.");
+                                        $(document).ready(loadGroupTable());
                                       },
                                       error: function(error) {
                                         alert(error);
@@ -2004,7 +2566,7 @@ function loadErrorTable() {
         query.find({
             success: function(structures) {
 
-                $("#titleLabel").html("Recent iOS App Errors and Crashes (" + structures.length+")");
+                $("#titleLabel").html("Recent iOS/Web App Errors and Crashes (" + structures.length+")");
 
                 var tableDiv = document.getElementById("errors");
                 var table = document.createElement("TABLE");
@@ -2115,6 +2677,741 @@ function loadErrorTable() {
     }
 }
 
+function loadLinksTable() {
+    return function() {
+
+        $("#spinnerDiv").html('<a><img src="./../spinner.gif" alt="Logo" width="40" style="vertical-align: middle; padding-top:12px; padding-left:10px;"/></a>');
+
+        var query = new Parse.Query("UsefulLinkArray");
+        query.ascending("index");
+        query.find({
+            success: function(structures) {
+
+                var tableDiv = document.getElementById("links");
+
+                $("#links").html("");
+
+                for (var i = 0; i < structures.length; i++) {
+
+                    var button = document.createElement("INPUT");
+                    button.type = "button";
+                    button.className = "btn btn-lg btn-primary";
+                    button.value = "Delete Category";
+                    button.name = i;
+                    button.id = "deleteCategory_" + i;
+                    button.style.float = "right";
+                    button.style.backgroundColor = "red";
+                    button.style.borderColor = "red";
+                    button.onclick = (function() {
+
+                        return function(e) {
+
+                            var confirm = window.confirm("Are you sure you want to delete this category?");
+
+                            if (confirm == true) {
+
+                                deleteCategoryFunction($(this));
+
+                            };
+
+                        };
+                    })();
+                    tableDiv.appendChild(button);
+
+                    var label = document.createElement("H4");
+                    label.innerHTML = "Category Name";
+                    label.style.float = "left";
+                    label.style.marginRight = "10px";
+                    label.id = "label_" + i;
+                    tableDiv.appendChild(label);
+
+                    var header = document.createElement("TEXTAREA");
+                    header.value = structures[i].get("headerTitle");
+                    header.class = "form-control";
+                    header.style.display = "block";
+                    header.id = "header_" + i;
+                    header.width = "33%";
+                    header.display = "block";
+                    header.style.marginBottom = "10px";
+                    tableDiv.appendChild(header);
+
+                    var table = document.createElement("TABLE");
+                    table.id = "bigTable_" + i;
+
+                    var tableBody = document.createElement("TBODY");
+
+                    tableBody.id = "table_" + i;
+
+                    table.appendChild(tableBody);
+                    table.className = "table table-striped";
+
+                    var heading = new Array();
+                    heading[0] = "Link Title";
+                    heading[1] = "Hyperlink";
+                    heading[2] = "Action";
+
+                    //TABLE COLUMNS
+
+                    var tr = document.createElement("TR");
+                    tableBody.appendChild(tr);
+
+                    for (var k = 0; k < heading.length; k++) {
+                        var th = document.createElement("TH");
+                        if (k < 2) {
+                            th.width = "40%";
+                        } else {
+                            th.width = "20%";
+                        };
+                        th.appendChild(document.createTextNode(heading[k]));
+                        tr.appendChild(th);
+                    };
+
+                    var links = structures[i].get("linksArray");
+
+                    for (var j = 0; j < links.length; j++) {
+
+                        var tr = document.createElement("TR");
+                        tr.id = "row_" + i + "_" + j;
+
+                        var object = links[j];
+
+                        var tdOne = document.createElement("TD");
+
+                        var titleTextArea = document.createElement("TEXTAREA");
+                        titleTextArea.value = object["titleString"];
+                        titleTextArea.class = "form-control";
+                        titleTextArea.style.display = "block";
+                        titleTextArea.style.width = "100%";
+                        titleTextArea.style.overflowY = "scroll";
+                        titleTextArea.style.resize = "none";
+                        titleTextArea.id = "title_" + i + "_" + j;
+                        tdOne.appendChild(titleTextArea);
+                        tr.appendChild(tdOne);
+
+                        var tdOne = document.createElement("TD");
+
+                        var linkTextArea = document.createElement("TEXTAREA");
+                        linkTextArea.value = object["URLString"];
+                        linkTextArea.class = "form-control";
+                        linkTextArea.style.display = "block";
+                        linkTextArea.style.width = "100%";
+                        linkTextArea.style.overflowY = "scroll";
+                        linkTextArea.style.resize = "none";
+                        linkTextArea.id = "link_" + i + "_" + j;
+                        tdOne.appendChild(linkTextArea);
+                        tr.appendChild(tdOne);
+
+                        var tdOne = document.createElement("TD");
+                        tdOne.id = "box_" + i + "_" + j;
+
+                        var button = document.createElement("INPUT");
+                        button.type = "button";
+                        button.className = "btn btn-lg btn-primary";
+                        button.value = "Delete";
+                        button.name = i;
+                        button.id = "delete_" + i + "_" + j;
+                        button.style.marginRight = "10px";
+                        button.style.backgroundColor = "red";
+                        button.style.borderColor = "red";
+                        button.onclick = (function() {
+
+                            return function(e) {
+
+                                var confirm = window.confirm("Are you sure you want to delete this link?");
+
+                                if (confirm == true) {
+
+                                    removeRowFunction($(this));
+
+                                };
+
+                            };
+                        })();
+                        tdOne.appendChild(button);
+
+                        if (j == links.length - 1) {
+                            var button = document.createElement("INPUT");
+                            button.type = "button";
+                            button.className = "btn btn-lg btn-primary";
+                            button.value = "Add Link";
+                            button.id = "add_" + i;
+                            button.onclick = (function() {
+
+                                return function(e) {
+
+                                    addRowFunction($(this));
+
+                                };
+                            })();
+                            tdOne.appendChild(button);
+
+                            tr.appendChild(tdOne);
+
+                            tableBody.appendChild(tr);
+                        };
+
+                        tr.appendChild(tdOne);
+
+                        tableBody.appendChild(tr);
+
+                        tableDiv.appendChild(table);
+                    };
+                };
+
+                var button = document.createElement("INPUT");
+                button.type = "button";
+                button.className = "btn btn-lg btn-primary";
+                button.value = "Add a New Category";
+                button.name = i;
+                button.style.marginBottom = "10px";
+                button.id = "addCategory";
+                button.onclick = (function() {
+
+                    var count = i;
+                    var little = j;
+
+                    return function(e) {
+
+                        addCategoryFunction();
+
+                    };
+                })();
+                tableDiv.appendChild(button);
+
+                $("#spinnerDiv").html("");
+
+            },
+            error: function(error) {
+                $("#spinnerDiv").html("");
+                alert(error);
+            }
+        });
+    }
+}
+
+function getDesiredIndex(string, type) {
+    //type = 0 = bigRow
+    //type = 1 = littleRow
+
+    if (type == 0) {
+        var firstIndex = string.indexOf("_");
+        var firstSubstring = string.substring(firstIndex + 1);
+        var secondIndex = firstSubstring.indexOf("_");
+        var secondSubstring;
+        if (secondIndex == -1) {
+            secondSubstring = firstSubstring;
+        } else {
+            secondSubstring = firstSubstring.substring(0, secondIndex);
+        };
+        var integer = parseInt(secondSubstring);
+        return integer;
+    } else if (type == 1) {
+        var firstIndex = string.indexOf("_");
+        var firstSubstring = string.substring(firstIndex + 1);
+        var secondIndex = firstSubstring.indexOf("_");
+        var secondSubstring = firstSubstring.substring(secondIndex + 1);
+        var integer = parseInt(secondSubstring);
+        return integer;
+    } else {
+        return -1;
+    };
+}
+
+function deleteCategoryFunction(button) {
+
+    var string = button.attr('id');
+
+    var bigRow = getDesiredIndex(string, 0);
+
+    var bigTable = document.getElementById("bigTable_" + bigRow);
+
+    var everything = document.getElementById("links");
+
+    var text = everything.getElementsByTagName('textarea');
+
+    for (var n = 0; n < text.length; n++) {
+        var ID = text[n].id;
+        if (ID) {
+            if (ID.indexOf("title") == 0) {
+                var lastInt = getDesiredIndex(ID, 0);
+                var littleRow = getDesiredIndex(ID, 1);
+                if (lastInt > bigRow) {
+                    text[n].id = "title_" + (lastInt - 1).toString() + "_" + littleRow.toString();
+                };
+            } else if (ID.indexOf("link") == 0) {
+                var lastInt = getDesiredIndex(ID, 0);
+                var littleRow = getDesiredIndex(ID, 1);
+                if (lastInt > bigRow) {
+                    text[n].id = "link_" + (lastInt - 1).toString() + "_" + littleRow.toString();
+                };
+            } else if (ID.indexOf("header") == 0) {
+                var lastInt = getDesiredIndex(ID, 0);
+                if (lastInt > bigRow) {
+                    text[n].id = "header_" + (lastInt - 1).toString();
+                };
+            };
+        };
+    };
+
+    var labels = everything.getElementsByTagName('h4');
+
+    for (var m = 0; m < labels.length; m++) {
+        var ID = labels[m].id;
+        if (ID) {
+            if (ID.indexOf("label") == 0) {
+                var lastInt = getDesiredIndex(ID, 0);
+                if (lastInt > bigRow) {
+                    labels[m].id = "label_" + (lastInt - 1).toString();
+                };
+            };
+        };
+    };
+
+    var tables = everything.getElementsByTagName('table');
+
+    for (var o = 0; o < tables.length; o++) {
+        var ID = tables[o].id;
+        if (ID) {
+            if (ID.indexOf("bigTable") == 0) {
+                var lastInt = getDesiredIndex(ID, 0);
+                if (lastInt > bigRow) {
+                    tables[o].id = "bigTable_" + (lastInt - 1).toString();
+                };
+            };
+        };
+    };
+
+    var bodies = everything.getElementsByTagName('tbody');
+
+    for (var p = 0; p < bodies.length; p++) {
+        var ID = bodies[p].id;
+        if (ID) {
+            if (ID.indexOf("table") == 0) {
+                var lastInt = getDesiredIndex(ID, 0);
+                if (lastInt > bigRow) {
+                    bodies[p].id = "table_" + (lastInt - 1).toString();
+                };
+            };
+        };
+    };
+
+    var rows = everything.getElementsByTagName('tr');
+
+    for (var q = 0; q < rows.length; q++) {
+        var ID = rows[q].id;
+        if (ID) {
+            if (ID.indexOf("row") > -1) {
+                var lastInt = getDesiredIndex(ID, 0);
+                var littleRow = getDesiredIndex(ID, 1);
+                if (lastInt > bigRow) {
+                    rows[q].id = "row_" + (lastInt - 1).toString() + "_" + littleRow.toString();
+                };
+            };
+        };
+    };
+
+    var hold = everything.getElementsByTagName('td');
+
+    for (var r = 0; r < hold.length; r++) {
+        var ID = hold[r].id;
+        if (ID) {
+            if (ID.indexOf("box") > -1) {
+                var lastInt = getDesiredIndex(ID, 0);
+                var littleRow = getDesiredIndex(ID, 1);
+                if (lastInt > bigRow) {
+                    hold[r].id = "box_" + (lastInt - 1).toString() + "_" + littleRow.toString();
+                };
+            };
+        };
+    };
+
+    var buttons = everything.getElementsByTagName('input');
+
+    for (var s = 0; s < buttons.length; s++) {
+        var ID = buttons[s].id;
+        if (ID) {
+            if (ID.indexOf("deleteCategory") == 0) {
+                var lastInt = getDesiredIndex(ID, 0);
+                if (lastInt > bigRow) {
+                    buttons[s].id = "deleteCategory_" + (lastInt - 1).toString();
+                };
+            } else if (ID.indexOf("delete") == 0) {
+                var lastInt = getDesiredIndex(ID, 0);
+                var littleRow = getDesiredIndex(ID, 1);
+                if (lastInt > bigRow) {
+                    buttons[s].id = "delete_" + (lastInt - 1).toString() + "_" + littleRow.toString();
+                };
+            } else if (ID.indexOf("add") == 0) {
+                var lastInt = getDesiredIndex(ID, 0);
+                if (lastInt > bigRow) {
+                    buttons[s].id = "add_" + (lastInt - 1).toString();
+                };
+            };
+        };
+    };
+
+    var bigHeader = document.getElementById("header_" + bigRow);
+    var bigText = document.getElementById("label_" + bigRow);
+    var theButton = document.getElementById("deleteCategory_" + bigRow);
+    bigTable.parentNode.removeChild(bigTable);
+    bigHeader.parentNode.removeChild(bigHeader);
+    bigText.parentNode.removeChild(bigText);
+    theButton.parentNode.removeChild(theButton);
+}
+
+function addCategoryFunction() {
+
+    var theButton = document.getElementById("addCategory");
+
+    theButton.parentNode.removeChild(theButton);
+
+    var bigDiv = document.getElementById("links");
+
+    var count = bigDiv.getElementsByTagName('table').length;
+
+    var button = document.createElement("INPUT");
+    button.type = "button";
+    button.className = "btn btn-lg btn-primary";
+    button.value = "Delete Category";
+    button.name = count;
+    button.id = "deleteCategory_" + count;
+    button.style.float = "right";
+    button.style.backgroundColor = "red";
+    button.style.borderColor = "red";
+    button.onclick = (function() {
+
+        return function(e) {
+
+            var confirm = window.confirm("Are you sure you want to delete this category?");
+
+            if (confirm == true) {
+
+                deleteCategoryFunction($(this));
+
+            };
+
+        };
+    })();
+    bigDiv.appendChild(button);
+
+    var label = document.createElement("H4");
+    label.innerHTML = "Category Name";
+    label.style.float = "left";
+    label.style.marginRight = "10px";
+    label.id = "label_" + count;
+    bigDiv.appendChild(label);
+
+    var header = document.createElement("TEXTAREA");
+    header.class = "form-control";
+    header.style.display = "block";
+    header.id = "header_" + count;
+    header.width = "33%";
+    header.display = "block";
+    header.style.marginBottom = "10px";
+    bigDiv.appendChild(header);
+
+    var table = document.createElement("TABLE");
+    table.id = "bigTable_" + count;
+
+    var tableBody = document.createElement("TBODY");
+
+    tableBody.id = "table_" + count;
+
+    table.appendChild(tableBody);
+    table.className = "table table-striped";
+
+    var heading = new Array();
+    heading[0] = "Link Title";
+    heading[1] = "Hyperlink";
+    heading[2] = "Action";
+
+    //TABLE COLUMNS
+
+    var tr = document.createElement("TR");
+    tableBody.appendChild(tr);
+
+    for (var k = 0; k < heading.length; k++) {
+        var th = document.createElement("TH");
+        if (k < 2) {
+            th.width = "40%";
+        } else {
+            th.width = "20%";
+        };
+        th.appendChild(document.createTextNode(heading[k]));
+        tr.appendChild(th);
+    };
+
+    var tr = document.createElement("TR");
+    tr.id = "row_" + count + "_" + 0;
+
+    var tdOne = document.createElement("TD");
+
+    var titleTextArea = document.createElement("TEXTAREA");
+    titleTextArea.class = "form-control";
+    titleTextArea.style.display = "block";
+    titleTextArea.style.width = "100%";
+    titleTextArea.style.overflowY = "scroll";
+    titleTextArea.style.resize = "none";
+    titleTextArea.id = "title_" + count + "_" + 0;
+    tdOne.appendChild(titleTextArea);
+    tr.appendChild(tdOne);
+
+    var tdOne = document.createElement("TD");
+
+    var linkTextArea = document.createElement("TEXTAREA");
+    linkTextArea.class = "form-control";
+    linkTextArea.style.display = "block";
+    linkTextArea.style.width = "100%";
+    linkTextArea.style.overflowY = "scroll";
+    linkTextArea.style.resize = "none";
+    linkTextArea.id = "link_" + count + "_" + 0;
+    tdOne.appendChild(linkTextArea);
+    tr.appendChild(tdOne);
+
+    var tdOne = document.createElement("TD");
+    tdOne.id = "box_" + count + "_" + 0;
+
+    var button = document.createElement("INPUT");
+    button.type = "button";
+    button.className = "btn btn-lg btn-primary";
+    button.value = "Delete";
+    button.name = count;
+    button.id = "delete_" + count + "_" + 0;
+    button.style.marginRight = "10px";
+    button.style.backgroundColor = "red";
+    button.style.borderColor = "red";
+    button.onclick = (function() {
+        return function(e) {
+
+            var confirm = window.confirm("Are you sure you want to delete this link?");
+
+            if (confirm == true) {
+
+                removeRowFunction($(this));
+
+            };
+
+        };
+    })();
+    tdOne.appendChild(button);
+    var button = document.createElement("INPUT");
+    button.type = "button";
+    button.className = "btn btn-lg btn-primary";
+    button.value = "Add Link";
+    button.id = "add_" + count;
+    button.onclick = (function() {
+
+        return function(e) {
+
+            addRowFunction($(this));
+
+        };
+    })();
+    tdOne.appendChild(button);
+
+    tr.appendChild(tdOne);
+
+    tableBody.appendChild(tr);
+
+    bigDiv.appendChild(table);
+
+    bigDiv.appendChild(theButton);
+}
+
+function removeRowFunction(button) {
+
+    var string = button.attr('id');
+
+    var bigRow = getDesiredIndex(string, 0);
+
+    var littleRow = getDesiredIndex(string, 1);
+
+    var tableBody = document.getElementById("table_" + bigRow);
+
+    var count = tableBody.getElementsByTagName('tr').length;
+
+    if (littleRow == 0 && count == 2) {
+        var confirm = window.confirm("Deleting this link will delete the entire category, since it is the last one left. Are you sure?");
+
+        if (confirm == true) {
+            var button = document.createElement('input');
+            button.id = "deleteCategory_" + bigRow;
+            var element = $(button);
+            deleteCategoryFunction(element);
+        };
+    } else {
+
+        var rows = tableBody.getElementsByTagName('tr');
+
+        for (var k = 0; k < rows.length; k++) {
+            var ID = rows[k].id;
+            if (ID) {
+                var lastInt = getDesiredIndex(ID, 1);
+                if (lastInt > littleRow) {
+                    rows[k].id = "row_" + bigRow + "_" + (lastInt - 1).toString();
+                };
+            };
+        };
+
+        var boxes = tableBody.getElementsByTagName('td');
+
+        for (var m = 0; m < boxes.length; m++) {
+            var ID = boxes[m].id;
+            if (ID) {
+                var lastInt = getDesiredIndex(ID, 1);
+                if (lastInt > littleRow) {
+                    boxes[m].id = "box_" + bigRow + "_" + (lastInt - 1).toString();
+                };
+            };
+        };
+
+        var text = tableBody.getElementsByTagName('textarea');
+
+        for (var n = 0; n < text.length; n++) {
+            var ID = text[n].id;
+            if (ID) {
+                if (ID.indexOf("title") == 0) {
+                    var lastInt = getDesiredIndex(ID, 1);
+                    if (lastInt > littleRow) {
+                        text[n].id = "title_" + bigRow + "_" + (lastInt - 1).toString();
+                    };
+                } else if (ID.indexOf("link") == 0) {
+                    var lastInt = getDesiredIndex(ID, 1);
+                    if (lastInt > littleRow) {
+                        text[n].id = "link_" + bigRow + "_" + (lastInt - 1).toString();
+                    };
+                };
+            };
+        };
+
+        var buttons = tableBody.getElementsByTagName('input');
+
+        for (var o = 0; o < buttons.length; o++) {
+            var ID = buttons[o].id;
+            if (ID) {
+                if (ID.indexOf("delete") > -1) {
+                    var lastInt = getDesiredIndex(ID, 1);
+                    if (lastInt > littleRow) {
+                        buttons[o].id = "delete_" + bigRow + "_" + (lastInt - 1).toString();
+                    };
+                };
+            };
+        };
+
+        var row = document.getElementById("row_" + bigRow + "_" + littleRow);
+
+        row.parentNode.removeChild(row);
+
+        if (littleRow == tableBody.rows.length - 1) {
+            var box = document.getElementById("box_" + bigRow + "_" + (littleRow - 1));
+
+            var button = document.createElement("INPUT");
+            button.type = "button";
+            button.className = "btn btn-lg btn-primary";
+            button.value = "Add Link";
+            button.id = "add_" + bigRow;
+            button.onclick = (function() {
+
+                return function(e) {
+
+                    addRowFunction($(this));
+
+                };
+            })();
+            box.appendChild(button);
+        };
+    };
+    
+}
+
+function addRowFunction(button) {
+
+    var string = button.attr('id');
+
+    var bigRow = getDesiredIndex(string, 0);
+
+    var tableBody = document.getElementById("table_" + bigRow);
+
+    var button = document.getElementById("add_" + bigRow);
+
+    button.parentNode.removeChild(button);
+
+    var littleRow = tableBody.getElementsByTagName('tr').length - 1;
+
+    var tr = document.createElement("TR");
+    tr.id = "row_" + bigRow + "_" + littleRow;
+
+    var tdOne = document.createElement("TD");
+
+    var titleTextArea = document.createElement("TEXTAREA");
+    titleTextArea.class = "form-control";
+    titleTextArea.style.display = "block";
+    titleTextArea.style.width = "100%";
+    titleTextArea.style.overflowY = "scroll";
+    titleTextArea.style.resize = "none";
+    titleTextArea.id = "title_" + bigRow + "_" + littleRow;
+    tdOne.appendChild(titleTextArea);
+    tr.appendChild(tdOne);
+
+    var tdOne = document.createElement("TD");
+
+    var linkTextArea = document.createElement("TEXTAREA");
+    linkTextArea.class = "form-control";
+    linkTextArea.style.display = "block";
+    linkTextArea.style.width = "100%";
+    linkTextArea.style.overflowY = "scroll";
+    linkTextArea.style.resize = "none";
+    linkTextArea.id = "link_" + bigRow + "_" + littleRow;
+    tdOne.appendChild(linkTextArea);
+    tr.appendChild(tdOne);
+
+    var tdOne = document.createElement("TD");
+    tdOne.id = "box_" + bigRow + "_" + littleRow;
+
+    var button = document.createElement("INPUT");
+    button.type = "button";
+    button.className = "btn btn-lg btn-primary";
+    button.value = "Delete";
+    button.id = "delete_" + bigRow + "_" + littleRow;
+    button.style.marginRight = "10px";
+    button.style.backgroundColor = "red";
+    button.style.borderColor = "red";
+    button.onclick = (function() {
+
+        return function(e) {
+
+            var confirm = window.confirm("Are you sure you want to delete this link?");
+
+            if (confirm == true) {
+
+                removeRowFunction($(this));
+
+            };
+
+        };
+    })();
+    tdOne.appendChild(button);
+
+    var button = document.createElement("INPUT");
+    button.type = "button";
+    button.className = "btn btn-lg btn-primary";
+    button.value = "Add Link";
+    button.id = "add_" + bigRow;
+    button.onclick = (function() {
+
+        return function(e) {
+
+            addRowFunction($(this));
+
+        };
+    })();
+    tdOne.appendChild(button);
+
+    tr.appendChild(tdOne);
+
+    tableBody.appendChild(tr);
+}
+
 function loadScheduleTable() {
     return function() {
 
@@ -2146,9 +3443,7 @@ function loadScheduleTable() {
                         queryTwo.first({
                             success: function(day) {
 
-                                if (day.get("scheduleType") != theStructures[0].get("scheduleType")) {
-                                    structures.push(day);
-                                };
+                                structures.push(day);
 
                                 for (var i = 0; i < theStructures.length; i++) {
                                     structures.push(theStructures[i]);
@@ -2192,12 +3487,14 @@ function loadScheduleTable() {
                                     var parts = structures[i].get("schoolDate").split('-');
                                     var date = new Date(parts[2], parts[0]-1,parts[1]);
                                     var string = date.toString('dddd, MMMM d, yyyy');
+                                    var today = new Date();
+                                    today = new Date(today.getFullYear(), today.getMonth(), today.getDate(), 0, 0, 0, 0);
+                                    if (date < today || (i == 0 && structures[i].get("isActive") == 0)) {
+                                        tdTwo.appendChild(document.createTextNode("INACTIVE SCHOOL DAY - "));
+                                    } else if (date.toDateString() === today.toDateString()) {
+                                        tdTwo.style.color = "red";
+                                    };
                                     tdTwo.appendChild(document.createTextNode(string));
-                                    if (i === 1) {
-                                        tdTwo.style.color = 'red';
-                                    } else if (i === 0) {
-                                        tdTwo.appendChild(document.createTextNode(" - LAST SCHOOL DAY")); 
-                                    }
                                     tr.appendChild(tdTwo);
 
                                     //Schedule Type
@@ -2216,50 +3513,57 @@ function loadScheduleTable() {
                                         tr.appendChild(tdOne);
                                     };
 
-                                    var tdThree = document.createElement("TD");
-                                    var selectList = document.createElement("SELECT");
-                                    selectList.name = "typeSelect";
-                                    var option = document.createElement("option");
-                                    option.value = -1;
-                                    option.text = "NONE SELECTED";
-                                    selectList.appendChild(option);
-                                    for (var j = 0; j < Object.keys(dictionary).length; j++) {
+                                    if (! date < today && (i != 0 || structures[i].get("isActive") == 1)) {
+
+                                        var tdThree = document.createElement("TD");
+                                        var selectList = document.createElement("SELECT");
+                                        selectList.name = "typeSelect";
                                         var option = document.createElement("option");
-                                        option.value = j;
-                                        option.text = dictionary[Object.keys(dictionary)[j]];
+                                        option.value = -1;
+                                        option.text = "NONE SELECTED";
                                         selectList.appendChild(option);
-                                    }
-                                    selectList.onchange = (function() {
+                                        for (var j = 0; j < Object.keys(dictionary).length; j++) {
+                                            var option = document.createElement("option");
+                                            option.value = j;
+                                            option.text = dictionary[Object.keys(dictionary)[j]];
+                                            selectList.appendChild(option);
+                                        }
+                                        selectList.onchange = (function() {
 
-                                        var count = i;
+                                            var count = i;
 
-                                        return function(e) {
+                                            return function(e) {
 
-                                            var confirm = window.confirm("Are you sure you want to edit this day's schedule?");
+                                                var confirm = window.confirm("Are you sure you want to edit this day's schedule?");
 
-                                            if (confirm == true) {
-                                                var key = reverseDictionary[this.selectedIndex - 1];
+                                                if (confirm == true) {
+                                                    var key = reverseDictionary[this.selectedIndex - 1];
 
-                                                structures[count].set("scheduleType", key);
-                                                structures[count].set("customSchedule", "None.");
-                                                structures[count].set("customString", "");
-                                                structures[count].save(null, {
-                                                    success: function(object) {
-                                                        alert("Schedule successfully updated.");
-                                                        $("#spinnerDiv").html("");
-                                                        $(document).ready(loadScheduleTable());
-                                                    },
-                                                    error: function(error) {
-                                                        alert(error.code + " - " + error.message);
-                                                        $("#spinnerDiv").html("");
-                                                    }
-                                                });
+                                                    structures[count].set("scheduleType", key);
+                                                    structures[count].set("customSchedule", "None.");
+                                                    structures[count].set("customString", "");
+                                                    structures[count].save(null, {
+                                                        success: function(object) {
+                                                            alert("Schedule successfully updated.");
+                                                            $("#spinnerDiv").html("");
+                                                            $(document).ready(loadScheduleTable());
+                                                        },
+                                                        error: function(error) {
+                                                            alert(error.code + " - " + error.message);
+                                                            $("#spinnerDiv").html("");
+                                                        }
+                                                    });
+                                                };
+
                                             };
-
-                                        };
-                                    })();
-                                    tdThree.appendChild(selectList);
-                                    tr.appendChild(tdThree);
+                                        })();
+                                        tdThree.appendChild(selectList);
+                                        tr.appendChild(tdThree);
+                                    } else {
+                                        var tdThree = document.createElement("TD");
+                                        tdThree.appendChild(document.createTextNode("No actions available."));
+                                        tr.appendChild(tdThree);
+                                    };
 
                                     var tdFour = document.createElement("TD");
 
@@ -2307,34 +3611,37 @@ function loadScheduleTable() {
                                         tr.appendChild(tdFour);
                                     };
 
-                                    var buttonTwo =document.createElement("INPUT");
-                                    buttonTwo.type = "button";
-                                    buttonTwo.className = "btn btn-lg btn-primary";
-                                    buttonTwo.value = "Edit Custom Schedule";
-                                    button.name = i;
-                                    buttonTwo.style.marginRight = "10px";
-                                    buttonTwo.onclick = (function() {
-                                        var count = i;
+                                    if (! date < today && (i != 0 || structures[i].get("isActive") == 1)) {
+                                        var buttonTwo =document.createElement("INPUT");
+                                        buttonTwo.type = "button";
+                                        buttonTwo.className = "btn btn-lg btn-primary";
+                                        buttonTwo.value = "Edit Custom Schedule";
+                                        buttonTwo.name = i;
+                                        buttonTwo.style.marginRight = "10px";
+                                        buttonTwo.onclick = (function() {
+                                            var count = i;
 
-                                        return function(e) {
+                                            return function(e) {
 
-                                            if (structures[count].get("scheduleType") === "*") {
-                                                localStorage.setItem("customString", structures[count].get("customSchedule"));
-                                            } else {
-                                                localStorage.setItem("customString", "Period 1: \nPeriod 2: \nPeriod 3: \nPeriod 4: \n1st: \n2nd: \n3rd: \nPeriod 6: \nPeriod 7: ");
+                                                if (structures[count].get("scheduleType") === "*") {
+                                                    localStorage.setItem("customString", structures[count].get("customSchedule"));
+                                                } else {
+                                                    localStorage.setItem("customString", "Period 1: \nPeriod 2: \nPeriod 3: \nPeriod 4: \n1st: \n2nd: \n3rd: \nPeriod 6: \nPeriod 7: ");
+                                                };
+
+                                                localStorage.setItem("customID", structures[count].get("schoolDayID"));
+
+                                                localStorage.setItem("customDate", structures[count].get("schoolDate"));
+
+                                                localStorage.setItem("customDescription", structures[count].get("customString"));     
+
+                                                window.location.replace("./custom");                       
+
                                             };
+                                        })();
+                                        tdFour.appendChild(buttonTwo);
+                                    };
 
-                                            localStorage.setItem("customID", structures[count].get("schoolDayID"));
-
-                                            localStorage.setItem("customDate", structures[count].get("schoolDate"));
-
-                                            localStorage.setItem("customDescription", structures[count].get("customString"));     
-
-                                            window.location.replace("./custom");                       
-
-                                        };
-                                    })();
-                                    tdFour.appendChild(buttonTwo);
                                     tr.appendChild(tdFour);
                                     tableBody.appendChild(tr);
 

@@ -101,16 +101,40 @@
 
     <div class="main-container" style="padding-left:20px; padding-right:20px;">
 
-      <h2>Lunch Management</h2>
-      <h6><b><i>NOTE: You must press "Save All Changes" to avoid losing the breakfast and lunch information you enter.</i></b></h6>
-      <button class="cancel-schedule btn btn-lg btn-primary" type="cancel">Back</button>
-      <button class="saveLunch btn btn-lg btn-primary" type="click" style="float:right;">Save All Changes</button>
-      <hr style="border-color:#561838";></hr>
-      <h4 id="titleLabel">Available School Days</h4>
-      <div id="schedules">
-
-      </div>
-      <button class="saveLunch btn btn-lg btn-primary btn-block" type="click">Save All Changes</button>
+      <button class="cancel btn btn-lg btn-primary" type="cancel">Cancel</button>
+      <h2>Event</h2>
+      <h6><i>NOTE: All events will require administrative approval before they appear in the app.</i></h6>
+      <form class="form-add-event" role="form">
+        <div class="form-group">
+          <label for="title">Title (60 characters max)</label>
+          <input type="text" name="title" class="form-control" id="title" placeholder="Title" maxlength="60">
+        </div>
+        <div class="form-group">
+          <label for="location">Location</label>
+          <input type="text" name="location" class="form-control" id="location" placeholder="Location" maxlength="140">
+        </div>
+        <label for="eventDate">Select Event Date</label>
+        <input type="date" name="eventDate" id="eventDate"></input>
+        <label for="eventTime">Select Event Time</label>
+        <input type="time" name="eventTime" id="eventTime"></input>
+        <br><br>
+        <div class="form-group">
+          <label for="message">Message (300 characters max)</label>
+          <h6><i>(i.e. event reminders, ticket information, parking, etc.) - NOTE: You can embed links in the event content below and they will appear as hyperlinks in the iOS app. (i.e "http://www.wildcatconnect.org")</i></h6>
+          <textarea name="message" class="form-control" rows="4" maxlength="300"></textarea>
+        </div>
+        <button class="btn btn-lg btn-primary btn-block" type="submit">Submit for Approval</button>
+      </form>
+      <script>
+        var today = new Date();
+        document.getElementById('eventDate').valueAsDate = today;
+        if (today.getHours() < 10) {
+          var currentTime = '0' + today.getHours() + ':' + today.getMinutes();
+        } else {
+          var currentTime = today.getHours() + ':' + today.getMinutes();
+        };
+        document.getElementById('eventTime').value = currentTime;
+      </script>
 
     </div> <!-- /container -->
 
@@ -132,20 +156,11 @@
 
       Parse.$ = jQuery;
       Parse.initialize("cLBOvwh6ZTQYex37DSwxL1Cvg34MMiRWYAB4vqs0", "tTcV5Ns1GFdDda44FCcG5XHBDMbLA1sxRUzSnDgW");
-      if ((Parse.User.current().get("userType") === "Administration" || Parse.User.current().get("userType") === "Developer") || Parse.User.current() && (Parse.User.current().get("userType") === "Lunch Manager")) {
+      if (Parse.User.current()) {
         //
       } else {
         window.location.replace("./login");
       };
-    </script>
-    
-    <script>
-
-      Parse.$ = jQuery;
-      Parse.initialize("cLBOvwh6ZTQYex37DSwxL1Cvg34MMiRWYAB4vqs0", "tTcV5Ns1GFdDda44FCcG5XHBDMbLA1sxRUzSnDgW");
-
-      $(document).ready(loadLunchTable());
-
     </script>
     <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
     <!--script src="../../assets/js/ie10-viewport-bug-workaround.js"></script>

@@ -52,6 +52,21 @@
     <![endif]-->
   </head>
 
+  <script type="text/javascript">
+
+    var isChrome = /Chrome/.test(navigator.userAgent) && /Google Inc/.test(navigator.vendor);
+    var isSafari = /Safari/.test(navigator.userAgent) && /Apple Computer/.test(navigator.vendor);
+
+    if( ! /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ) {
+       alert("Your browser is fine! Go enjoy our site!");
+       window.location.replace("./index");
+    } else if (isChrome == true || isSafari == true) {
+      alert("Your browser is fine! Go enjoy our site!");
+      window.location.replace("./index");
+    };
+
+  </script>
+
   <body>
     <!-- Static navbar -->
     <nav class="navbar navbar-default navbar-static-top">
@@ -71,19 +86,6 @@
             <!--li><a href="#about">About</a></li>
             <li><a href="#contact">Contact</a></li-->
           </ul>
-          <ul class="nav navbar-nav navbar-right">
-            <li class="dropdown">
-              <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Account <span class="caret"></span></a>
-              <ul class="dropdown-menu">
-                <li>
-                  <a href="" id="changePassword">Change Password</a>
-                </li>
-                <li>
-                  <a href="mailto:support@wildcatconnect.org">Report an issue</a></li><li role="separator" class="divider"></li><li><a href="" id="logOut">Log Out</a>
-                </li>
-              </ul>
-            </li>
-          </ul>
           <!--ul class="nav navbar-nav navbar-right">
             <li class="dropdown">
               <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Account<span class="caret"></span></a>
@@ -101,16 +103,14 @@
 
     <div class="main-container" style="padding-left:20px; padding-right:20px;">
 
-      <h2>Lunch Management</h2>
-      <h6><b><i>NOTE: You must press "Save All Changes" to avoid losing the breakfast and lunch information you enter.</i></b></h6>
-      <button class="cancel-schedule btn btn-lg btn-primary" type="cancel">Back</button>
-      <button class="saveLunch btn btn-lg btn-primary" type="click" style="float:right;">Save All Changes</button>
-      <hr style="border-color:#561838";></hr>
-      <h4 id="titleLabel">Available School Days</h4>
-      <div id="schedules">
-
+      <div style="width:400px; margin:0 auto;">
+        <h1 style="text-align:center;">:(</h1>
+        <h4 style="text-align:center;">WildcatConnect only supports Chrome and Safari for its browser capabilities.</h4>
+        <a><img src="./../chrome.png" alt="Chrome" style="float:left;width: 33.3%;"/></a>
+        <a><img src="./../safari.png" alt="Safari" style="float:right;text-align: right;width: 33.3%;"/></a>
+        <a><img src="./../logoTransparent.gif" alt="Logo" style="float: left;width: 33.3%;text-align: center;"/></a>
+        <h4 style="text-align:center;width:100%">You will need to update your browser.</h4>
       </div>
-      <button class="saveLunch btn btn-lg btn-primary btn-block" type="click">Save All Changes</button>
 
     </div> <!-- /container -->
 
@@ -118,35 +118,10 @@
     ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->
     <script src="./../js/jquery.min.js"></script>
-    <script src="./../js/parse-1.2.19.min.js"></script>
     <!--script>window.jQuery || document.write('<script src="../../assets/js/vendor/jquery.min.js"><\/script>')</script-->
     <script src="./../js/bootstrap.min.js"></script>
     <script src="./../js/uglyScript.js"></script>
     <script src="./../js/date.js"></script>
-
-    <script type="text/javascript">
-
-      window.onerror = function(error, url, line) {
-          $(document).ready(errorFunction(error, url, line));
-      };
-
-      Parse.$ = jQuery;
-      Parse.initialize("cLBOvwh6ZTQYex37DSwxL1Cvg34MMiRWYAB4vqs0", "tTcV5Ns1GFdDda44FCcG5XHBDMbLA1sxRUzSnDgW");
-      if ((Parse.User.current().get("userType") === "Administration" || Parse.User.current().get("userType") === "Developer") || Parse.User.current() && (Parse.User.current().get("userType") === "Lunch Manager")) {
-        //
-      } else {
-        window.location.replace("./login");
-      };
-    </script>
-    
-    <script>
-
-      Parse.$ = jQuery;
-      Parse.initialize("cLBOvwh6ZTQYex37DSwxL1Cvg34MMiRWYAB4vqs0", "tTcV5Ns1GFdDda44FCcG5XHBDMbLA1sxRUzSnDgW");
-
-      $(document).ready(loadLunchTable());
-
-    </script>
     <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
     <!--script src="../../assets/js/ie10-viewport-bug-workaround.js"></script>
   </body>

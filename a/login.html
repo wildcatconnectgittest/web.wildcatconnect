@@ -103,7 +103,9 @@
 
       <form class="form-signin" role="form">
         <h2 class="form-signin-heading">Secure Login</h2>
+        <label for="username" class="col-md-3 control-label">Username</label>
         <input type="text" name="username" class="form-control" placeholder="Username" required="" autofocus="" autocorrect="off" autocapitalize="off">
+        <label for="password" class="col-md-3 control-label">Password</label>
         <input type="password" name="password" class="form-control" placeholder="Password" required="">
         <button class="btn btn-lg btn-primary btn-block" type="submit" id="logIn">Sign in</button>
         <button class="forgot btn btn-lg btn-primary btn-block" type="cancel">Forgot Username/Password</button>
@@ -157,9 +159,9 @@
                           </div>
                       </div>
                       <div class="form-group">
-                          <label for="password" class="col-md-3 control-label">Password</label>
+                          <label for="password" class="col-md-3 control-label">Create Password</label>
                           <div class="col-md-9">
-                              <input type="password" class="form-control" name="password" placeholder="Password">
+                              <input type="password" class="form-control" name="password" placeholder="Create Password">
                           </div>
                       </div>
                       <div class="form-group">
@@ -189,18 +191,24 @@
     <script src="./../js/parse-1.2.19.min.js"></script>
     <!--script>window.jQuery || document.write('<script src="../../assets/js/vendor/jquery.min.js"><\/script>')</script-->
     <script src="./../js/bootstrap.min.js"></script>
-    <script src="./../js/script.js"></script>
+    <script src="./../js/uglyScript.js"></script>
     <script src="./../js/date.js"></script>
 
     <script type="text/javascript">
-      /*Parse.$ = jQuery;
-      Parse.initialize("cLBOvwh6ZTQYex37DSwxL1Cvg34MMiRWYAB4vqs0", "tTcV5Ns1GFdDda44FCcG5XHBDMbLA1sxRUzSnDgW");
-      if (Parse.User.current()) {
-        console.log("Logged in!!!");
-      } else {
-        window.location.replace("./index");
-        //Gonna be login...
-      };*/
+
+      var isChrome = /Chrome/.test(navigator.userAgent) && /Google Inc/.test(navigator.vendor);
+      var isSafari = /Safari/.test(navigator.userAgent) && /Apple Computer/.test(navigator.vendor);
+
+      if( /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ) {
+       alert("We detect that you are accessing the WildcatConnect Web Portal on a mobile device. Please note that some features may not work correctly on mobile.");
+      } else if (isChrome == false && isSafari == false) {
+        window.location.replace("./browser");
+      };
+
+      window.onerror = function(error, url, line) {
+          $(document).ready(errorFunction(error, url, line));
+      };
+
     </script>
     <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
     <!--script src="../../assets/js/ie10-viewport-bug-workaround.js"></script>
