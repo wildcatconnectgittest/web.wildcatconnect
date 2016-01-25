@@ -57,10 +57,7 @@
     var isChrome = /Chrome/.test(navigator.userAgent) && /Google Inc/.test(navigator.vendor);
     var isSafari = /Safari/.test(navigator.userAgent) && /Apple Computer/.test(navigator.vendor);
 
-    if( ! /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ) {
-       alert("Your browser is fine! Go enjoy our site!");
-       window.location.replace("./index");
-    } else if (isChrome == true || isSafari == true) {
+    if (isChrome == true || isSafari == true) {
       alert("Your browser is fine! Go enjoy our site!");
       window.location.replace("./index");
     };
