@@ -716,18 +716,27 @@ var NewsArticleStructure = Parse.Object.extend("NewsArticleStructure", {
                             'isApproved' : 0
                         },  {
                             success: function(object) {
-                                alert("Wildcat News Story successfully submitted for approval. Please allow 1-2 days for processing.");
+                                $("#spinnerDiv").html("");
+                                localStorage.setItem("alertString", "Wildcat News Story successfully submitted for approval. Please allow 1-2 days for processing.");
                                 window.location.replace("./index");
                             },
                             error: function(error) {
-                                alert(error);
+                                BootstrapDialog.show({
+                                    type: BootstrapDialog.TYPE_DEFAULT,
+                                    title: "Error",
+                                    message: "Error occurred. Please try again."
+                                });
                                 $("#spinnerDiv").html("");
                             }
                         });
                     };
                 },
                 error: function(error) {
-                    alert(error);
+                    BootstrapDialog.show({
+                        type: BootstrapDialog.TYPE_DEFAULT,
+                        title: "Error",
+                        message: "Error occurred. Please try again."
+                    });
                     $("#spinnerDiv").html("");
                 }
             });
@@ -761,18 +770,27 @@ var ExtracurricularUpdateStructure = Parse.Object.extend("ExtracurricularUpdateS
                         array.push(object);
                         Parse.Object.saveAll(array, {
                             success: function(array) {
-                                alert("Update successfully posted.");
+                                $("#spinnerDiv").html("");
+                                localStorage.setItem("alertString", "Group update successfully posted.");
                                 window.location.replace("./index");
                             },
                             error: function(error) {
-                                alert(error.message);
+                                BootstrapDialog.show({
+                                    type: BootstrapDialog.TYPE_DEFAULT,
+                                    title: "Error",
+                                    message: "Error occurred. Please try again."
+                                });
                                 $("#spinnerDiv").html("");
                             }
                         });
                     };
                 },
                 error: function(error) {
-                    alert(error);
+                    BootstrapDialog.show({
+                        type: BootstrapDialog.TYPE_DEFAULT,
+                        title: "Error",
+                        message: "Error occurred. Please try again."
+                    });
                     $("#spinnerDiv").html("");
                 }
             });
@@ -810,17 +828,26 @@ var CommunityServiceStructure = Parse.Object.extend("CommunityServiceStructure",
                         'endDate' : endDate
                     },  {
                         success: function(object) {
-                            alert("Update successfully posted.");
+                            $("#spinnerDiv").html("");
+                            localStorage.setItem("alertString", "Community service update successfully posted.");
                             window.location.replace("./index");
                         },
                         error: function(error) {
-                            alert(error);
+                            BootstrapDialog.show({
+                                type: BootstrapDialog.TYPE_DEFAULT,
+                                title: "Error",
+                                message: "Error occurred. Please try again."
+                            });
                             $("#spinnerDiv").html("");
                         }
                     });
                 },
                 error: function(error) {
-                    alert(error);
+                    BootstrapDialog.show({
+                        type: BootstrapDialog.TYPE_DEFAULT,
+                        title: "Error",
+                        message: "Error occurred. Please try again."
+                    });
                     $("#spinnerDiv").html("");
                 }
             });
@@ -849,11 +876,18 @@ var EventStructure = Parse.Object.extend("EventStructure", {
                 "userString" : Parse.User.current().get("firstName") + " " + Parse.User.current().get("lastName")
             }, {
                 success: function(object) {
-                    alert("Event successfully submitted for approval. Please allow 1-2 days for processing.");
+                    $("#spinnerDiv").html("");
+                    localStorage.setItem("alertString", "Event successfully submitted for approval. Please allow 1-2 days for processing.");
                     window.location.replace("./index");
                 },
-                error: function(error) {
-                    alert(error.code + " - " + error.message);
+                error: function(object, error) {
+                    //console.log(error.code.toString() + error.message.toString() + " - " + object);
+                    //Create ErrorStructures with custom method!!!
+                    BootstrapDialog.show({
+                        type: BootstrapDialog.TYPE_DEFAULT,
+                        title: "Error",
+                        message: "Error occurred. Please try again."
+                    });
                     $("#spinnerDiv").html("");
                 }
             });
@@ -1212,43 +1246,84 @@ $(function() {
     $('.form-add-groupUpdate').submit(function() {
         event.preventDefault();
 
-        var confirm = window.confirm("Are you sure you want to submit this Group Update?");
+        var here = $(this);
 
-        if (confirm == true) {
-            var data = $(this).serializeArray();
+        BootstrapDialog.confirm({
+          title: 'Confirmation',
+          message: 'Are you sure you want to post this group update?',
+          type: BootstrapDialog.TYPE_DANGER, // <-- Default value is BootstrapDialog.TYPE_PRIMARY
+          closable: true, // <-- Default value is false
+          draggable: true, // <-- Default value is false
+          btnCancelLabel: 'No', // <-- Default value is 'Cancel',
+          btnOKLabel: 'Yes', // <-- Default value is 'OK',
+          btnOKClass: 'btn-primary', // <-- If you didn't specify it, dialog type will be used,
+          callback: function(result) {
+              // result will be true if button was click, while it will be false if users close the dialog directly.
+              if(result) {
+                  var data = here.serializeArray();
  
-            var ECU = new ExtracurricularUpdateStructure();
+                  var ECU = new ExtracurricularUpdateStructure();
 
-            ECU.create(window.groupsArray, data[data.length - 1].value);
-        };
+                  ECU.create(window.groupsArray, data[data.length - 1].value);
+              };
+          }
+      });
+
     });
 
     $('.form-add-community').submit(function() {
         event.preventDefault();
 
-        var confirm = window.confirm("Are you sure you want to submit this Community Service Update?");
+        var here = $(this);
 
-        if (confirm == true) {
-            var data = $(this).serializeArray();
+        BootstrapDialog.confirm({
+          title: 'Confirmation',
+          message: 'Are you sure you want to submit this Community Service Update?',
+          type: BootstrapDialog.TYPE_DANGER, // <-- Default value is BootstrapDialog.TYPE_PRIMARY
+          closable: true, // <-- Default value is false
+          draggable: true, // <-- Default value is false
+          btnCancelLabel: 'No', // <-- Default value is 'Cancel',
+          btnOKLabel: 'Yes', // <-- Default value is 'OK',
+          btnOKClass: 'btn-primary', // <-- If you didn't specify it, dialog type will be used,
+          callback: function(result) {
+              // result will be true if button was click, while it will be false if users close the dialog directly.
+              if(result) {
+                  var data = here.serializeArray();
  
-            var CS = new CommunityServiceStructure();
+                    var CS = new CommunityServiceStructure();
 
-            CS.create(data[0].value, data[1].value, data[2].value, data[3].value, data[4].value, data[5].value);
-        };
+                    CS.create(data[0].value, data[1].value, data[2].value, data[3].value, data[4].value, data[5].value);
+              };
+          }
+      });
+
     });
 
     $('.form-add-event').submit(function() {
         event.preventDefault();
 
-        var confirm = window.confirm("Are you sure you want to submit this event for administrative approval?");
+        var here = $(this);
 
-        if (confirm == true) {
-            var data = $(this).serializeArray();
+        BootstrapDialog.confirm({
+          title: 'Confirmation',
+          message: 'Are you sure you want to submit this event for administrative approval??',
+          type: BootstrapDialog.TYPE_DANGER, // <-- Default value is BootstrapDialog.TYPE_PRIMARY
+          closable: true, // <-- Default value is false
+          draggable: true, // <-- Default value is false
+          btnCancelLabel: 'No', // <-- Default value is 'Cancel',
+          btnOKLabel: 'Yes', // <-- Default value is 'OK',
+          btnOKClass: 'btn-primary', // <-- If you didn't specify it, dialog type will be used,
+          callback: function(result) {
+              // result will be true if button was click, while it will be false if users close the dialog directly.
+              if(result) {
+                  var data = here.serializeArray();
  
-            var theEvent = new EventStructure();
+                    var theEvent = new EventStructure();
 
-            theEvent.create(data[0].value, data[1].value, data[2].value, data[3].value, data[4].value);
-        };
+                    theEvent.create(data[0].value, data[1].value, data[2].value, data[3].value, data[4].value);
+              };
+          }
+      });
     });
 
     $('.form-add-poll').submit(function() {
