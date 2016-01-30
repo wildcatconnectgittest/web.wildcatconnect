@@ -99,6 +99,10 @@
       </div>
     </nav>
 
+    <div id="scheduleAlertDiv">
+      
+    </div>
+
     <div class="main-container" style="padding-left:20px; padding-right:20px;">
 
      <h2>Schedule Management</h2>
@@ -126,6 +130,16 @@
     <script src="./../js/bootstrap.min.js"></script>
     <script src="./../js/script.js"></script>
     <script src="./../js/date.js"></script>
+    <script src="./../js/dialog.js"></script>
+
+    <script>
+      var alertString = localStorage.getItem("alertStringSchedule");
+      if (alertString.length > 0) {
+        localStorage.setItem("alertStringSchedule", "");
+        $("#alertDivSchedule").html('<div class="alert alert-success fade in"><a href="#" class="close" data-dismiss="alert" aria-label="close">Close</a><strong>'+alertString+'</strong></div>');
+        $('#alertDivSchedule').delay(5000).fadeOut(500);
+      };
+    </script>
 
     <script type="text/javascript">
 

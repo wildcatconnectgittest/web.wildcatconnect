@@ -52,14 +52,22 @@
     <![endif]-->
   </head>
 
+  <script src="./../js/dialog.js"></script>
+
   <script type="text/javascript">
 
     var isChrome = /Chrome/.test(navigator.userAgent) && /Google Inc/.test(navigator.vendor);
     var isSafari = /Safari/.test(navigator.userAgent) && /Apple Computer/.test(navigator.vendor);
 
     if (isChrome == true || isSafari == true) {
-      alert("Your browser is fine! Go enjoy our site!");
-      window.location.replace("./index");
+      BootstrapDialog.show({
+          type: BootstrapDialog.TYPE_DEFAULT,
+          title: "Browser",
+          message: "Your browser is fine! Go enjoy our site!",
+          onhide: function(dialogRef) {
+              window.location.replace("./index");
+          }
+      });
     };
 
   </script>

@@ -12,173 +12,6 @@ var reverseDictionary = new Array();
 var groupsArray = new Array();
 var showYesterday = true;
 
-/*var CustomView = Parse.View.extend({
-	template: Handlebars.compile($('#custom-tpl').html()),
-    events: {
-        'submit .form-add': 'submit',
-        'click .cancel' : 'cancel'
-    },
-    cancel: function(e){
-    	e.preventDefault();
-
-    	var data = $(e.target).serializeArray();
-
-    	var scheduleView = new ScheduleView();
-    	scheduleView.render();
-    	$('.main-container').html(scheduleView.el);
-    },
-    submit: function(e){
-        e.preventDefault();
-
-        var data = $(e.target).serializeArray();
-
-       	var custom = data[0].value;
-
-       	if (! custom) {
-       		alert("No data entered!");
-       	} else {
-       		$("#spinnerDiv").html('<a><img src="./../spinner.gif" alt="Logo" width="40" style="vertical-align: middle; padding-top:12px; padding-left:10px;"/></a>');
-       		var query = new Parse.Query("SchoolDayStructure");
-       		query.equalTo("schoolDayID", window.customID);
-       		query.first({
-       			success: function(object) {
-       				object.set("customSchedule", custom);
-       				object.set("scheduleType", "*");
-       				object.save(null, {
-       					success: function() {
-       						alert("Schedule successfully updated.");
-							$("#spinnerDiv").html("");
-							var scheduleView = new ScheduleView();
-					    	scheduleView.render();
-					    	$('.main-container').html(scheduleView.el);
-					    },
-					    error: function(error) {
-					    	alert(error.code + " - " + error.message);
-					    }
-       				});
-       			},
-       			error: function(error) {
-       				alert(error.code + " - " + error.message);
-       			}
-       		});
-       	};
-    },
-    render: function(){
-        this.$el.html(this.template());
-    }
-});
-
-var ScheduleView = Parse.View.extend({
-	template: Handlebars.compile($('#schedule-tpl').html()),
-    events: {
-        'submit .form-add': 'submit',
-        'click .cancel' : 'cancel'
-    },
-    cancel: function(e){
-    	e.preventDefault();
-
-    	if (Parse.User.current().get("userType") === "Administration" || Parse.User.current().get("userType") === "Developer") {
-			var welcomeView = new AdminWelcomeView({ model: Parse.User.current() });
-		    welcomeView.render();
-		    $('.main-container').html(welcomeView.el);
-		} else {
-			var welcomeView = new FacultyWelcomeView({ model: Parse.User.current() });
-		    welcomeView.render();
-		    $('.main-container').html(welcomeView.el);
-		};
-    },
-    submit: function(e){
-        e.preventDefault();
-
-        var data = $(e.target).serializeArray();
-
-       	//
-    },
-    render: function(){
-        this.$el.html(this.template());
-    }
-});
-
-var AdminWelcomeView = Parse.View.extend({
-    template: Handlebars.compile($('#admin-welcome-tpl').html()),
-    events: {
-        'click .add-ec' : 'addEC',
-        'click .add-cs' : 'addCS',
-        'click .add-poll' : 'addPoll',
-        'click .add-alert' : 'addAlert',
-        'click .register-ec' : 'registerEC',
-        'click .user' : 'user',
-        'click .schedule' : 'schedule'
-    },
-    addEC: function() {
-    	var addECView = new AddECView();
-    	addECView.render();
-    	$('.main-container').html(addECView.el);
-    },
-    addCS: function() {
-    	var addCSView = new AddCSView();
-    	addCSView.render();
-    	$('.main-container').html(addCSView.el);
-    },
-    addPoll: function() {
-    	var addPollView = new AddPollView();
-    	addPollView.render();
-    	$('.main-container').html(addPollView.el);
-    },
-    addAlert: function() {
-    	var addAlertView = new AddAlertView();
-    	addAlertView.render();
-    	$('.main-container').html(addAlertView.el);
-    },
-    registerEC: function() {
-    	var registerECView = new RegisterECView();
-    	registerECView.render();
-    	$('.main-container').html(registerECView.el);
-    },
-    user: function() {
-    	var userView = new UserView();
-    	userView.render();
-    	$('.main-container').html(userView.el);
-    },
-    schedule: function() {
-    	var scheduleView = new ScheduleView();
-    	scheduleView.render();
-    	$('.main-container').html(scheduleView.el);
-    },
-    render: function(){
-        var attributes = this.model.toJSON();
-        this.$el.html(this.template(attributes));
-    }
-});
-
-var FacultyWelcomeView = Parse.View.extend({
-    template: Handlebars.compile($('#faculty-welcome-tpl').html()),
-    events: {
-        'click .add-news': 'addNews',
-        'click .add-ec' : 'addEC',
-        'click .register-ec' : 'registerEC'
-    },
-    addNews: function(){
-        var addNewsView = new AddNewsView();
-	    addNewsView.render();
-	    $('.main-container').html(addNewsView.el);
-    },
-    addEC: function() {
-    	var addECView = new AddECView();
-    	addECView.render();
-    	$('.main-container').html(addECView.el);
-    },
-    registerEC: function() {
-    	var registerECView = new RegisterECView();
-    	registerECView.render();
-    	$('.main-container').html(registerECView.el);
-    },
-    render: function(){
-        var attributes = this.model.toJSON();
-        this.$el.html(this.template(attributes));
-    }
-});*/
-
 var UserRegisterStructure = Parse.Object.extend("UserRegisterStructure", {
     create: function(firstName, lastName, email, confirmEmail, username, password, confirmPassword) {
         if (! firstName || ! lastName || ! username || ! password || ! email) {
@@ -228,439 +61,52 @@ var UserRegisterStructure = Parse.Object.extend("UserRegisterStructure", {
                                     'key' : string
                                 },  {
                                     success: function(object) {
-                                        alert("You have successfully registered your WildcatConnect account! A member of administration will approve your request and you will then receive a confirmation e-mail.");
-                                        location.reload();
+                                        BootstrapDialog.show({
+                                            type: BootstrapDialog.TYPE_DEFAULT,
+                                            title: "Success",
+                                            message: "You have successfully registered your WildcatConnect account! A member of administration will approve your request and you will then receive a confirmation e-mail.",
+                                            onhide: function(dialogRef){
+                                                location.reload();
+                                            }
+                                        });
+                                        $("#spinnerDiv").html("");
                                     },
                                     error: function(error) {
-                                        alert(error);
-                                        $("#signupButton").html("Register");
+                                        BootstrapDialog.show({
+                                            type: BootstrapDialog.TYPE_DEFAULT,
+                                            title: "Error",
+                                            message: "Error occurred. Please try again."
+                                        });
                                         $("#spinnerDiv").html("");
+                                        $("#signupButton").html("Register");
                                     }
                                 });
                             },
                             error: function(error) {
-                                alert(error);
-                                $("#signupButton").html("Register");
+                                BootstrapDialog.show({
+                                    type: BootstrapDialog.TYPE_DEFAULT,
+                                    title: "Error",
+                                    message: "Error occurred. Please try again."
+                                });
                                 $("#spinnerDiv").html("");
+                                $("#signupButton").html("Register");
                             }
                         });
                     };
                 },
                 error: function(error) {
-                    alert(error);
-                    $("#signupButton").html("Register");
+                    BootstrapDialog.show({
+                        type: BootstrapDialog.TYPE_DEFAULT,
+                        title: "Error",
+                        message: "Error occurred. Please try again."
+                    });
                     $("#spinnerDiv").html("");
+                    $("#signupButton").html("Register");
                 }
             });
         };
     }
 });
-
-/*var LoginView = Parse.View.extend({
-    template: Handlebars.compile($('#login-tpl').html()),
-    events: {
-        'submit .form-signin': 'login',
-        'submit .form-horizontal' : 'register',
-        'click .forgot' : 'forgot' 
-    },
-    register: function(e) {
-    	e.preventDefault();
-
-    	var data = $(e.target).serializeArray();
-
-    	var USR = new UserRegisterStructure();
-
-    	USR.create(data[0].value, data[1].value, data[2].value, data[3].value, data[4].value);
-    },
-    login: function(e) {
- 
-        // Prevent Default Submit Event
-        e.preventDefault();
- 
-        // Get data from the form and put them into variables
-        var data = $(e.target).serializeArray(),
-            username = data[0].value,
-            password = data[1].value;
- 
-        $("#spinnerDiv").html('<a><img src="./../spinner.gif" alt="Logo" width="40" style="vertical-align: middle; padding-top:12px; padding-left:10px;"/></a>');
-
-        // Call Parse Login function with those variables
-        Parse.User.logIn(username, password, {
-            // If the username and password matches
-            success: function(user) {
-            	$("#spinnerDiv").html("");
-                var verified = Parse.User.current().get("verified");
-                if (verified === 0) {
-                    var verifyView = new VerifyView();
-                    verifyView.render();
-                    $('.main-container').html(verifyView.el);
-                } else {
-                    if (Parse.User.current().get("userType") === "Administration" || Parse.User.current().get("userType") === "Developer") {
-                        var welcomeView = new AdminWelcomeView({ model: Parse.User.current() });
-                        welcomeView.render();
-                        $('.main-container').html(welcomeView.el);
-                    } else {
-                        var welcomeView = new FacultyWelcomeView({ model: Parse.User.current() });
-                        welcomeView.render();
-                        $('.main-container').html(welcomeView.el);
-                    };
-                    var div = document.getElementById('navbar');
-                    div.innerHTML = div.innerHTML + '<ul class="nav navbar-nav navbar-right"><li class="dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Account <span class="caret"></span></a><ul class="dropdown-menu"><li><a href="" id="changePassword">Change Password</a></li><li><a href="mailto:support@wildcatconnect.org">Report an issue</a></li><li role="separator" class="divider"></li><li><a href="" id="logOut">Log Out</a></li></ul></li></ul>';
-                    location.reload();
-                };
-			},
-            // If there is an error
-            error: function(user, error) {
-                if (error.code === 101) {
-                	alert("Invalid username or password. Please try again.");
-                    $("#spinnerDiv").html("");
-                };
-            }
-        });
-    },
-    forgot: function(e) {
-        e.preventDefault();    	var forgotView = new ForgotView();
-	    forgotView.render();
-	    $('.main-container').html(forgotView.el);
-    },
-    render: function(){
-        this.$el.html(this.template());
-    }
-});
-
-var ForgotView = Parse.View.extend({
-    template: Handlebars.compile($('#forgot-tpl').html()),
-    events: {
-        'submit .form-signin' : 'submit',
-        'click .cancel' : 'cancel'
-    },
-    submit: function(e) {
-    	e.preventDefault();
-
-    	var data = $(e.target).serializeArray();
-
-    	var email = data[0].value;
-
-    	if (! email) {
-    		alert("You must enter a valid e-mail address.");
-    	} else {
-    		Parse.Cloud.run("recoverUser", { "email" : email }, {
-    			success: function() {
-    				alert("An e-mail will be sent to you at " + email + " with password reset instructions.");
-    				location.reload();
-    			},
-    			error: function(error) {
-    				alert(error.code + " - " + error.message);
-    			}
-    		});
-    	};
-    },
-    cancel: function(e) {
-    	e.preventDefault();
-    	var loginView = new LoginView();
-		loginView.render();
-		$('.main-container').html(loginView.el);
-    },
-    render: function(){
-        this.$el.html(this.template());
-    }
-});
-
-var VerifyView = Parse.View.extend({
-    template: Handlebars.compile($('#verify-tpl').html()),
-    events: {
-        'submit .form-signin' : 'submit',
-        'click .cancel' : 'cancel'
-    },
-    submit: function(e) {
-        e.preventDefault();
-
-        var data = $(e.target).serializeArray();
-
-        var newKey = data[0].value;
-
-        if (newKey === Parse.User.current().get("key")) {
-            alert("Registration complete! Welcome to WildcatConnect!");
-            Parse.User.current().save({
-                "verified" : 1
-            }, {
-                success: function(user) {
-                    if (Parse.User.current().get("userType") === "Administration" || Parse.User.current().get("userType") === "Developer") {
-                        var welcomeView = new AdminWelcomeView({ model: Parse.User.current() });
-                        welcomeView.render();
-                        $('.main-container').html(welcomeView.el);
-                    } else {
-                        var welcomeView = new FacultyWelcomeView({ model: Parse.User.current() });
-                        welcomeView.render();
-                        $('.main-container').html(welcomeView.el);
-                    };
-                    var div = document.getElementById('navbar');
-                    div.innerHTML = div.innerHTML + '<ul class="nav navbar-nav navbar-right"><li class="dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Account <span class="caret"></span></a><ul class="dropdown-menu"><li><a href="" id="changePassword">Change Password</a></li><li><a href="mailto:support@wildcatconnect.org">Report an issue</a></li><li role="separator" class="divider"></li><li><a href="" id="logOut">Log Out</a></li></ul></li></ul>';
-                    location.reload();
-                },
-                error: function(error) {
-                    alert(error.code + " - " + error.message);
-                    Parse.User.logOut();
-                    var loginView = new LoginView();
-                    loginView.render();
-                    $('.main-container').html(loginView.el);
-                    var div = document.getElementById('navbar');
-                    div.innerHTML = "";
-                } 
-            });
-        } else {
-            alert("Incorrect registration key.");
-            Parse.User.logOut();
-            var loginView = new LoginView();
-            loginView.render();
-            $('.main-container').html(loginView.el);
-            var div = document.getElementById('navbar');
-            div.innerHTML = "";
-        };
-    },
-    cancel: function(e) {
-        e.preventDefault();
-        event.preventDefault();
-        Parse.User.logOut();
-        var loginView = new LoginView();
-        loginView.render();
-        $('.main-container').html(loginView.el);
-        var div = document.getElementById('navbar');
-        div.innerHTML = "";
-    },
-    render: function(){
-        this.$el.html(this.template());
-    }
-});
-
-var AddNewsView = Parse.View.extend({
-    template: Handlebars.compile($('#add-news-tpl').html()),
-    events: {
-        'submit .form-add': 'submit',
-        'click .cancel' : 'cancel'
-    },
-    cancel: function(e){
-    	e.preventDefault();
-
-    	if (Parse.User.current().get("userType") === "Administration" || Parse.User.current().get("userType") === "Developer") {
-			var welcomeView = new AdminWelcomeView({ model: Parse.User.current() });
-		    welcomeView.render();
-		    $('.main-container').html(welcomeView.el);
-		} else {
-			var welcomeView = new FacultyWelcomeView({ model: Parse.User.current() });
-		    welcomeView.render();
-		    $('.main-container').html(welcomeView.el);
-		};
-    },
-    submit: function(e){
-        e.preventDefault();
-
-        var data = $(e.target).serializeArray();
-
-        var newsArticle = new NewsArticleStructure();
-
-        newsArticle.create(data[0].value, data[1].value, document.getElementById('date').value, data[2].value, data[3].value);
-    },
-    render: function(){
-        this.$el.html(this.template());
-    }
-});
-
-var AddECView = Parse.View.extend({
-	template: Handlebars.compile($('#add-ec-tpl').html()),
-    events: {
-        'submit .form-add': 'submit',
-        'click .cancel' : 'cancel'
-    },
-    cancel: function(e){
-    	e.preventDefault();
-
-    	if (Parse.User.current().get("userType") === "Administration" || Parse.User.current().get("userType") === "Developer") {
-			var welcomeView = new AdminWelcomeView({ model: Parse.User.current() });
-		    welcomeView.render();
-		    $('.main-container').html(welcomeView.el);
-		} else {
-			var welcomeView = new FacultyWelcomeView({ model: Parse.User.current() });
-		    welcomeView.render();
-		    $('.main-container').html(welcomeView.el);
-		};
-    },
-    submit: function(e){
-        e.preventDefault();
-
-        var data = $(e.target).serializeArray();
-
-        var ECU = new ExtracurricularUpdateStructure();
-
-        ECU.create(data[0].value, data[1].value);
-    },
-    render: function(){
-        this.$el.html(this.template());
-    }
-});
-
-var AddCSView = Parse.View.extend({
-	template: Handlebars.compile($('#add-cs-tpl').html()),
-    events: {
-        'submit .form-add': 'submit',
-        'click .cancel' : 'cancel'
-    },
-    cancel: function(e){
-    	e.preventDefault();
-
-    	if (Parse.User.current().get("userType") === "Administration" || Parse.User.current().get("userType") === "Developer") {
-			var welcomeView = new AdminWelcomeView({ model: Parse.User.current() });
-		    welcomeView.render();
-		    $('.main-container').html(welcomeView.el);
-		} else {
-			var welcomeView = new FacultyWelcomeView({ model: Parse.User.current() });
-		    welcomeView.render();
-		    $('.main-container').html(welcomeView.el);
-		};
-    },
-    submit: function(e){
-        e.preventDefault();
-
-        var data = $(e.target).serializeArray();
-
-        var CS = new CommunityServiceStructure();
-
-        CS.create(data[0].value, data[1].value, data[2].value, data[3].value, data[4].value, data[5].value);
-    },
-    render: function(){
-        this.$el.html(this.template());
-    }
-});
-
-var AddPollView = Parse.View.extend({
-	template: Handlebars.compile($('#add-poll-tpl').html()),
-    events: {
-        'submit .form-add': 'submit',
-        'click .cancel' : 'cancel'
-    },
-    cancel: function(e){
-    	e.preventDefault();
-
-    	if (Parse.User.current().get("userType") === "Administration" || Parse.User.current().get("userType") === "Developer") {
-			var welcomeView = new AdminWelcomeView({ model: Parse.User.current() });
-		    welcomeView.render();
-		    $('.main-container').html(welcomeView.el);
-		} else {
-			var welcomeView = new FacultyWelcomeView({ model: Parse.User.current() });
-		    welcomeView.render();
-		    $('.main-container').html(welcomeView.el);
-		};
-    },
-    submit: function(e){
-        e.preventDefault();
-
-        var data = $(e.target).serializeArray();
-
-        var poll = new PollStructure();
-
-        poll.create(data[0].value, data[1].value, data[2].value, choicesArray);
-    },
-    render: function(){
-        this.$el.html(this.template());
-    }
-});
-
-var AddAlertView = Parse.View.extend({
-	template: Handlebars.compile($('#add-alert-tpl').html()),
-    events: {
-        'submit .form-add': 'submit',
-        'click .cancel' : 'cancel'
-    },
-    cancel: function(e){
-    	e.preventDefault();
-
-    	if (Parse.User.current().get("userType") === "Administration" || Parse.User.current().get("userType") === "Developer") {
-			var welcomeView = new AdminWelcomeView({ model: Parse.User.current() });
-		    welcomeView.render();
-		    $('.main-container').html(welcomeView.el);
-		} else {
-			var welcomeView = new FacultyWelcomeView({ model: Parse.User.current() });
-		    welcomeView.render();
-		    $('.main-container').html(welcomeView.el);
-		};
-    },
-    submit: function(e){
-        e.preventDefault();
-
-        var data = $(e.target).serializeArray();
-
-       	var alert = new AlertStructure();
-
-       	alert.create(data[0].value, Parse.User.current().get("firstName") + " " + Parse.User.current().get("lastName"), data[1].value, data[2].value, data[3].value, data[4].value);
-    },
-    render: function(){
-        this.$el.html(this.template());
-    }
-});
-
-var RegisterECView = Parse.View.extend({
-	template: Handlebars.compile($('#reg-ec-tpl').html()),
-    events: {
-        'submit .form-add': 'submit',
-        'click .cancel' : 'cancel'
-    },
-    cancel: function(e){
-    	e.preventDefault();
-
-    	if (Parse.User.current().get("userType") === "Administration" || Parse.User.current().get("userType") === "Developer") {
-			var welcomeView = new AdminWelcomeView({ model: Parse.User.current() });
-		    welcomeView.render();
-		    $('.main-container').html(welcomeView.el);
-		} else {
-			var welcomeView = new FacultyWelcomeView({ model: Parse.User.current() });
-		    welcomeView.render();
-		    $('.main-container').html(welcomeView.el);
-		};
-    },
-    submit: function(e){
-        e.preventDefault();
-
-        var data = $(e.target).serializeArray();
-
-       	var EC = new ExtracurricularStructure();
-
-       	EC.create(data[0].value, data[1].value);
-    },
-    render: function(){
-        this.$el.html(this.template());
-    }
-});
-
-var UserView = Parse.View.extend({
-	template: Handlebars.compile($('#user-tpl').html()),
-    events: {
-        'submit .form-add': 'submit',
-        'click .cancel' : 'cancel'
-    },
-    cancel: function(e){
-    	e.preventDefault();
-
-    	if (Parse.User.current().get("userType") === "Administration" || Parse.User.current().get("userType") === "Developer") {
-			var welcomeView = new AdminWelcomeView({ model: Parse.User.current() });
-		    welcomeView.render();
-		    $('.main-container').html(welcomeView.el);
-		} else {
-			var welcomeView = new FacultyWelcomeView({ model: Parse.User.current() });
-		    welcomeView.render();
-		    $('.main-container').html(welcomeView.el);
-		};
-    },
-    submit: function(e){
-        e.preventDefault();
-
-        var data = $(e.target).serializeArray();
-
-       	//
-    },
-    render: function(){
-        this.$el.html(this.template());
-    }
-});*/
 
 var NewsArticleStructure = Parse.Object.extend("NewsArticleStructure", {
     create: function(title, author, date, summary, content) {
@@ -693,7 +139,8 @@ var NewsArticleStructure = Parse.Object.extend("NewsArticleStructure", {
                             'isApproved' : 0
                         },  {
                             success: function(object) {
-                                alert("Wildcat News Story successfully submitted for approval. Please allow 1-2 days for processing.");
+                                $("#spinnerDiv").html("");
+                                localStorage.setItem("alertString", "Wildcat News Story successfully submitted for approval. Please allow 1-2 days for processing.");
                                 window.location.replace("./index");
                             },
                             error: function(error) {
@@ -883,6 +330,7 @@ var EventStructure = Parse.Object.extend("EventStructure", {
                 error: function(object, error) {
                     //console.log(error.code.toString() + error.message.toString() + " - " + object);
                     //Create ErrorStructures with custom method!!!
+                    errorFunction(error.code.toString() + " - " + error.message.toString(), "ParseError", "Script 333");
                     BootstrapDialog.show({
                         type: BootstrapDialog.TYPE_DEFAULT,
                         title: "Error",
@@ -924,17 +372,28 @@ var PollStructure = Parse.Object.extend("PollStructure", {
                         'pollMultipleChoices' : dictionary
                     },  {
                         success: function(object) {
-                            alert("Poll successfully posted.");
+                            $("#spinnerDiv").html("");
+                            localStorage.setItem("alertString", "Poll successfully posted.");
                             window.location.replace("./index");
                         },
                         error: function(error) {
-                            alert(error);
+                            errorFunction(error.code.toString() + " - " + error.message.toString(), "ParseError", "Script 380");
+                           BootstrapDialog.show({
+                                type: BootstrapDialog.TYPE_DEFAULT,
+                                title: "Error",
+                                message: "Error occurred. Please try again."
+                            });
                             $("#spinnerDiv").html("");
                         }
                     });
                 },
                 error: function(error) {
-                    alert(error);
+                    errorFunction(error.code.toString() + " - " + error.message.toString(), "ParseError", "Script 391");
+                   BootstrapDialog.show({
+                        type: BootstrapDialog.TYPE_DEFAULT,
+                        title: "Error",
+                        message: "Error occurred. Please try again."
+                    });
                     $("#spinnerDiv").html("");
                 }
             });
@@ -972,8 +431,12 @@ var AlertStructure = Parse.Object.extend("AlertStructure", {
                     var alertDate = new Date(dateDate.getFullYear(), dateDate.getMonth(), dateDate.getDate(), dateTime.getHours(), dateTime.getMinutes(), 0, 0);
                     var now = new Date();
                     if (alertDate < now && alertTiming === "time") {
-                        alert("Whoops! You can't send an alert in the past!");
-                        $("#spinnerDiv").html("");
+                           BootstrapDialog.show({
+                                type: BootstrapDialog.TYPE_DEFAULT,
+                                title: "Whoops!",
+                                message: "You can't send an alert in the past. No one would ever see it. :("
+                            });
+                            $("#spinnerDiv").html("");
                     } else {
                         if (alertTiming === "now") {
                             var dateString = month[now.getMonth()] + " " + now.getDate().toString() + ", " + now.getFullYear().toString();
@@ -989,11 +452,17 @@ var AlertStructure = Parse.Object.extend("AlertStructure", {
                                 'hasTime' : 0
                             },  {
                                 success: function(object) {
-                                    alert("Alert successfully posted.");
+                                    $("#spinnerDiv").html("");
+                                    localStorage.setItem("alertString", "Alert successfully posted.");
                                     window.location.replace("./index");
                                 },
                                 error: function(error) {
-                                    alert(error);
+                                    errorFunction(error.code.toString() + " - " + error.message.toString(), "ParseError", "Script 460");
+                                   BootstrapDialog.show({
+                                        type: BootstrapDialog.TYPE_DEFAULT,
+                                        title: "Error",
+                                        message: "Error occurred. Please try again."
+                                    });
                                     $("#spinnerDiv").html("");
                                 }
                             });
@@ -1011,11 +480,17 @@ var AlertStructure = Parse.Object.extend("AlertStructure", {
                                 'hasTime' : 1
                             },  {
                                 success: function(object) {
-                                    alert("Alert successfully posted.");
+                                    $("#spinnerDiv").html("");
+                                    localStorage.setItem("alertString", "Alert successfully posted.");
                                     window.location.replace("./index");
                                 },
                                 error: function(error) {
-                                    alert(error);
+                                    errorFunction(error.code.toString() + " - " + error.message.toString(), "ParseError", "Script 488");
+                                    BootstrapDialog.show({
+                                        type: BootstrapDialog.TYPE_DEFAULT,
+                                        title: "Error",
+                                        message: "Error occurred. Please try again."
+                                    });
                                     $("#spinnerDiv").html("");
                                 }
                             });
@@ -1023,7 +498,12 @@ var AlertStructure = Parse.Object.extend("AlertStructure", {
                     };
                 },
                 error: function(error) {
-                    alert(error);
+                    errorFunction(error.code.toString() + " - " + error.message.toString(), "ParseError", "Script 501");
+                    BootstrapDialog.show({
+                        type: BootstrapDialog.TYPE_DEFAULT,
+                        title: "Error",
+                        message: "Error occurred. Please try again."
+                    });
                     $("#spinnerDiv").html("");
                 }
             });
@@ -1066,30 +546,51 @@ var ExtracurricularStructure = Parse.Object.extend("ExtracurricularStructure", {
                                             'ownedEC' : ownedEC
                                         }, {
                                             success : function(user) {
-                                                alert("Group successfully registered.");
+                                                $("#spinnerDiv").html("");
+                                                localStorage.setItem("alertString", "Group successfully registered.");
                                                 window.location.replace("./index");
                                             },
                                             error: function(error) {
-                                                alert(error);
+                                                errorFunction(error.code.toString() + " - " + error.message.toString(), "ParseError", "Script 554");
+                                                BootstrapDialog.show({
+                                                    type: BootstrapDialog.TYPE_DEFAULT,
+                                                    title: "Error",
+                                                    message: "Error occurred. Please try again."
+                                                });
                                                 $("#spinnerDiv").html("");
                                             }
                                         });
                                     },
                                     error: function(error) {
-                                        alert(error);
+                                        errorFunction(error.code.toString() + " - " + error.message.toString(), "ParseError", "Script 565");
+                                        BootstrapDialog.show({
+                                            type: BootstrapDialog.TYPE_DEFAULT,
+                                            title: "Error",
+                                            message: "Error occurred. Please try again."
+                                        });
                                         $("#spinnerDiv").html("");
                                     }
                                 });
                             },
                             error: function(error) {
-                                alert(error);
+                                errorFunction(error.code.toString() + " - " + error.message.toString(), "ParseError", "Script 576");
+                                BootstrapDialog.show({
+                                    type: BootstrapDialog.TYPE_DEFAULT,
+                                    title: "Error",
+                                    message: "Error occurred. Please try again."
+                                });
                                 $("#spinnerDiv").html("");
                             }
                         });
                     };
                 },
                 error: function(error) {
-                    alert(error.code + " - " + error.message);
+                    errorFunction(error.code.toString() + " - " + error.message.toString(), "ParseError", "Script 588");
+                    BootstrapDialog.show({
+                        type: BootstrapDialog.TYPE_DEFAULT,
+                        title: "Error",
+                        message: "Error occurred. Please try again."
+                    });
                     $("#spinnerDiv").html("");
                 }
             });
@@ -1103,60 +604,69 @@ $(function() {
  
     Parse.initialize("cLBOvwh6ZTQYex37DSwxL1Cvg34MMiRWYAB4vqs0", "tTcV5Ns1GFdDda44FCcG5XHBDMbLA1sxRUzSnDgW");
 
-    /*if (Parse.User.current()) {
-        var verified = Parse.User.current().get("verified");
-        if (verified === 0) {
-            var verifyView = new VerifyView();
-            verifyView.render();
-            $('.main-container').html(verifyView.el);
-        } else {
-            if (Parse.User.current().get("userType") === "Administration" || Parse.User.current().get("userType") === "Developer") {
-                var welcomeView = new AdminWelcomeView({ model: Parse.User.current() });
-                welcomeView.render();
-                $('.main-container').html(welcomeView.el);
-            } else {
-                var welcomeView = new FacultyWelcomeView({ model: Parse.User.current() });
-                welcomeView.render();
-                $('.main-container').html(welcomeView.el);
-            };
-            var div = document.getElementById('navbar');
-            div.innerHTML = div.innerHTML + '<ul class="nav navbar-nav navbar-right"><li class="dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Account <span class="caret"></span></a><ul class="dropdown-menu"><li><a href="" id="changePassword">Change Password</a></li><li><a href="mailto:support@wildcatconnect.org">Report an issue</a></li><li role="separator" class="divider"></li><li><a href="" id="logOut">Log Out</a></li></ul></li></ul>';
-        };
-	} else {
-		var loginView = new LoginView();
-		loginView.render();
-		$('.main-container').html(loginView.el);
-	};*/
-
 	$('#logOut').click(function() {
 		event.preventDefault();
 
-        var confirm = window.confirm("Are you sure you want to log out and end your session?");
+        BootstrapDialog.confirm({
+          title: 'Confirmation',
+          message: 'Are you sure you want to log out and end your session?',
+          type: BootstrapDialog.TYPE_DANGER, // <-- Default value is BootstrapDialog.TYPE_PRIMARY
+          closable: true, // <-- Default value is false
+          draggable: true, // <-- Default value is false
+          btnCancelLabel: 'No', // <-- Default value is 'Cancel',
+          btnOKLabel: 'Yes', // <-- Default value is 'OK',
+          btnOKClass: 'btn-primary', // <-- If you didn't specify it, dialog type will be used,
+          callback: function(result) {
+              // result will be true if button was click, while it will be false if users close the dialog directly.
+              if(result) {
+                  Parse.User.logOut();
+                  window.location.replace("./login");
+              };
+          }
+        });
 
-        if (confirm == true) {
-            Parse.User.logOut();
-            window.location.replace("./login");
-        };
 	});
 
 	$('#changePassword').click(function() {
-		var c = confirm("Are you sure you want to change your password?");
-		event.preventDefault();
-		if (c == true) {
-			Parse.User.requestPasswordReset(Parse.User.current().get("email"), {
-			  success: function() {
-			  	alert("Check your e-mail for password reset instructions!");
-			  },
-			  error: function(error) {
-			    // Show the error message somewhere
-			    alert("Error: " + error.code + " " + error.message);
-			  }
-			});
-		};
+        event.preventDefault();
+
+        BootstrapDialog.confirm({
+          title: 'Confirmation',
+          message: 'Are you sure you want to change your password?',
+          type: BootstrapDialog.TYPE_DANGER, // <-- Default value is BootstrapDialog.TYPE_PRIMARY
+          closable: true, // <-- Default value is false
+          draggable: true, // <-- Default value is false
+          btnCancelLabel: 'No', // <-- Default value is 'Cancel',
+          btnOKLabel: 'Yes', // <-- Default value is 'OK',
+          btnOKClass: 'btn-primary', // <-- If you didn't specify it, dialog type will be used,
+          callback: function(result) {
+              // result will be true if button was click, while it will be false if users close the dialog directly.
+              if(result) {
+                  Parse.User.requestPasswordReset(Parse.User.current().get("email"), {
+                      success: function() {
+                        var alertString = "Success! Check your e-mail for password reset instructions.";
+                        $('#alertDiv').html('<div class="alert alert-success fade in"><a href="#" class="close" data-dismiss="alert" aria-label="close">Close</a><strong>'+alertString+'</strong></div>');
+                        $('#alertDiv').delay(5000).fadeOut(500);
+                      },
+                      error: function(error) {
+                        errorFunction(error.code.toString() + " - " + error.message.toString(), "ParseError", "Script 652");
+                    $("#spinnerDiv").html("");
+                        BootstrapDialog.show({
+                            type: BootstrapDialog.TYPE_DEFAULT,
+                            title: "Error",
+                            message: "Error occurred. Please try again."
+                        });
+                        $("#spinnerDiv").html("");
+                      }
+                    });
+              };
+          }
+      });
 	});
 
     $('.form-signin').submit(function() {
         event.preventDefault();
+
         var data = $(this).serializeArray(),
             username = data[0].value,
             password = data[1].value;
@@ -1179,10 +689,13 @@ $(function() {
             },
             // If there is an error
             error: function(user, error) {
-                if (error.code === 101) {
-                    alert("Invalid username or password. Please try again.");
-                    $("#spinnerDiv").html("");
-                };
+                errorFunction(error.code.toString() + " - " + error.message.toString(), "ParseError", "Script 692");
+                BootstrapDialog.show({
+                    type: BootstrapDialog.TYPE_DEFAULT,
+                    title: "Error",
+                    message: "Error occurred logging in with those credentials. Please try again."
+                });
+                $("#spinnerDiv").html("");
             }
         });
     });
@@ -1200,11 +713,22 @@ $(function() {
     $('.cancel').click(function() {
         event.preventDefault();
 
-        var confirm = window.confirm("Are you sure you want to go back? Any unsaved progress will be lost.");
-
-        if (confirm == true) {
-            history.back();
-        };
+        BootstrapDialog.confirm({
+          title: 'Confirmation',
+          message: 'Are you sure you want to go back? Any unsaved progress will be lost.',
+          type: BootstrapDialog.TYPE_DANGER, // <-- Default value is BootstrapDialog.TYPE_PRIMARY
+          closable: true, // <-- Default value is false
+          draggable: true, // <-- Default value is false
+          btnCancelLabel: 'No', // <-- Default value is 'Cancel',
+          btnOKLabel: 'Yes', // <-- Default value is 'OK',
+          btnOKClass: 'btn-primary', // <-- If you didn't specify it, dialog type will be used,
+          callback: function(result) {
+              // result will be true if button was click, while it will be false if users close the dialog directly.
+              if(result) {
+                  history.back();
+              };
+          }
+      });
     });
 
     $('.cancel-errors').click(function() {
@@ -1222,25 +746,49 @@ $(function() {
     $('.cancel-schedule').click(function() {
         event.preventDefault();
 
-        var confirm = window.confirm("Are you sure you want to go back? Any unsaved progress will be lost.");
-
-        if (confirm == true) {
-            history.back();
-        };
+        BootstrapDialog.confirm({
+          title: 'Confirmation',
+          message: 'Are you sure you want to go back? Any unsaved progress will be lost.',
+          type: BootstrapDialog.TYPE_DANGER, // <-- Default value is BootstrapDialog.TYPE_PRIMARY
+          closable: true, // <-- Default value is false
+          draggable: true, // <-- Default value is false
+          btnCancelLabel: 'No', // <-- Default value is 'Cancel',
+          btnOKLabel: 'Yes', // <-- Default value is 'OK',
+          btnOKClass: 'btn-primary', // <-- If you didn't specify it, dialog type will be used,
+          callback: function(result) {
+              // result will be true if button was click, while it will be false if users close the dialog directly.
+              if(result) {
+                  history.back();
+              };
+          }
+      });
     });
 
     $('.form-add-news').submit(function() {
         event.preventDefault();
 
-        var confirm = window.confirm("Are you sure you want to submit this Wildcat News Story for administrative approval?");
+        var here = $(this);
 
-        if (confirm == true) {
-            var data = $(this).serializeArray();
+        BootstrapDialog.confirm({
+          title: 'Confirmation',
+          message: 'Are you sure you want to submit this Wildcat News Story for administrative approval?',
+          type: BootstrapDialog.TYPE_DANGER, // <-- Default value is BootstrapDialog.TYPE_PRIMARY
+          closable: true, // <-- Default value is false
+          draggable: true, // <-- Default value is false
+          btnCancelLabel: 'No', // <-- Default value is 'Cancel',
+          btnOKLabel: 'Yes', // <-- Default value is 'OK',
+          btnOKClass: 'btn-primary', // <-- If you didn't specify it, dialog type will be used,
+          callback: function(result) {
+              // result will be true if button was click, while it will be false if users close the dialog directly.
+              if(result) {
+                  var data = here.serializeArray();
  
-            var newsArticle = new NewsArticleStructure();
+                  var newsArticle = new NewsArticleStructure();
 
-            newsArticle.create(data[0].value, data[1].value, document.getElementById('date').value, data[2].value, data[3].value);
-        };
+                  newsArticle.create(data[0].value, data[1].value, document.getElementById('date').value, data[2].value, data[3].value);
+              };
+          }
+      });
     });
 
     $('.form-add-groupUpdate').submit(function() {
@@ -1306,7 +854,7 @@ $(function() {
 
         BootstrapDialog.confirm({
           title: 'Confirmation',
-          message: 'Are you sure you want to submit this event for administrative approval??',
+          message: 'Are you sure you want to submit this event for administrative approval?',
           type: BootstrapDialog.TYPE_DANGER, // <-- Default value is BootstrapDialog.TYPE_PRIMARY
           closable: true, // <-- Default value is false
           draggable: true, // <-- Default value is false
@@ -1329,43 +877,84 @@ $(function() {
     $('.form-add-poll').submit(function() {
         event.preventDefault();
 
-        var confirm = window.confirm("Are you sure you want to submit this User Poll?");
+        var here = $(this);
 
-        if (confirm == true) {
-            var data = $(this).serializeArray();
+        BootstrapDialog.confirm({
+          title: 'Confirmation',
+          message: 'Are you sure you want to submit this User Poll?',
+          type: BootstrapDialog.TYPE_DANGER, // <-- Default value is BootstrapDialog.TYPE_PRIMARY
+          closable: true, // <-- Default value is false
+          draggable: true, // <-- Default value is false
+          btnCancelLabel: 'No', // <-- Default value is 'Cancel',
+          btnOKLabel: 'Yes', // <-- Default value is 'OK',
+          btnOKClass: 'btn-primary', // <-- If you didn't specify it, dialog type will be used,
+          callback: function(result) {
+              // result will be true if button was click, while it will be false if users close the dialog directly.
+              if(result) {
+                  var data = here.serializeArray();
  
-            var poll = new PollStructure();
+                    var poll = new PollStructure();
 
-            poll.create(data[0].value, data[1].value, data[2].value, choicesArray);
-        };
+                    poll.create(data[0].value, data[1].value, data[2].value, choicesArray);
+              };
+          }
+      });
+
     });
 
     $('.form-add-alert').submit(function() {
         event.preventDefault();
 
-        var confirm = window.confirm("Are you sure you want to submit this alert? It will be live to all app users.");
+        var here = $(this);
 
-        if (confirm == true) {
-            var data = $(this).serializeArray();
+        BootstrapDialog.confirm({
+          title: 'Confirmation',
+          message: 'Are you sure you want to submit this alert? It will be live to all app users.',
+          type: BootstrapDialog.TYPE_DANGER, // <-- Default value is BootstrapDialog.TYPE_PRIMARY
+          closable: true, // <-- Default value is false
+          draggable: true, // <-- Default value is false
+          btnCancelLabel: 'No', // <-- Default value is 'Cancel',
+          btnOKLabel: 'Yes', // <-- Default value is 'OK',
+          btnOKClass: 'btn-primary', // <-- If you didn't specify it, dialog type will be used,
+          callback: function(result) {
+              // result will be true if button was click, while it will be false if users close the dialog directly.
+              if(result) {
+                 var data = here.serializeArray();
  
             var alert = new AlertStructure();
 
             alert.create(data[0].value, Parse.User.current().get("firstName") + " " + Parse.User.current().get("lastName"), data[1].value, data[2].value, data[3].value, data[4].value);
-        };
+              };
+          }
+      });
     });
 
     $('.form-add-groupRegister').submit(function() {
         event.preventDefault();
 
-        var confirm = window.confirm("Are you sure you want to register this new group?");
+        var here = $(this);
 
-        if (confirm == true) {
-            var data = $(this).serializeArray();
+        BootstrapDialog.confirm({
+          title: 'Confirmation',
+          message: 'Are you sure you want to register this new group?',
+          type: BootstrapDialog.TYPE_DANGER, // <-- Default value is BootstrapDialog.TYPE_PRIMARY
+          closable: true, // <-- Default value is false
+          draggable: true, // <-- Default value is false
+          btnCancelLabel: 'No', // <-- Default value is 'Cancel',
+          btnOKLabel: 'Yes', // <-- Default value is 'OK',
+          btnOKClass: 'btn-primary', // <-- If you didn't specify it, dialog type will be used,
+          callback: function(result) {
+              // result will be true if button was click, while it will be false if users close the dialog directly.
+              if(result) {
+                 var data = here.serializeArray();
  
-            var EC = new ExtracurricularStructure();
+                 var EC = new ExtracurricularStructure();
 
-            EC.create(data[0].value, data[1].value);
-        };
+                 EC.create(data[0].value, data[1].value);
+              };
+          }
+      });
+
     });
 
     $('.form-add-custom').submit(function() {
@@ -1377,35 +966,62 @@ $(function() {
         var custom = data[1].value;
 
         if (! custom) {
-            alert("No data entered!");
+            BootstrapDialog.show({
+                type: BootstrapDialog.TYPE_DEFAULT,
+                title: "Error",
+                message: "No data entered!"
+            });
         } else {
-            var confirm = window.confirm("Are you sure you want to save this custom schedule?");
-
-            if (confirm == true) {
-                $("#spinnerDiv").html('<a><img src="./../spinner.gif" alt="Logo" width="40" style="vertical-align: middle; padding-top:12px; padding-left:10px;"/></a>');
-                var query = new Parse.Query("SchoolDayStructure");
-                query.equalTo("schoolDayID", parseInt(localStorage.getItem("customID")));
-                query.first({
-                    success: function(object) {
-                        object.set("customString", description);
-                        object.set("customSchedule", custom);
-                        object.set("scheduleType", "*");
-                        object.save(null, {
-                            success: function() {
-                                alert("Schedule successfully updated.");
-                                $("#spinnerDiv").html("");
-                                window.location.replace("./schedule");
+                BootstrapDialog.confirm({
+                  title: 'Confirmation',
+                  message: 'Are you sure you want to save this custom schedule?',
+                  type: BootstrapDialog.TYPE_DANGER, // <-- Default value is BootstrapDialog.TYPE_PRIMARY
+                  closable: true, // <-- Default value is false
+                  draggable: true, // <-- Default value is false
+                  btnCancelLabel: 'No', // <-- Default value is 'Cancel',
+                  btnOKLabel: 'Yes', // <-- Default value is 'OK',
+                  btnOKClass: 'btn-primary', // <-- If you didn't specify it, dialog type will be used,
+                  callback: function(result) {
+                      // result will be true if button was click, while it will be false if users close the dialog directly.
+                      if(result) {
+                         $("#spinnerDiv").html('<a><img src="./../spinner.gif" alt="Logo" width="40" style="vertical-align: middle; padding-top:12px; padding-left:10px;"/></a>');
+                        var query = new Parse.Query("SchoolDayStructure");
+                        query.equalTo("schoolDayID", parseInt(localStorage.getItem("customID")));
+                        query.first({
+                            success: function(object) {
+                                object.set("customString", description);
+                                object.set("customSchedule", custom);
+                                object.set("scheduleType", "*");
+                                object.save(null, {
+                                    success: function() {
+                                        $("#spinnerDiv").html("");
+                                        localStorage.setItem("alertStringSchedule", "Schedule successfully updated.");
+                                        window.location.replace("./schedule");
+                                    },
+                                    error: function(error) {
+                                        errorFunction(error.code.toString() + " - " + error.message.toString(), "ParseError", "Script 1002");
+                                        BootstrapDialog.show({
+                                            type: BootstrapDialog.TYPE_DEFAULT,
+                                            title: "Error",
+                                            message: "Error occurred. Please try again."
+                                        });
+                                        $("#spinnerDiv").html("");
+                                    }
+                                });
                             },
                             error: function(error) {
-                                alert(error.code + " - " + error.message);
+                                errorFunction(error.code.toString() + " - " + error.message.toString(), "ParseError", "Script 1013");
+                                BootstrapDialog.show({
+                                    type: BootstrapDialog.TYPE_DEFAULT,
+                                    title: "Error",
+                                    message: "Error occurred. Please try again."
+                                });
+                                $("#spinnerDiv").html("");
                             }
                         });
-                    },
-                    error: function(error) {
-                        alert(error.code + " - " + error.message);
-                    }
-                });
-            };
+                      };
+                  }
+              });
             
         };
     });
@@ -1427,22 +1043,44 @@ $(function() {
                     }, {
                         success: function() {
                             Parse.User.logOut();
-                            alert("Registration complete! Welcome to WildcatConnect! Please re-enter your login credentials.");
-                            window.location.replace("./login");
+                            BootstrapDialog.show({
+                                type: BootstrapDialog.TYPE_DEFAULT,
+                                title: "Success",
+                                message: "Registration complete! Welcome to WildcatConnect! Please re-enter your login credentials.",
+                                onhide: function(dialogRef) {
+                                    window.location.replace("./login");
+                                }
+                            });
                         },
                         error: function(error) {
-                            alert(error.code + " - " + error.message);
+                            Parse.User.logOut();
+                            errorFunction(error.code.toString() + " - " + error.message.toString(), "ParseError", "Script 1057");
+                            BootstrapDialog.show({
+                                type: BootstrapDialog.TYPE_DEFAULT,
+                                title: "Error",
+                                message: "An error occurred. Please try again."
+                            });
                             window.location.replace("./login");
                         }
                     });
                 },
                 error: function(error) {
-                    alert(error.code + " - " + error.message);
+                    errorFunction(error.code.toString() + " - " + error.message.toString(), "ParseError", "Script 1068");
+                    $("#spinnerDiv").html("");
+                    BootstrapDialog.show({
+                        type: BootstrapDialog.TYPE_DEFAULT,
+                        title: "Error",
+                        message: "An error occurred. Please try again."
+                    });
                     window.location.replace("./login");
                 }
             });
         } else {
-            alert("Incorrect registration key.");
+            BootstrapDialog.show({
+                type: BootstrapDialog.TYPE_DEFAULT,
+                title: "Error",
+                message: "Incorrect registration key."
+            });
             Parse.User.logOut();
             window.location.replace("./login");
         };
@@ -1451,158 +1089,204 @@ $(function() {
     $('.saveLunch').click(function() {
         event.preventDefault();
 
-        var confirm = window.confirm("Are you sure you want to save this breakfast and lunch information?");
-
-        if (confirm == true) {
-            $("#spinnerDiv").html('<a><img src="./../spinner.gif" alt="Logo" width="40" style="vertical-align: middle; padding-top:12px; padding-left:10px;"/></a>');
+        BootstrapDialog.confirm({
+          title: 'Confirmation',
+          message: 'Are you sure you want to save this breakfast and lunch information?',
+          type: BootstrapDialog.TYPE_DANGER, // <-- Default value is BootstrapDialog.TYPE_PRIMARY
+          closable: true, // <-- Default value is false
+          draggable: true, // <-- Default value is false
+          btnCancelLabel: 'No', // <-- Default value is 'Cancel',
+          btnOKLabel: 'Yes', // <-- Default value is 'OK',
+          btnOKClass: 'btn-primary', // <-- If you didn't specify it, dialog type will be used,
+          callback: function(result) {
+              // result will be true if button was click, while it will be false if users close the dialog directly.
+              if(result) {
+                 $("#spinnerDiv").html('<a><img src="./../spinner.gif" alt="Logo" width="40" style="vertical-align: middle; padding-top:12px; padding-left:10px;"/></a>');
 
             var array = new Array();
 
-            var query = new Parse.Query("SchoolDayStructure");
-            query.equalTo("isActive", 1);
-            query.ascending("schoolDayID");
-            query.find({
-                success: function(structures) {
-                    for (var i = 0; i < structures.length; i++) {
-                        var ID = "#b_" + i.toString();
-                        var newBreakfast = $(ID).val();
-                        var ID2 = "#l_" + i.toString();
-                        var newLunch = $(ID2).val();
-                        structures[i].set("breakfastString", newBreakfast);
-                        structures[i].set("lunchString", newLunch);
-                        array.push(structures[i]);
-                    };
-                    Parse.Object.saveAll(array, {
-                        success: function(objects) {
-                            alert("Breakfasts and lunches successfully updated.");
-                            $("#spinnerDiv").html("");
-                            window.location.replace("./lunch");
+                    var query = new Parse.Query("SchoolDayStructure");
+                    query.equalTo("isActive", 1);
+                    query.ascending("schoolDayID");
+                    query.find({
+                        success: function(structures) {
+                            for (var i = 0; i < structures.length; i++) {
+                                var ID = "#b_" + i.toString();
+                                var newBreakfast = $(ID).val();
+                                var ID2 = "#l_" + i.toString();
+                                var newLunch = $(ID2).val();
+                                structures[i].set("breakfastString", newBreakfast);
+                                structures[i].set("lunchString", newLunch);
+                                array.push(structures[i]);
+                            };
+                            Parse.Object.saveAll(array, {
+                                success: function(objects) {
+                                    alert("Breakfasts and lunches successfully updated.");
+                                    $("#spinnerDiv").html("");
+                                    window.location.replace("./lunch");
+                                },
+                                error: function(error) {
+                                    errorFunction(error.code.toString() + " - " + error.message.toString(), "ParseError", "Script 1129");
+                                       BootstrapDialog.show({
+                                            type: BootstrapDialog.TYPE_DEFAULT,
+                                            title: "Error",
+                                            message: "Error occurred. Please try again."
+                                        });
+                                        $("#spinnerDiv").html("");
+                                }
+                            });
                         },
                         error: function(error) {
-                            alert(error.code + " - " + error.message);
+                            errorFunction(error.code.toString() + " - " + error.message.toString(), "ParseError", "Script 1140");
+                           BootstrapDialog.show({
+                                type: BootstrapDialog.TYPE_DEFAULT,
+                                title: "Error",
+                                message: "Error occurred. Please try again."
+                            });
                             $("#spinnerDiv").html("");
                         }
                     });
-                },
-                error: function(error) {
-                    alert(error.code + " - " + error.message);
-                    $("#spinnerDiv").html("");
-                }
-            });
-        };
+              };
+          }
+      });
 
     });
 
     $('.saveLinks').click(function() {
         event.preventDefault();
 
-        var confirm = window.confirm("Are you sure you want to save these links? They will be live for all app users.");
+        BootstrapDialog.confirm({
+          title: 'Confirmation',
+          message: 'Are you sure you want to save these links? They will be live for all app users.',
+          type: BootstrapDialog.TYPE_DANGER, // <-- Default value is BootstrapDialog.TYPE_PRIMARY
+          closable: true, // <-- Default value is false
+          draggable: true, // <-- Default value is false
+          btnCancelLabel: 'No', // <-- Default value is 'Cancel',
+          btnOKLabel: 'Yes', // <-- Default value is 'OK',
+          btnOKClass: 'btn-primary', // <-- If you didn't specify it, dialog type will be used,
+          callback: function(result) {
+              // result will be true if button was click, while it will be false if users close the dialog directly.
+              if(result) {
+                 $("#spinnerDiv").html('<a><img src="./../spinner.gif" alt="Logo" width="40" style="vertical-align: middle; padding-top:12px; padding-left:10px;"/></a>');
 
-        if (confirm == true) {
-            $("#spinnerDiv").html('<a><img src="./../spinner.gif" alt="Logo" width="40" style="vertical-align: middle; padding-top:12px; padding-left:10px;"/></a>');
+                var query = new Parse.Query("UsefulLinkArray");
+                query.ascending("index");
+                query.find({
+                    success: function(structures) {
+                        Parse.Object.destroyAll(structures, {
+                            success: function() {
+                                var everything = document.getElementById("links");
 
-            var query = new Parse.Query("UsefulLinkArray");
-            query.ascending("index");
-            query.find({
-                success: function(structures) {
-                    Parse.Object.destroyAll(structures, {
-                        success: function() {
-                            var everything = document.getElementById("links");
+                                var tableCount = everything.getElementsByTagName("table").length;
 
-                            var tableCount = everything.getElementsByTagName("table").length;
+                                var finalArray = new Array();
 
-                            var finalArray = new Array();
+                                var work = true;
 
-                            var work = true;
-
-                            for (var i = 0; i < tableCount; i++) {
-                                var UsefulLinkArray = Parse.Object.extend("UsefulLinkArray");
-                                var object = new UsefulLinkArray();
-                                var headerID = "#header_" + i.toString();
-                                var headerTitle = $(headerID).val();
-                                object.set("headerTitle", headerTitle);
-                                object.set("index", i);
-                                var rows = document.getElementById("table_" + i.toString()).rows;
-                                var array = [];
-                                for (var j = 0; j < rows.length - 1; j++) {
-                                    var dictionary = {};
-                                    var titleID = "#title_" + i + "_" + j;
-                                    var titleString = $(titleID).val();
-                                    if (! titleString) {
-                                        work = false;
-                                        alert("Please ensure you have correctly filled all fields!");
-                                        var test = $(titleID).css("border-color");
-                                        $(titleID).css("border-color", "red");
-                                        break;
-                                    } else {
-                                        dictionary["titleString"] = titleString;
-                                        $(titleID).css("border-color", "rgb(51, 51, 51");
+                                for (var i = 0; i < tableCount; i++) {
+                                    var UsefulLinkArray = Parse.Object.extend("UsefulLinkArray");
+                                    var object = new UsefulLinkArray();
+                                    var headerID = "#header_" + i.toString();
+                                    var headerTitle = $(headerID).val();
+                                    object.set("headerTitle", headerTitle);
+                                    object.set("index", i);
+                                    var rows = document.getElementById("table_" + i.toString()).rows;
+                                    var array = [];
+                                    for (var j = 0; j < rows.length - 1; j++) {
+                                        var dictionary = {};
+                                        var titleID = "#title_" + i + "_" + j;
+                                        var titleString = $(titleID).val();
+                                        if (! titleString) {
+                                            work = false;
+                                            alert("Please ensure you have correctly filled all fields!");
+                                            var test = $(titleID).css("border-color");
+                                            $(titleID).css("border-color", "red");
+                                            break;
+                                        } else {
+                                            dictionary["titleString"] = titleString;
+                                            $(titleID).css("border-color", "rgb(51, 51, 51");
+                                        };
+                                        var linkID = "#link_" + i + "_" + j;
+                                        var linkString = $(linkID).val();
+                                        if (! linkString) {
+                                            work = false;
+                                            alert("Please ensure you have correctly filled all fields!");
+                                            $(linkID).css("border-color", "red");
+                                            break;
+                                        } else {
+                                            dictionary["URLString"] = linkString;
+                                            $(linkID).css("border-color", "rgb(51, 51, 51");
+                                        };
+                                        array.push(dictionary);
                                     };
-                                    var linkID = "#link_" + i + "_" + j;
-                                    var linkString = $(linkID).val();
-                                    if (! linkString) {
-                                        work = false;
-                                        alert("Please ensure you have correctly filled all fields!");
-                                        $(linkID).css("border-color", "red");
-                                        break;
+                                    if (work == true) {
+                                        object.set("linksArray", array);
+                                        finalArray.push(object);
                                     } else {
-                                        dictionary["URLString"] = linkString;
-                                        $(linkID).css("border-color", "rgb(51, 51, 51");
+                                        break;
                                     };
-                                    array.push(dictionary);
                                 };
+
                                 if (work == true) {
-                                    object.set("linksArray", array);
-                                    finalArray.push(object);
+                                    Parse.Object.saveAll(finalArray, {
+                                        success: function(objects) {
+                                            alert("Links successfully updated.");
+                                            $("#spinnerDiv").html("");
+                                            window.location.replace("./links");
+                                        },
+                                        error: function(error) {
+                                            errorFunction(error.code.toString() + " - " + error.message.toString(), "ParseError", "Script 1238");
+                                           BootstrapDialog.show({
+                                                type: BootstrapDialog.TYPE_DEFAULT,
+                                                title: "Error",
+                                                message: "Error occurred. Please try again."
+                                            });
+                                            $("#spinnerDiv").html("");
+                                        }
+                                    });
                                 } else {
-                                    break;
+                                    Parse.Object.saveAll(structures, {
+                                        success: function(objects) {
+                                            $("#spinnerDiv").html("");
+                                        },
+                                        error: function(error) {
+                                            errorFunction(error.code.toString() + " - " + error.message.toString(), "ParseError", "Script 1253");
+                                           BootstrapDialog.show({
+                                                type: BootstrapDialog.TYPE_DEFAULT,
+                                                title: "Error",
+                                                message: "Error occurred. Please try again."
+                                            });
+                                            $("#spinnerDiv").html("");
+                                        }
+                                    });
                                 };
-                            };
-
-                            if (work == true) {
-                                Parse.Object.saveAll(finalArray, {
-                                    success: function(objects) {
-                                        alert("Links successfully updated.");
-                                        $("#spinnerDiv").html("");
-                                        window.location.replace("./links");
-                                    },
-                                    error: function(error) {
-                                        alert(error.code + " - " + error.message);
-                                        $("#spinnerDiv").html("");
-                                    }
+                            },
+                            error: function(error) {
+                                errorFunction(error.code.toString() + " - " + error.message.toString(), "ParseError", "Script 1265");
+                               BootstrapDialog.show({
+                                    type: BootstrapDialog.TYPE_DEFAULT,
+                                    title: "Error",
+                                    message: "Error occurred. Please try again."
                                 });
-                            } else {
-                                Parse.Object.saveAll(structures, {
-                                    success: function(objects) {
-                                        $("#spinnerDiv").html("");
-                                    },
-                                    error: function(error) {
-                                        alert(error.code + " - " + error.message);
-                                        $("#spinnerDiv").html("");
-                                    }
-                                });
-                            };
-                        },
-                        error: function(error) {
-                            alert(error.code + " - " + error.message);
-                            $("#spinnerDiv").html("");
-                        }
-                    });
-                },
-                error: function(error) {
-                    alert(error.code + " - " + error.message);
-                    $("#spinnerDiv").html("");
-                }
-            });
-        };
+                                $("#spinnerDiv").html("");
+                            }
+                        });
+                    },
+                    error: function(error) {
+                        errorFunction(error.code.toString() + " - " + error.message.toString(), "ParseError", "Script 1276");
+                       BootstrapDialog.show({
+                            type: BootstrapDialog.TYPE_DEFAULT,
+                            title: "Error",
+                            message: "Error occurred. Please try again."
+                        });
+                        $("#spinnerDiv").html("");
+                    }
+                });
+              };
+          }
+      });
 
     });
-
-    $(window).error( 
-      function(e, url, line){
-        console.log(e + " - " + url + " - " + line);
-      }
-    );
 
 });
 
@@ -1714,37 +1398,59 @@ function loadNewUserTable() {
                             
                             //Approve the user at i
 
-                            var confirm = window.confirm("Are you sure you want to approve this user?");
+                            BootstrapDialog.confirm({
+                                  title: 'Confirmation',
+                                  message: 'Are you sure you want to approve this user?',
+                                  type: BootstrapDialog.TYPE_DANGER, // <-- Default value is BootstrapDialog.TYPE_PRIMARY
+                                  closable: true, // <-- Default value is false
+                                  draggable: true, // <-- Default value is false
+                                  btnCancelLabel: 'No', // <-- Default value is 'Cancel',
+                                  btnOKLabel: 'Yes', // <-- Default value is 'OK',
+                                  btnOKClass: 'btn-primary', // <-- If you didn't specify it, dialog type will be used,
+                                  callback: function(result) {
+                                      // result will be true if button was click, while it will be false if users close the dialog directly.
+                                      if(result) {
+                                         $("#spinnerDiv").html('<a><img src="./../spinner.gif" alt="Logo" width="40" style="vertical-align: middle; padding-top:12px; padding-left:10px;"/></a>');
 
-                            if (confirm == true) {
-                                $("#spinnerDiv").html('<a><img src="./../spinner.gif" alt="Logo" width="40" style="vertical-align: middle; padding-top:12px; padding-left:10px;"/></a>');
+                                        var user = window.userArray[count];
 
-                                var user = window.userArray[count];
+                                        var password = user.get("password");
+                                        var key = user.get("key");
 
-                                var password = user.get("password");
-                                var key = user.get("key");
-
-                                Parse.Cloud.run("decryptPassword", { "password" : password}, {
-                                    success: function(here) {
-                                        Parse.Cloud.run('registerUser', { "username" : user.get("username") , "password" : here , "email" : user.get("email") , "firstName" : user.get("firstName") , "lastName" : user.get("lastName"), "key" : key }, {
-                                          success: function() {
-                                            $("#spinnerDiv").html("");
-                                            alert("User approved!");
-                                            $(document).ready(loadNewUserTable());
-                                            $(document).ready(loadExistingUserTable());
-                                          },
-                                          error: function(error) {
-                                            alert(error);
-                                            $("#spinnerDiv").html("");
-                                          }
+                                        Parse.Cloud.run("decryptPassword", { "password" : password}, {
+                                            success: function(here) {
+                                                Parse.Cloud.run('registerUser', { "username" : user.get("username") , "password" : here , "email" : user.get("email") , "firstName" : user.get("firstName") , "lastName" : user.get("lastName"), "key" : key }, {
+                                                  success: function() {
+                                                    $("#spinnerDiv").html("");
+                                                    var alertString = "User approved!";
+                                                    localStorage.setItem("userAlertString", alertString);
+                                                    $(document).ready(loadNewUserTable());
+                                                    $(document).ready(loadExistingUserTable());
+                                                  },
+                                                  error: function(error) {
+                                                    errorFunction(error.code.toString() + " - " + error.message.toString(), "ParseError", "Script 1431");
+                                                   BootstrapDialog.show({
+                                                        type: BootstrapDialog.TYPE_DEFAULT,
+                                                        title: "Error",
+                                                        message: "Error occurred. Please try again."
+                                                    });
+                                                    $("#spinnerDiv").html("");
+                                                  }
+                                                });
+                                            },
+                                            error: function(error) {
+                                                errorFunction(error.code.toString() + " - " + error.message.toString(), "ParseError", "Script 1442");
+                                               BootstrapDialog.show({
+                                                    type: BootstrapDialog.TYPE_DEFAULT,
+                                                    title: "Error",
+                                                    message: "Error occurred. Please try again."
+                                                });
+                                                $("#spinnerDiv").html("");
+                                            }
                                         });
-                                    },
-                                    error: function(error) {
-                                        alert(error.message);
-                                        $("#spinnerDiv").html("");
-                                    }
-                                });
-                            };
+                                      };
+                                  }
+                              });
                         };
                     })();
                     tdFour.appendChild(button);
@@ -1762,36 +1468,58 @@ function loadNewUserTable() {
 
                         return function(e) {
 
-                            var confirm = window.confirm("Are you sure you want to deny this user?");
+                            BootstrapDialog.confirm({
+                                  title: 'Confirmation',
+                                  message: 'Are you sure you want to deny this user?',
+                                  type: BootstrapDialog.TYPE_DANGER, // <-- Default value is BootstrapDialog.TYPE_PRIMARY
+                                  closable: true, // <-- Default value is false
+                                  draggable: true, // <-- Default value is false
+                                  btnCancelLabel: 'No', // <-- Default value is 'Cancel',
+                                  btnOKLabel: 'Yes', // <-- Default value is 'OK',
+                                  btnOKClass: 'btn-primary', // <-- If you didn't specify it, dialog type will be used,
+                                  callback: function(result) {
+                                      // result will be true if button was click, while it will be false if users close the dialog directly.
+                                      if(result) {
+                                         $("#spinnerDiv").html('<a><img src="./../spinner.gif" alt="Logo" width="40" style="vertical-align: middle; padding-top:12px; padding-left:10px;"/></a>');
 
-                            if (confirm == true) {
-                                $("#spinnerDiv").html('<a><img src="./../spinner.gif" alt="Logo" width="40" style="vertical-align: middle; padding-top:12px; padding-left:10px;"/></a>');
+                                            var user = window.userArray[count];
 
-                                var user = window.userArray[count];
-
-                                var query = new Parse.Query("UserRegisterStructure");
-                                query.equalTo("username", user.get("username"));
-                                query.first({
-                                    success: function(object) {
-                                        object.destroy({
-                                            success: function(object) {
-                                                alert("User successfully denied request.");
-                                                $("#spinnerDiv").html("");
-                                                $(document).ready(loadNewUserTable());
-                                                $(document).ready(loadExistingUserTable());
-                                            },
-                                            error: function(error) {
-                                                alert(error);
-                                                $("#spinnerDiv").html("");
-                                            }
-                                        });
-                                    },
-                                    error: function(error) {
-                                        alert(error);
-                                        $("#spinnerDiv").html("");
-                                    }
-                                });
-                            };
+                                            var query = new Parse.Query("UserRegisterStructure");
+                                            query.equalTo("username", user.get("username"));
+                                            query.first({
+                                                success: function(object) {
+                                                    object.destroy({
+                                                        success: function(object) {
+                                                            $("#spinnerDiv").html("");
+                                                            var alertString = "User successfully denied account request.";
+                                                            localStorage.setItem("userAlertString", alertString);
+                                                            $(document).ready(loadNewUserTable());
+                                                            $(document).ready(loadExistingUserTable());
+                                                        },
+                                                        error: function(error) {
+                                                            errorFunction(error.code.toString() + " - " + error.message.toString(), "ParseError", "Script 1500");
+                                                           BootstrapDialog.show({
+                                                                type: BootstrapDialog.TYPE_DEFAULT,
+                                                                title: "Error",
+                                                                message: "Error occurred. Please try again."
+                                                            });
+                                                            $("#spinnerDiv").html("");
+                                                        }
+                                                    });
+                                                },
+                                                error: function(error) {
+                                                    errorFunction(error.code.toString() + " - " + error.message.toString(), "ParseError", "Script 1511");
+                                                   BootstrapDialog.show({
+                                                        type: BootstrapDialog.TYPE_DEFAULT,
+                                                        title: "Error",
+                                                        message: "Error occurred. Please try again."
+                                                    });
+                                                    $("#spinnerDiv").html("");
+                                                }
+                                            });
+                                      };
+                                  }
+                              });
 
                         };
                     })();
@@ -1811,6 +1539,16 @@ function loadNewUserTable() {
 
 function loadExistingUserTable() {
 	return function() {
+
+        $('#userAlertDiv').css("display", "block");
+
+        var alertString = localStorage.getItem("userAlertString");
+        if (alertString && alertString.length > 0) {
+            localStorage.setItem("userAlertString", "");
+            $('#userAlertDiv').html('<div class="alert alert-success fade in"><a href="#" class="close" data-dismiss="alert" aria-label="close">Close</a><strong>'+alertString+'</strong></div>');
+            $('#userAlertDiv').delay(5000).fadeOut(500);
+        };
+
 		var query = new Parse.Query("User");
 		query.ascending("lastName");
 		query.find({
@@ -1891,27 +1629,45 @@ function loadExistingUserTable() {
 
                         return function(e) {
 
-                            var confirm = window.confirm("Are you sure you want to update this user?");
+                            var index = this.selectedIndex - 1;
 
-                            if (confirm == true) {
-                                var key = theArray[this.selectedIndex - 1];
+                            BootstrapDialog.confirm({
+                                  title: 'Confirmation',
+                                  message: 'Are you sure you want to update this user?',
+                                  type: BootstrapDialog.TYPE_DANGER, // <-- Default value is BootstrapDialog.TYPE_PRIMARY
+                                  closable: true, // <-- Default value is false
+                                  draggable: true, // <-- Default value is false
+                                  btnCancelLabel: 'No', // <-- Default value is 'Cancel',
+                                  btnOKLabel: 'Yes', // <-- Default value is 'OK',
+                                  btnOKClass: 'btn-primary', // <-- If you didn't specify it, dialog type will be used,
+                                  callback: function(result) {
+                                      // result will be true if button was click, while it will be false if users close the dialog directly.
+                                      if(result) {
+                                         var key = theArray[index];
 
-                                $("#spinnerDiv").html('<a><img src="./../spinner.gif" alt="Logo" width="40" style="vertical-align: middle; padding-top:12px; padding-left:10px;"/></a>');
+                                        $("#spinnerDiv").html('<a><img src="./../spinner.gif" alt="Logo" width="40" style="vertical-align: middle; padding-top:12px; padding-left:10px;"/></a>');
 
-                                Parse.Cloud.run('updateType', { "username" : structures[count].get("username") , "type" : key }, {
-                                  success: function() {
-                                    alert("User successfully updated.");
-                                    $("#spinnerDiv").html("");
-                                    $(document).ready(loadNewUserTable());
-                                    $(document).ready(loadExistingUserTable());
-                                  },
-                                  error: function(error) {
-                                    alert(error);
-                                    $("#spinnerDiv").html("");
+                                        Parse.Cloud.run('updateType', { "username" : structures[count].get("username") , "type" : key }, {
+                                          success: function() {
+                                            $("#spinnerDiv").html("");
+                                            var alertString = "User successfully updated.";
+                                            localStorage.setItem("userAlertString", alertString);
+                                            $(document).ready(loadNewUserTable());
+                                            $(document).ready(loadExistingUserTable());
+                                          },
+                                          error: function(error) {
+                                            errorFunction(error.code.toString() + " - " + error.message.toString(), "ParseError", "Script 1659");
+                                           BootstrapDialog.show({
+                                                type: BootstrapDialog.TYPE_DEFAULT,
+                                                title: "Error",
+                                                message: "Error occurred. Please try again."
+                                            });
+                                            $("#spinnerDiv").html("");
+                                          }
+                                        });
+                                      };
                                   }
-                                });
-
-                            };
+                              });
 
                         };
                     })();
@@ -1931,32 +1687,54 @@ function loadExistingUserTable() {
 					    var count = i;
 
 					    return function(e) {
-					        
-					    	var user = window.existingUserArray[count];
 
-                            if (user.get("username") != Parse.User.current().get("username").toString()) {
-                                var c = confirm("Are you sure you want to delete " + user.get("firstName") + " " + user.get("lastName") + " as a user?");
-                                event.preventDefault();
-                                if (c == true) {
-                                    $("#spinnerDiv").html('<a><img src="./../spinner.gif" alt="Logo" width="40" style="vertical-align: middle; padding-top:12px; padding-left:10px;"/></a>');
+                            BootstrapDialog.confirm({
+                                  title: 'Confirmation',
+                                  message: 'Are you sure you want to delete this user?',
+                                  type: BootstrapDialog.TYPE_DANGER, // <-- Default value is BootstrapDialog.TYPE_PRIMARY
+                                  closable: true, // <-- Default value is false
+                                  draggable: true, // <-- Default value is false
+                                  btnCancelLabel: 'No', // <-- Default value is 'Cancel',
+                                  btnOKLabel: 'Yes', // <-- Default value is 'OK',
+                                  btnOKClass: 'btn-primary', // <-- If you didn't specify it, dialog type will be used,
+                                  callback: function(result) {
+                                      // result will be true if button was click, while it will be false if users close the dialog directly.
+                                      if(result) {
+                                         var user = window.existingUserArray[count];
 
-                                    Parse.Cloud.run('deleteUser', { "username" : user.get("username") }, {
-                                      success: function() {
-                                        alert("User successfully deleted.");
-                                        $("#spinnerDiv").html("");
-                                        $(document).ready(loadNewUserTable());
-                                        $(document).ready(loadExistingUserTable());
-                                      },
-                                      error: function(error) {
-                                        alert(error);
-                                        $("#spinnerDiv").html("");
-                                      }
-                                    });
-                                };
-                            } else {
-                                alert("You cannot delete yourself as a user!");
-                                $("#spinnerDiv").html("");
-                            };
+                                            if (user.get("username") != Parse.User.current().get("username").toString()) {
+                                                $("#spinnerDiv").html('<a><img src="./../spinner.gif" alt="Logo" width="40" style="vertical-align: middle; padding-top:12px; padding-left:10px;"/></a>');
+
+                                                Parse.Cloud.run('deleteUser', { "username" : user.get("username") }, {
+                                                  success: function() {
+                                                    $("#spinnerDiv").html("");
+                                                        var alertString = "User successfully deleted.";
+                                                        $('#userAlertDiv').html('<div class="alert alert-success fade in"><a href="#" class="close" data-dismiss="alert" aria-label="close">Close</a><strong>'+alertString+'</strong></div>');
+                                                        $('#userAlertDiv').delay(5000).fadeOut(500);
+                                                        $(document).ready(loadNewUserTable());
+                                                        $(document).ready(loadExistingUserTable());
+                                                  },
+                                                  error: function(error) {
+                                                    errorFunction(error.code.toString() + " - " + error.message.toString(), "ParseError", "Script 1718");
+                                                   BootstrapDialog.show({
+                                                        type: BootstrapDialog.TYPE_DEFAULT,
+                                                        title: "Error",
+                                                        message: "Error occurred. Please try again."
+                                                    });
+                                                    $("#spinnerDiv").html("");
+                                                  }
+                                                });
+                                            } else {
+                                                BootstrapDialog.show({
+                                                    type: BootstrapDialog.TYPE_DEFAULT,
+                                                    title: "Error",
+                                                    message: "Whoops! You cannot delete yourself as a user."
+                                                });
+                                                $("#spinnerDiv").html("");
+                                            };
+                                      };
+                                  }
+                              });
 
 					    };
 					})();
@@ -2020,10 +1798,7 @@ function loadLunchTable() {
                     tr.appendChild(th);
                 };
 
-                window.existingUserArray = new Array();
-
                 for (var i = 0; i < structures.length; i++) {
-                    window.existingUserArray.push(structures[i]);
                     var tr = document.createElement("TR");
                     var tdTwo = document.createElement("TD");
                     var parts = structures[i].get("schoolDate").split('-');
@@ -2041,6 +1816,7 @@ function loadLunchTable() {
                     breakfastText.style.overflowY = "scroll";
                     breakfastText.style.resize = "none";
                     breakfastText.id = "b_" + i;
+                    breakfastText.maxLength = 80;
                     tdOne.appendChild(breakfastText);
                     tr.appendChild(tdOne);
 
@@ -2053,6 +1829,7 @@ function loadLunchTable() {
                     lunchText.style.overflowY = "scroll";
                     lunchText.style.resize = "none";
                     lunchText.id = "l_" + i;
+                    lunchText.maxLength = 80;
                     tdThree.appendChild(lunchText);
                     tr.appendChild(tdThree);
 
@@ -2065,8 +1842,13 @@ function loadLunchTable() {
 
             },
             error: function(error) {
+                errorFunction(error.code.toString() + " - " + error.message.toString(), "ParseError", "Script 1845");
+               BootstrapDialog.show({
+                    type: BootstrapDialog.TYPE_DEFAULT,
+                    title: "Error",
+                    message: "Error occurred. Please try again."
+                });
                 $("#spinnerDiv").html("");
-                alert(error);
             }
         });
 	}
@@ -2074,6 +1856,15 @@ function loadLunchTable() {
 
 function loadNewsTable() {
     return function() {
+
+        $('#newsAlertDiv').css("display", "block");
+
+        var alertString = localStorage.getItem("newsAlertString");
+        if (alertString && alertString.length > 0) {
+            localStorage.setItem("newsAlertString", "");
+            $('#newsAlertDiv').html('<div class="alert alert-success fade in"><a href="#" class="close" data-dismiss="alert" aria-label="close">Close</a><strong>'+alertString+'</strong></div>');
+            $('#newsAlertDiv').delay(5000).fadeOut(500);
+        };
 
         $("#spinnerDiv").html('<a><img src="./../spinner.gif" alt="Logo" width="40" style="vertical-align: middle; padding-top:12px; padding-left:10px;"/></a>');
 
@@ -2118,10 +1909,7 @@ function loadNewsTable() {
                     tr.appendChild(th);
                 };
 
-                window.existingUserArray = new Array();
-
                 for (var i = 0; i < structures.length; i++) {
-                    window.existingUserArray.push(structures[i]);
                     var tr = document.createElement("TR");
                     var tdTwo = document.createElement("TD");
                     var date = structures[i].createdAt;
@@ -2155,24 +1943,41 @@ function loadNewsTable() {
                             
                             //Approve the user at i
 
-                            var confirm = window.confirm("Are you sure you want to approve this Wildcat News Story? It will be live to all app users.");
+                            BootstrapDialog.confirm({
+                                  title: 'Confirmation',
+                                  message: 'Are you sure you want to approve this Wildcat News Story? It will be live to all app users.',
+                                  type: BootstrapDialog.TYPE_DANGER, // <-- Default value is BootstrapDialog.TYPE_PRIMARY
+                                  closable: true, // <-- Default value is false
+                                  draggable: true, // <-- Default value is false
+                                  btnCancelLabel: 'No', // <-- Default value is 'Cancel',
+                                  btnOKLabel: 'Yes', // <-- Default value is 'OK',
+                                  btnOKClass: 'btn-primary', // <-- If you didn't specify it, dialog type will be used,
+                                  callback: function(result) {
+                                      // result will be true if button was click, while it will be false if users close the dialog directly.
+                                      if(result) {
+                                         $("#spinnerDiv").html('<a><img src="./../spinner.gif" alt="Logo" width="40" style="vertical-align: middle; padding-top:12px; padding-left:10px;"/></a>');
 
-                            if (confirm == true) {
-                                $("#spinnerDiv").html('<a><img src="./../spinner.gif" alt="Logo" width="40" style="vertical-align: middle; padding-top:12px; padding-left:10px;"/></a>');
-
-                                structures[count].set("isApproved", 1);
-                                structures[count].save({
-                                    success: function() {
-                                        $("#spinnerDiv").html("");
-                                        alert("Story successfully approved.");
-                                        $(document).ready(loadNewsTable());
-                                      },
-                                      error: function(error) {
-                                        alert(error);
-                                        $("#spinnerDiv").html("");
-                                      }
-                                });
-                            };
+                                        structures[count].set("isApproved", 1);
+                                        structures[count].save({
+                                            success: function() {
+                                                $("#spinnerDiv").html("");
+                                                var alertString = "Story successfully approved.";
+                                                localStorage.setItem("newsAlertString", alertString);
+                                                $(document).ready(loadNewsTable());
+                                              },
+                                              error: function(error) {
+                                                errorFunction(error.code.toString() + " - " + error.message.toString(), "ParseError", "Script 1969");
+                                                   BootstrapDialog.show({
+                                                        type: BootstrapDialog.TYPE_DEFAULT,
+                                                        title: "Error",
+                                                        message: "Error occurred. Please try again."
+                                                    });
+                                                    $("#spinnerDiv").html("");
+                                              }
+                                        });
+                                      };
+                                  }
+                              });
                         };
                     })();
                     tdFour.appendChild(button);
@@ -2190,23 +1995,40 @@ function loadNewsTable() {
 
                         return function(e) {
 
-                            var confirm = window.confirm("Are you sure you want to deny this event?");
+                            BootstrapDialog.confirm({
+                                  title: 'Confirmation',
+                                  message: 'Are you sure you want to deny this Wildcat News Story?',
+                                  type: BootstrapDialog.TYPE_DANGER, // <-- Default value is BootstrapDialog.TYPE_PRIMARY
+                                  closable: true, // <-- Default value is false
+                                  draggable: true, // <-- Default value is false
+                                  btnCancelLabel: 'No', // <-- Default value is 'Cancel',
+                                  btnOKLabel: 'Yes', // <-- Default value is 'OK',
+                                  btnOKClass: 'btn-primary', // <-- If you didn't specify it, dialog type will be used,
+                                  callback: function(result) {
+                                      // result will be true if button was click, while it will be false if users close the dialog directly.
+                                      if(result) {
+                                         $("#spinnerDiv").html('<a><img src="./../spinner.gif" alt="Logo" width="40" style="vertical-align: middle; padding-top:12px; padding-left:10px;"/></a>');
 
-                            if (confirm == true) {
-                                $("#spinnerDiv").html('<a><img src="./../spinner.gif" alt="Logo" width="40" style="vertical-align: middle; padding-top:12px; padding-left:10px;"/></a>');
-
-                                structures[count].destroy({
-                                    success: function() {
-                                        $("#spinnerDiv").html("");
-                                        alert("Story successfully denied.");
-                                        $(document).ready(loadNewsTable());
-                                      },
-                                      error: function(error) {
-                                        alert(error);
-                                        $("#spinnerDiv").html("");
-                                      }
-                                });
-                            };
+                                        structures[count].destroy({
+                                            success: function() {
+                                                $("#spinnerDiv").html("");
+                                                var alertString = "Story successfully denied.";
+                                                localStorage.setItem("newsAlertString", alertString);
+                                                $(document).ready(loadNewsTable());
+                                              },
+                                              error: function(error) {
+                                                errorFunction(error.code.toString() + " - " + error.message.toString(), "ParseError", "Script 2020");
+                                               BootstrapDialog.show({
+                                                    type: BootstrapDialog.TYPE_DEFAULT,
+                                                    title: "Error",
+                                                    message: "Error occurred. Please try again."
+                                                });
+                                                $("#spinnerDiv").html("");
+                                              }
+                                        });
+                                      };
+                                  }
+                              });
 
                         };
                     })();
@@ -2222,8 +2044,13 @@ function loadNewsTable() {
 
             },
             error: function(error) {
+                errorFunction(error.code.toString() + " - " + error.message.toString(), "ParseError", "Script 2047");
+               BootstrapDialog.show({
+                    type: BootstrapDialog.TYPE_DEFAULT,
+                    title: "Error",
+                    message: "Error occurred. Please try again."
+                });
                 $("#spinnerDiv").html("");
-                alert(error);
             }
         });
     }
@@ -2276,10 +2103,7 @@ function loadEventTable() {
                     tr.appendChild(th);
                 };
 
-                window.existingUserArray = new Array();
-
                 for (var i = 0; i < structures.length; i++) {
-                    window.existingUserArray.push(structures[i]);
                     var tr = document.createElement("TR");
 
                     var tdOne = document.createElement("TD");
@@ -2318,25 +2142,42 @@ function loadEventTable() {
                             
                             //Approve the user at i
 
-                            var confirm = window.confirm("Are you sure you want to approve this event? It will be live to all app users.");
+                            BootstrapDialog.confirm({
+                                  title: 'Confirmation',
+                                  message: 'Are you sure you want to approve this event? It will be live to all app users.?',
+                                  type: BootstrapDialog.TYPE_DANGER, // <-- Default value is BootstrapDialog.TYPE_PRIMARY
+                                  closable: true, // <-- Default value is false
+                                  draggable: true, // <-- Default value is false
+                                  btnCancelLabel: 'No', // <-- Default value is 'Cancel',
+                                  btnOKLabel: 'Yes', // <-- Default value is 'OK',
+                                  btnOKClass: 'btn-primary', // <-- If you didn't specify it, dialog type will be used,
+                                  callback: function(result) {
+                                      // result will be true if button was click, while it will be false if users close the dialog directly.
+                                      if(result) {
+                                         $("#spinnerDiv").html('<a><img src="./../spinner.gif" alt="Logo" width="40" style="vertical-align: middle; padding-top:12px; padding-left:10px;"/></a>');
 
-                            if (confirm == true) {
-                                $("#spinnerDiv").html('<a><img src="./../spinner.gif" alt="Logo" width="40" style="vertical-align: middle; padding-top:12px; padding-left:10px;"/></a>');
-
-                                structures[count].set("isApproved", 1);
-                                structures[count].save({
-                                    success: function() {
-                                        $("#spinnerDiv").html("");
-                                        alert("Event successfully approved.");
-                                        $(document).ready(loadEventTable());
-                                        $(document).ready(loadExistingEventTable());
-                                      },
-                                      error: function(error) {
-                                        alert(error);
-                                        $("#spinnerDiv").html("");
-                                      }
-                                });
-                            };
+                                        structures[count].set("isApproved", 1);
+                                        structures[count].save({
+                                            success: function() {
+                                                $("#spinnerDiv").html("");
+                                                var alertString = "Event successfully approved.";
+                                                localStorage.setItem("eventAlertString", alertString);
+                                                $(document).ready(loadEventTable());
+                                                $(document).ready(loadExistingEventTable());
+                                              },
+                                              error: function(error) {
+                                                errorFunction(error.code.toString() + " - " + error.message.toString(), "ParseError", "Script 2169");
+                                                   BootstrapDialog.show({
+                                                        type: BootstrapDialog.TYPE_DEFAULT,
+                                                        title: "Error",
+                                                        message: "Error occurred. Please try again."
+                                                    });
+                                                    $("#spinnerDiv").html("");
+                                              }
+                                        });
+                                      };
+                                  }
+                              });
                         };
                     })();
                     tdFour.appendChild(button);
@@ -2354,24 +2195,41 @@ function loadEventTable() {
 
                         return function(e) {
 
-                            var confirm = window.confirm("Are you sure you want to deny this event?");
+                            BootstrapDialog.confirm({
+                                  title: 'Confirmation',
+                                  message: 'Are you sure you want to deny this event?',
+                                  type: BootstrapDialog.TYPE_DANGER, // <-- Default value is BootstrapDialog.TYPE_PRIMARY
+                                  closable: true, // <-- Default value is false
+                                  draggable: true, // <-- Default value is false
+                                  btnCancelLabel: 'No', // <-- Default value is 'Cancel',
+                                  btnOKLabel: 'Yes', // <-- Default value is 'OK',
+                                  btnOKClass: 'btn-primary', // <-- If you didn't specify it, dialog type will be used,
+                                  callback: function(result) {
+                                      // result will be true if button was click, while it will be false if users close the dialog directly.
+                                      if(result) {
+                                         $("#spinnerDiv").html('<a><img src="./../spinner.gif" alt="Logo" width="40" style="vertical-align: middle; padding-top:12px; padding-left:10px;"/></a>');
 
-                            if (confirm == true) {
-                                $("#spinnerDiv").html('<a><img src="./../spinner.gif" alt="Logo" width="40" style="vertical-align: middle; padding-top:12px; padding-left:10px;"/></a>');
-
-                                structures[count].destroy({
-                                    success: function() {
-                                        $("#spinnerDiv").html("");
-                                        alert("Event successfully denied.");
-                                        $(document).ready(loadEventTable());
-                                        $(document).ready(loadExistingEventTable());
-                                      },
-                                      error: function(error) {
-                                        alert(error);
-                                        $("#spinnerDiv").html("");
-                                      }
-                                });
-                            };
+                                        structures[count].destroy({
+                                            success: function() {
+                                                $("#spinnerDiv").html("");
+                                                var alertString = "Event successfully denied.";
+                                                localStorage.setItem("eventAlertString", alertString);
+                                                $(document).ready(loadEventTable());
+                                                $(document).ready(loadExistingEventTable());
+                                              },
+                                              error: function(error) {
+                                                errorFunction(error.code.toString() + " - " + error.message.toString(), "ParseError", "Script 2221");
+                                                   BootstrapDialog.show({
+                                                        type: BootstrapDialog.TYPE_DEFAULT,
+                                                        title: "Error",
+                                                        message: "Error occurred. Please try again."
+                                                    });
+                                                    $("#spinnerDiv").html("");
+                                              }
+                                        });
+                                      };
+                                  }
+                              });
 
                         };
                     })();
@@ -2387,8 +2245,13 @@ function loadEventTable() {
 
             },
             error: function(error) {
+                errorFunction(error.code.toString() + " - " + error.message.toString(), "ParseError", "Script 2248");
+               BootstrapDialog.show({
+                    type: BootstrapDialog.TYPE_DEFAULT,
+                    title: "Error",
+                    message: "Error occurred. Please try again."
+                });
                 $("#spinnerDiv").html("");
-                alert(error);
             }
         });
     }
@@ -2396,6 +2259,15 @@ function loadEventTable() {
 
 function loadExistingEventTable() {
     return function() {
+
+        $('#eventAlertDiv').css("display", "block");
+
+        var alertString = localStorage.getItem("eventAlertString");
+        if (alertString && alertString.length > 0) {
+            localStorage.setItem("eventAlertString", "");
+            $('#eventAlertDiv').html('<div class="alert alert-success fade in"><a href="#" class="close" data-dismiss="alert" aria-label="close">Close</a><strong>'+alertString+'</strong></div>');
+            $('#eventAlertDiv').delay(5000).fadeOut(500);
+        };
 
         $("#spinnerDiv").html('<a><img src="./../spinner.gif" alt="Logo" width="40" style="vertical-align: middle; padding-top:12px; padding-left:10px;"/></a>');
 
@@ -2442,10 +2314,7 @@ function loadExistingEventTable() {
                     tr.appendChild(th);
                 };
 
-                window.existingUserArray = new Array();
-
                 for (var i = 0; i < structures.length; i++) {
-                    window.existingUserArray.push(structures[i]);
                     var tr = document.createElement("TR");
 
                     var tdOne = document.createElement("TD");
@@ -2484,24 +2353,41 @@ function loadExistingEventTable() {
 
                         return function(e) {
 
-                            var confirm = window.confirm("Are you sure you want to delete this event?");
+                            BootstrapDialog.confirm({
+                                  title: 'Confirmation',
+                                  message: 'Are you sure you want to delete this event?',
+                                  type: BootstrapDialog.TYPE_DANGER, // <-- Default value is BootstrapDialog.TYPE_PRIMARY
+                                  closable: true, // <-- Default value is false
+                                  draggable: true, // <-- Default value is false
+                                  btnCancelLabel: 'No', // <-- Default value is 'Cancel',
+                                  btnOKLabel: 'Yes', // <-- Default value is 'OK',
+                                  btnOKClass: 'btn-primary', // <-- If you didn't specify it, dialog type will be used,
+                                  callback: function(result) {
+                                      // result will be true if button was click, while it will be false if users close the dialog directly.
+                                      if(result) {
+                                         $("#spinnerDiv").html('<a><img src="./../spinner.gif" alt="Logo" width="40" style="vertical-align: middle; padding-top:12px; padding-left:10px;"/></a>');
 
-                            if (confirm == true) {
-                                $("#spinnerDiv").html('<a><img src="./../spinner.gif" alt="Logo" width="40" style="vertical-align: middle; padding-top:12px; padding-left:10px;"/></a>');
-
-                                structures[count].destroy({
-                                    success: function() {
-                                        $("#spinnerDiv").html("");
-                                        alert("Event successfully deleted.");
-                                        $(document).ready(loadEventTable());
-                                        $(document).ready(loadExistingEventTable());
-                                      },
-                                      error: function(error) {
-                                        alert(error);
-                                        $("#spinnerDiv").html("");
-                                      }
-                                });
-                            };
+                                        structures[count].destroy({
+                                            success: function() {
+                                                $("#spinnerDiv").html("");
+                                                var alertString = "Event successfully deleted.";
+                                                localStorage.setItem("eventAlertString", alertString);
+                                                $(document).ready(loadEventTable());
+                                                $(document).ready(loadExistingEventTable());
+                                              },
+                                              error: function(error) {
+                                                errorFunction(error.code.toString() + " - " + error.message.toString(), "ParseError", "Script 2379");
+                                               BootstrapDialog.show({
+                                                    type: BootstrapDialog.TYPE_DEFAULT,
+                                                    title: "Error",
+                                                    message: "Error occurred. Please try again."
+                                                });
+                                                $("#spinnerDiv").html("");
+                                              }
+                                        });
+                                      };
+                                  }
+                              });
 
                         };
                     })();
@@ -2517,8 +2403,13 @@ function loadExistingEventTable() {
 
             },
             error: function(error) {
+                errorFunction(error.code.toString() + " - " + error.message.toString(), "ParseError", "Script 2406");
+               BootstrapDialog.show({
+                    type: BootstrapDialog.TYPE_DEFAULT,
+                    title: "Error",
+                    message: "Error occurred. Please try again."
+                });
                 $("#spinnerDiv").html("");
-                alert(error);
             }
         });
     }
@@ -2526,6 +2417,15 @@ function loadExistingEventTable() {
 
 function loadGroupTable() {
     return function() {
+
+        $('#groupAlertDiv').css("display", "block");
+
+        var alertString = localStorage.getItem("groupAlertString");
+        if (alertString && alertString.length > 0) {
+            localStorage.setItem("groupAlertString", "");
+            $('#groupAlertDiv').html('<div class="alert alert-success fade in"><a href="#" class="close" data-dismiss="alert" aria-label="close">Close</a><strong>'+alertString+'</strong></div>');
+            $('#groupAlertDiv').delay(5000).fadeOut(500);
+        };
 
         $("#spinnerDiv").html('<a><img src="./../spinner.gif" alt="Logo" width="40" style="vertical-align: middle; padding-top:12px; padding-left:10px;"/></a>');
 
@@ -2564,10 +2464,7 @@ function loadGroupTable() {
                     tr.appendChild(th);
                 };
 
-                window.existingUserArray = new Array();
-
                 for (var i = 0; i < structures.length; i++) {
-                    window.existingUserArray.push(structures[i]);
                     var tr = document.createElement("TR");
 
                     var tdOne = document.createElement("TD");
@@ -2592,23 +2489,40 @@ function loadGroupTable() {
 
                         return function(e) {
 
-                            var confirm = window.confirm("Are you sure you want to delete this group?");
+                            BootstrapDialog.confirm({
+                                  title: 'Confirmation',
+                                  message: 'Are you sure you want to delete this group?',
+                                  type: BootstrapDialog.TYPE_DANGER, // <-- Default value is BootstrapDialog.TYPE_PRIMARY
+                                  closable: true, // <-- Default value is false
+                                  draggable: true, // <-- Default value is false
+                                  btnCancelLabel: 'No', // <-- Default value is 'Cancel',
+                                  btnOKLabel: 'Yes', // <-- Default value is 'OK',
+                                  btnOKClass: 'btn-primary', // <-- If you didn't specify it, dialog type will be used,
+                                  callback: function(result) {
+                                      // result will be true if button was click, while it will be false if users close the dialog directly.
+                                      if(result) {
+                                         $("#spinnerDiv").html('<a><img src="./../spinner.gif" alt="Logo" width="40" style="vertical-align: middle; padding-top:12px; padding-left:10px;"/></a>');
 
-                            if (confirm == true) {
-                                $("#spinnerDiv").html('<a><img src="./../spinner.gif" alt="Logo" width="40" style="vertical-align: middle; padding-top:12px; padding-left:10px;"/></a>');
-
-                                structures[count].destroy({
-                                    success: function() {
-                                        $("#spinnerDiv").html("");
-                                        alert("Group successfully deleted.");
-                                        $(document).ready(loadGroupTable());
-                                      },
-                                      error: function(error) {
-                                        alert(error);
-                                        $("#spinnerDiv").html("");
-                                      }
-                                });
-                            };
+                                        structures[count].destroy({
+                                            success: function() {
+                                                $("#spinnerDiv").html("");
+                                                var alertString = "Group successfully deleted.";
+                                                localStorage.setItem("groupAlertString", alertString);
+                                                $(document).ready(loadGroupTable());
+                                              },
+                                              error: function(error) {
+                                               errorFunction(error.code.toString() + " - " + error.message.toString(), "ParseError", "Script 2514");
+                                               BootstrapDialog.show({
+                                                    type: BootstrapDialog.TYPE_DEFAULT,
+                                                    title: "Error",
+                                                    message: "Error occurred. Please try again."
+                                                });
+                                                $("#spinnerDiv").html("");
+                                              }
+                                        });
+                                      };
+                                  }
+                              });
 
                         };
                     })();
@@ -2716,20 +2630,21 @@ function loadErrorTable() {
 
                         return function(e) {
 
-                            var confirm = window.confirm("Are you sure you want to delete this error?");
-
-                            if (confirm == true) {
-                                structures[count].destroy({
-                                    success: function() {
-                                        alert("Error successfully deleted.");
-                                        $(document).ready(loadErrorTable());
-                                    },
-                                    error: function(error) {
-                                        alert(error.code + " - " + error.message);
-                                        $("#spinnerDiv").html("");
-                                    }
-                                });
-                            };
+                            structures[count].destroy({
+                                success: function() {
+                                    alert("Error successfully deleted.");
+                                    $(document).ready(loadErrorTable());
+                                },
+                                error: function(error) {
+                                    errorFunction(error.code.toString() + " - " + error.message.toString(), "ParseError", "Script 2639");
+                                   BootstrapDialog.show({
+                                        type: BootstrapDialog.TYPE_DEFAULT,
+                                        title: "Error",
+                                        message: "Error occurred. Please try again."
+                                    });
+                                    $("#spinnerDiv").html("");
+                                }
+                            });
 
                         };
                     })();
@@ -2781,13 +2696,24 @@ function loadLinksTable() {
 
                         return function(e) {
 
-                            var confirm = window.confirm("Are you sure you want to delete this category?");
+                            var here = $(this);
 
-                            if (confirm == true) {
-
-                                deleteCategoryFunction($(this));
-
-                            };
+                            BootstrapDialog.confirm({
+                                  title: 'Confirmation',
+                                  message: 'Are you sure you want to delete this category?',
+                                  type: BootstrapDialog.TYPE_DANGER, // <-- Default value is BootstrapDialog.TYPE_PRIMARY
+                                  closable: true, // <-- Default value is false
+                                  draggable: true, // <-- Default value is false
+                                  btnCancelLabel: 'No', // <-- Default value is 'Cancel',
+                                  btnOKLabel: 'Yes', // <-- Default value is 'OK',
+                                  btnOKClass: 'btn-primary', // <-- If you didn't specify it, dialog type will be used,
+                                  callback: function(result) {
+                                      // result will be true if button was click, while it will be false if users close the dialog directly.
+                                      if(result) {
+                                         deleteCategoryFunction(here);
+                                      };
+                                  }
+                              });
 
                         };
                     })();
@@ -2892,13 +2818,24 @@ function loadLinksTable() {
 
                             return function(e) {
 
-                                var confirm = window.confirm("Are you sure you want to delete this link?");
+                                var here = $(this);
 
-                                if (confirm == true) {
-
-                                    removeRowFunction($(this));
-
-                                };
+                                BootstrapDialog.confirm({
+                                      title: 'Confirmation',
+                                      message: 'Are you sure you want to delete this link?',
+                                      type: BootstrapDialog.TYPE_DANGER, // <-- Default value is BootstrapDialog.TYPE_PRIMARY
+                                      closable: true, // <-- Default value is false
+                                      draggable: true, // <-- Default value is false
+                                      btnCancelLabel: 'No', // <-- Default value is 'Cancel',
+                                      btnOKLabel: 'Yes', // <-- Default value is 'OK',
+                                      btnOKClass: 'btn-primary', // <-- If you didn't specify it, dialog type will be used,
+                                      callback: function(result) {
+                                          // result will be true if button was click, while it will be false if users close the dialog directly.
+                                          if(result) {
+                                             removeRowFunction(here);
+                                          };
+                                      }
+                                  });
 
                             };
                         })();
@@ -3157,13 +3094,24 @@ function addCategoryFunction() {
 
         return function(e) {
 
-            var confirm = window.confirm("Are you sure you want to delete this category?");
+            var here = $(this);
 
-            if (confirm == true) {
-
-                deleteCategoryFunction($(this));
-
-            };
+            BootstrapDialog.confirm({
+              title: 'Confirmation',
+              message: 'Are you sure you want to delete this category?',
+              type: BootstrapDialog.TYPE_DANGER, // <-- Default value is BootstrapDialog.TYPE_PRIMARY
+              closable: true, // <-- Default value is false
+              draggable: true, // <-- Default value is false
+              btnCancelLabel: 'No', // <-- Default value is 'Cancel',
+              btnOKLabel: 'Yes', // <-- Default value is 'OK',
+              btnOKClass: 'btn-primary', // <-- If you didn't specify it, dialog type will be used,
+              callback: function(result) {
+                  // result will be true if button was click, while it will be false if users close the dialog directly.
+                  if(result) {
+                     deleteCategoryFunction($(this));
+                  };
+              }
+          });
 
         };
     })();
@@ -3258,13 +3206,24 @@ function addCategoryFunction() {
     button.onclick = (function() {
         return function(e) {
 
-            var confirm = window.confirm("Are you sure you want to delete this link?");
+            var here = $(this);
 
-            if (confirm == true) {
-
-                removeRowFunction($(this));
-
-            };
+            BootstrapDialog.confirm({
+              title: 'Confirmation',
+              message: 'Are you sure you want to delete this link?',
+              type: BootstrapDialog.TYPE_DANGER, // <-- Default value is BootstrapDialog.TYPE_PRIMARY
+              closable: true, // <-- Default value is false
+              draggable: true, // <-- Default value is false
+              btnCancelLabel: 'No', // <-- Default value is 'Cancel',
+              btnOKLabel: 'Yes', // <-- Default value is 'OK',
+              btnOKClass: 'btn-primary', // <-- If you didn't specify it, dialog type will be used,
+              callback: function(result) {
+                  // result will be true if button was click, while it will be false if users close the dialog directly.
+                  if(result) {
+                     removeRowFunction(here);
+                  };
+              }
+          });
 
         };
     })();
@@ -3306,14 +3265,27 @@ function removeRowFunction(button) {
     var count = tableBody.getElementsByTagName('tr').length;
 
     if (littleRow == 0 && count == 2) {
-        var confirm = window.confirm("Deleting this link will delete the entire category, since it is the last one left. Are you sure?");
+            var here = $(this);
 
-        if (confirm == true) {
-            var button = document.createElement('input');
-            button.id = "deleteCategory_" + bigRow;
-            var element = $(button);
-            deleteCategoryFunction(element);
-        };
+            BootstrapDialog.confirm({
+              title: 'Confirmation',
+              message: 'Deleting this link will delete the entire category, since it is the last one left. Are you sure?',
+              type: BootstrapDialog.TYPE_DANGER, // <-- Default value is BootstrapDialog.TYPE_PRIMARY
+              closable: true, // <-- Default value is false
+              draggable: true, // <-- Default value is false
+              btnCancelLabel: 'No', // <-- Default value is 'Cancel',
+              btnOKLabel: 'Yes', // <-- Default value is 'OK',
+              btnOKClass: 'btn-primary', // <-- If you didn't specify it, dialog type will be used,
+              callback: function(result) {
+                  // result will be true if button was click, while it will be false if users close the dialog directly.
+                  if(result) {
+                     var button = document.createElement('input');
+                    button.id = "deleteCategory_" + bigRow;
+                    var element = $(button);
+                    deleteCategoryFunction(element);
+                  };
+              }
+          });
     } else {
 
         var rows = tableBody.getElementsByTagName('tr');
@@ -3455,13 +3427,24 @@ function addRowFunction(button) {
 
         return function(e) {
 
-            var confirm = window.confirm("Are you sure you want to delete this link?");
+            var here = $(this);
 
-            if (confirm == true) {
-
-                removeRowFunction($(this));
-
-            };
+            BootstrapDialog.confirm({
+                  title: 'Confirmation',
+                  message: 'Are you sure you want to delete this link?',
+                  type: BootstrapDialog.TYPE_DANGER, // <-- Default value is BootstrapDialog.TYPE_PRIMARY
+                  closable: true, // <-- Default value is false
+                  draggable: true, // <-- Default value is false
+                  btnCancelLabel: 'No', // <-- Default value is 'Cancel',
+                  btnOKLabel: 'Yes', // <-- Default value is 'OK',
+                  btnOKClass: 'btn-primary', // <-- If you didn't specify it, dialog type will be used,
+                  callback: function(result) {
+                      // result will be true if button was click, while it will be false if users close the dialog directly.
+                      if(result) {
+                         removeRowFunction(here);
+                      };
+                  }
+              });
 
         };
     })();
@@ -3489,6 +3472,15 @@ function addRowFunction(button) {
 
 function loadScheduleTable() {
     return function() {
+
+        $('#scheduleAlertDiv').css("display", "block");
+
+        var alertString = localStorage.getItem("scheduleAlertString");
+        if (alertString && alertString.length > 0) {
+            localStorage.setItem("scheduleAlertString", "");
+            $('#scheduleAlertDiv').html('<div class="alert alert-success fade in"><a href="#" class="close" data-dismiss="alert" aria-label="close">Close</a><strong>'+alertString+'</strong></div>');
+            $('#scheduleAlertDiv').delay(5000).fadeOut(500);
+        };
 
         $("#spinnerDiv").html('<a><img src="./../spinner.gif" alt="Logo" width="40" style="vertical-align: middle; padding-top:12px; padding-left:10px;"/></a>');
 
@@ -3553,10 +3545,7 @@ function loadScheduleTable() {
                                     tr.appendChild(th);
                                 };
 
-                                window.existingUserArray = new Array();
-
                                 for (var i = 0; i < structures.length; i++) {
-                                    window.existingUserArray.push(structures[i]);
                                     var tr = document.createElement("TR");
                                     var tdTwo = document.createElement("TD");
                                     var parts = structures[i].get("schoolDate").split('-');
@@ -3609,26 +3598,45 @@ function loadScheduleTable() {
 
                                             return function(e) {
 
-                                                var confirm = window.confirm("Are you sure you want to edit this day's schedule?");
+                                                var index = this.selectedIndex - 1;
 
-                                                if (confirm == true) {
-                                                    var key = reverseDictionary[this.selectedIndex - 1];
+                                                BootstrapDialog.confirm({
+                                                      title: 'Confirmation',
+                                                      message: "Are you sure you want to edit this day's schedule?",
+                                                      type: BootstrapDialog.TYPE_DANGER, // <-- Default value is BootstrapDialog.TYPE_PRIMARY
+                                                      closable: true, // <-- Default value is false
+                                                      draggable: true, // <-- Default value is false
+                                                      btnCancelLabel: 'No', // <-- Default value is 'Cancel',
+                                                      btnOKLabel: 'Yes', // <-- Default value is 'OK',
+                                                      btnOKClass: 'btn-primary', // <-- If you didn't specify it, dialog type will be used,
+                                                      callback: function(result) {
+                                                          // result will be true if button was click, while it will be false if users close the dialog directly.
+                                                          if(result) {
+                                                             var key = reverseDictionary[index];
 
-                                                    structures[count].set("scheduleType", key);
-                                                    structures[count].set("customSchedule", "None.");
-                                                    structures[count].set("customString", "");
-                                                    structures[count].save(null, {
-                                                        success: function(object) {
-                                                            alert("Schedule successfully updated.");
-                                                            $("#spinnerDiv").html("");
-                                                            $(document).ready(loadScheduleTable());
-                                                        },
-                                                        error: function(error) {
-                                                            alert(error.code + " - " + error.message);
-                                                            $("#spinnerDiv").html("");
-                                                        }
-                                                    });
-                                                };
+                                                            structures[count].set("scheduleType", key);
+                                                            structures[count].set("customSchedule", "None.");
+                                                            structures[count].set("customString", "");
+                                                            structures[count].save(null, {
+                                                                success: function(object) {
+                                                                    $("#spinnerDiv").html("");
+                                                                    var alertString = "Schedule successfully updated.";
+                                                                    localStorage.setItem("scheduleAlertString", alertString);
+                                                                    $(document).ready(loadScheduleTable());
+                                                                },
+                                                                error: function(error) {
+                                                                    errorFunction(error.code.toString() + " - " + error.message.toString(), "ParseError", "Script 3628");
+                                                                    BootstrapDialog.show({
+                                                                        type: BootstrapDialog.TYPE_DEFAULT,
+                                                                        title: "Error",
+                                                                        message: "Error occurred. Please try again."
+                                                                    });
+                                                                    $("#spinnerDiv").html("");
+                                                                }
+                                                            });
+                                                          };
+                                                      }
+                                                  });
 
                                             };
                                         })();
@@ -3657,27 +3665,48 @@ function loadScheduleTable() {
 
                                                 if (count != structures.length - 1) {
 
-                                                    var confirm = window.confirm("Are you sure you want to make this day a snow day? This will affect all schedules after this date.");
-
-                                                    if (confirm == true) {
-                                                        if (count === 0) {
-                                                            window.showYesterday = false;
-                                                        };
-                                                        $("#spinnerDiv").html('<a><img src="./../spinner.gif" alt="Logo" width="40" style="vertical-align: middle; padding-top:12px; padding-left:10px;"/></a>');
-                                                        Parse.Cloud.run('snowDay', { "ID" : structures[count].get("schoolDayID") }, {
-                                                          success: function() {
-                                                            alert("Schedule successfully updated.");
-                                                            $("#spinnerDiv").html("");
-                                                            $(document).ready(loadScheduleTable());
-                                                          },
-                                                          error: function(error) {
-                                                            alert(error);
-                                                            $("#spinnerDiv").html("");
-                                                          }
-                                                        });
-                                                    };
+                                                    BootstrapDialog.confirm({
+                                                      title: 'Confirmation',
+                                                      message: "Are you sure you want to make this day a snow day? This will affect all schedules after this date.",
+                                                      type: BootstrapDialog.TYPE_DANGER, // <-- Default value is BootstrapDialog.TYPE_PRIMARY
+                                                      closable: true, // <-- Default value is false
+                                                      draggable: true, // <-- Default value is false
+                                                      btnCancelLabel: 'No', // <-- Default value is 'Cancel',
+                                                      btnOKLabel: 'Yes', // <-- Default value is 'OK',
+                                                      btnOKClass: 'btn-primary', // <-- If you didn't specify it, dialog type will be used,
+                                                      callback: function(result) {
+                                                          // result will be true if button was click, while it will be false if users close the dialog directly.
+                                                          if(result) {
+                                                             if (count === 0) {
+                                                                window.showYesterday = false;
+                                                            };
+                                                            $("#spinnerDiv").html('<a><img src="./../spinner.gif" alt="Logo" width="40" style="vertical-align: middle; padding-top:12px; padding-left:10px;"/></a>');
+                                                            Parse.Cloud.run('snowDay', { "ID" : structures[count].get("schoolDayID") }, {
+                                                              success: function() {
+                                                                $("#spinnerDiv").html("");
+                                                                    var alertString = "Schedule successfully updated.";
+                                                                    localStorage.setItem("scheduleAlertString", alertString);
+                                                                    $(document).ready(loadScheduleTable());
+                                                              },
+                                                              error: function(error) {
+                                                                errorFunction(error.code.toString() + " - " + error.message.toString(), "ParseError", "Script 3692");
+                                                                BootstrapDialog.show({
+                                                                    type: BootstrapDialog.TYPE_DEFAULT,
+                                                                    title: "Error",
+                                                                    message: "Error occurred. Please try again."
+                                                                });
+                                                                $("#spinnerDiv").html("");
+                                                              }
+                                                            });
+                                                          };
+                                                      }
+                                                  });
                                                 } else {
-                                                    alert("You can't go back one day from here! This is the last day in the available queue.");
+                                                    BootstrapDialog.show({
+                                                        type: BootstrapDialog.TYPE_DEFAULT,
+                                                        title: "Whoops!",
+                                                        message: "You can't go back one day from here! This is the last day in the available queue."
+                                                    });
                                                 };
 
                                             };
@@ -3726,20 +3755,35 @@ function loadScheduleTable() {
                                 $("#spinnerDiv").html("");
                             },
                             error: function(error) {
-                                alert(error.code + " - " + error.message);
+                                errorFunction(error.code.toString() + " - " + error.message.toString(), "ParseError", "Script 3758");
+                                BootstrapDialog.show({
+                                    type: BootstrapDialog.TYPE_DEFAULT,
+                                    title: "Error",
+                                    message: "Error occurred. Please try again."
+                                });
                                 $("#spinnerDiv").html("");
                             }
                         });
                     },
                     error: function(error) {
+                        errorFunction(error.code.toString() + " - " + error.message.toString(), "ParseError", "Script 3769");
+                        BootstrapDialog.show({
+                            type: BootstrapDialog.TYPE_DEFAULT,
+                            title: "Error",
+                            message: "Error occurred. Please try again."
+                        });
                         $("#spinnerDiv").html("");
-                        alert(error);
                     }
                 });
             },
             error: function(error) {
+                errorFunction(error.code.toString() + " - " + error.message.toString(), "ParseError", "Script 3780");
+                BootstrapDialog.show({
+                    type: BootstrapDialog.TYPE_DEFAULT,
+                    title: "Error",
+                    message: "Error occurred. Please try again."
+                });
                 $("#spinnerDiv").html("");
-                alert(error);
             }
         });
     }
