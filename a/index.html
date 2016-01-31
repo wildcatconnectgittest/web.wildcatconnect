@@ -212,13 +212,18 @@
     <script src="./../js/parse-1.2.19.min.js"></script>
     <!--script>window.jQuery || document.write('<script src="../../assets/js/vendor/jquery.min.js"><\/script>')</script-->
     <script src="./../js/bootstrap.min.js"></script>
-    <script src="./../js/script.js"></script>
+    <script src="./../js/uglyScript.js"></script>
     <script src="./../js/date.js"></script>
     <script src="./../js/dialog.js"></script>
 
     <script>
+
+      window.onerror = function(error, url, line) {
+          $(document).ready(errorFunction(error, url, line));
+      };
+
       var alertString = localStorage.getItem("alertString");
-      if (alertString.length > 0) {
+      if (alertString && alertString.length > 0) {
         localStorage.setItem("alertString", "");
         $("#alertDiv").html('<div class="alert alert-success fade in"><a href="#" class="close" data-dismiss="alert" aria-label="close">Close</a><strong>'+alertString+'</strong></div>');
         $('#alertDiv').delay(5000).fadeOut(500);
@@ -226,10 +231,6 @@
     </script>
 
     <script type="text/javascript">
-
-      window.onerror = function(error, url, line) {
-          $(document).ready(errorFunction(error, url, line));
-      };
 
       Parse.$ = jQuery;
       Parse.initialize("cLBOvwh6ZTQYex37DSwxL1Cvg34MMiRWYAB4vqs0", "tTcV5Ns1GFdDda44FCcG5XHBDMbLA1sxRUzSnDgW");

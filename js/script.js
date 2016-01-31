@@ -15,22 +15,42 @@ var showYesterday = true;
 var UserRegisterStructure = Parse.Object.extend("UserRegisterStructure", {
     create: function(firstName, lastName, email, confirmEmail, username, password, confirmPassword) {
         if (! firstName || ! lastName || ! username || ! password || ! email) {
-            alert("Please ensure you have correctly filled out all required fields!");
+            BootstrapDialog.show({
+              type: BootstrapDialog.TYPE_DEFAULT,
+              title: "Whoops!",
+              message: "Please ensure you have correctly filled out all required fields!"
+            });
             $("#signupButton").html("Register");
         } else if (email != confirmEmail) {
-            alert("Your e-mail addresses do not match!");
+            BootstrapDialog.show({
+              type: BootstrapDialog.TYPE_DEFAULT,
+              title: "Whoops!",
+              message: "Your e-mail addresses do not match!"
+            });
             $("#signupButton").html("Register");
         } else if (password != confirmPassword) {
-            alert("Your passwords do not match!");
+            BootstrapDialog.show({
+              type: BootstrapDialog.TYPE_DEFAULT,
+              title: "Whoops!",
+              message: "Your passwords do not match!"
+            });
             $("#signupButton").html("Register");
         } /*else if (email.indexOf("weymouthschools.org") === -1) {
             alert("Your e-mail address is not a valid faculty address!");
             $("#signupButton").html("Register");
         }*/ else if (username.indexOf(" ") > -1) {
-            alert("Your username cannot contain any spaces!");
+            BootstrapDialog.show({
+              type: BootstrapDialog.TYPE_DEFAULT,
+              title: "Whoops!",
+              message: "Your username cannot contain any spaces!"
+            });
             $("#signupButton").html("Register");
         } else if (password.indexOf(" ") > -1) {
-            alert("Your password cannot contain any spaces!");
+             BootstrapDialog.show({
+              type: BootstrapDialog.TYPE_DEFAULT,
+              title: "Whoops!",
+              message: "Your password cannot contain any spaces!"
+            });
             $("#signupButton").html("Register");
         } else {
             $("#spinnerDiv").html('<a><img src="./../spinner.gif" alt="Logo" width="40" style="vertical-align: middle; padding-top:12px; padding-left:10px;"/></a>');
@@ -39,7 +59,11 @@ var UserRegisterStructure = Parse.Object.extend("UserRegisterStructure", {
             Parse.Cloud.run("validateUser", { "username" : username , "email" : email }, {
                 success: function(count) {
                     if (count > 0) {
-                        alert("This username or e-mail has already been used. Please try again.");
+                        BootstrapDialog.show({
+                          type: BootstrapDialog.TYPE_DEFAULT,
+                          title: "Whoops!",
+                          message: "This username or e-mail has already been used. Please try again."
+                        });
                         $("#signupButton").html("Register");
                         $("#spinnerDiv").html("");
                     } else {
@@ -111,7 +135,11 @@ var UserRegisterStructure = Parse.Object.extend("UserRegisterStructure", {
 var NewsArticleStructure = Parse.Object.extend("NewsArticleStructure", {
     create: function(title, author, date, summary, content) {
         if (! title || ! author || ! date || ! summary || ! content) {
-            alert("Please ensure you have filled out all required fields!");
+            BootstrapDialog.show({
+                type: BootstrapDialog.TYPE_DEFAULT,
+                title: "Error",
+                message: "Please ensure you have filled out all required fields!"
+            });
         } else {
             $("#spinnerDiv").html('<a><img src="./../spinner.gif" alt="Logo" width="40" style="vertical-align: middle; padding-top:12px; padding-left:10px;"/></a>');
             var query = new Parse.Query("NewsArticleStructure");
@@ -194,7 +222,11 @@ var NewsArticleStructure = Parse.Object.extend("NewsArticleStructure", {
 var ExtracurricularUpdateStructure = Parse.Object.extend("ExtracurricularUpdateStructure", {
     create: function(IDarray, message) {
         if (IDarray.length === 0 || ! message) {
-            alert("Please ensure you have filled out all required fields!");
+            BootstrapDialog.show({
+                type: BootstrapDialog.TYPE_DEFAULT,
+                title: "Error",
+                message: "Please ensure you have filled out all required fields!"
+            });
         } else {
             $("#spinnerDiv").html('<a><img src="./../spinner.gif" alt="Logo" width="40" style="vertical-align: middle; padding-top:12px; padding-left:10px;"/></a>');
             var query = new Parse.Query("ExtracurricularUpdateStructure");
@@ -252,7 +284,11 @@ var CommunityServiceStructure = Parse.Object.extend("CommunityServiceStructure",
         endDateTime = new Date(endDateDate + " " + endDateTime);
         endDateDate = new Date(endDateDate);
         if (! title || ! startDateDate || ! startDateTime || ! endDateDate || ! startDateTime || ! message || startDateDate > endDateDate || (startDateDate.getDate() === endDateDate.getDate() && startDateTime > endDateTime)) {
-            alert("Please ensure you have filled out all required fields!");
+            BootstrapDialog.show({
+                type: BootstrapDialog.TYPE_DEFAULT,
+                title: "Error",
+                message: "Please ensure you have filled out all required fields!"
+            });
         } else {
             $("#spinnerDiv").html('<a><img src="./../spinner.gif" alt="Logo" width="40" style="vertical-align: middle; padding-top:12px; padding-left:10px;"/></a>');
             var query = new Parse.Query("CommunityServiceStructure");
@@ -309,7 +345,11 @@ var EventStructure = Parse.Object.extend("EventStructure", {
         var now = new Date();
         now = new Date(now.getFullYear(), now.getMonth(), now.getDate(), now.getHours(), now.getMinutes(), 0, 0);
         if (! title || ! location || ! eventDate || ! eventTime || ! message || eventDate < now ) {
-            alert("Please ensure you have filled out all required fields!");
+            BootstrapDialog.show({
+                type: BootstrapDialog.TYPE_DEFAULT,
+                title: "Error",
+                message: "Please ensure you have filled out all required fields!"
+            });
         } else {
             $("#spinnerDiv").html('<a><img src="./../spinner.gif" alt="Logo" width="40" style="vertical-align: middle; padding-top:12px; padding-left:10px;"/></a>');
             var object = new EventStructure();
@@ -346,7 +386,11 @@ var EventStructure = Parse.Object.extend("EventStructure", {
 var PollStructure = Parse.Object.extend("PollStructure", {
     create: function(title, question, daysSelect, choicesArray) {
         if (! title || ! question || ! daysSelect || ! choicesArray) {
-            alert("Please ensure you have filled out all required fields!");
+            BootstrapDialog.show({
+                type: BootstrapDialog.TYPE_DEFAULT,
+                title: "Error",
+                message: "Please ensure you have filled out all required fields!"
+            });
         } else {
             $("#spinnerDiv").html('<a><img src="./../spinner.gif" alt="Logo" width="40" style="vertical-align: middle; padding-top:12px; padding-left:10px;"/></a>');
             var dictionary = {};
@@ -406,7 +450,11 @@ var AlertStructure = Parse.Object.extend("AlertStructure", {
         dateTime = new Date(dateDate + " " + dateTime);
         dateDate = new Date(dateDate);
         if (! title || ! author || ! alertTiming || (alertTiming === "time" && (! dateDate || ! dateTime))) {
-            alert("Please ensure you have correctly filled out all required fields!");
+            BootstrapDialog.show({
+                type: BootstrapDialog.TYPE_DEFAULT,
+                title: "Error",
+                message: "Please ensure you have filled out all required fields!"
+            });
         } else {
             $("#spinnerDiv").html('<a><img src="./../spinner.gif" alt="Logo" width="40" style="vertical-align: middle; padding-top:12px; padding-left:10px;"/></a>');
             var query = new Parse.Query("AlertStructure");
@@ -514,7 +562,11 @@ var AlertStructure = Parse.Object.extend("AlertStructure", {
 var ExtracurricularStructure = Parse.Object.extend("ExtracurricularStructure", {
     create: function(title, content) {
         if (! title || ! content) {
-            alert("Please ensure you have correctly filled out all required fields!");
+            BootstrapDialog.show({
+                type: BootstrapDialog.TYPE_DEFAULT,
+                title: "Error",
+                message: "Please ensure you have filled out all required fields!"
+            });
         } else {
             $("#spinnerDiv").html('<a><img src="./../spinner.gif" alt="Logo" width="40" style="vertical-align: middle; padding-top:12px; padding-left:10px;"/></a>');
             var query = new Parse.Query("ExtracurricularStructure");
@@ -523,7 +575,11 @@ var ExtracurricularStructure = Parse.Object.extend("ExtracurricularStructure", {
             query.count({
                 success: function(count) {
                     if (count > 0) {
-                        alert("A group with this name has already been registered. Please enter a different name.");
+                        BootstrapDialog.show({
+                            type: BootstrapDialog.TYPE_DEFAULT,
+                            title: "Error",
+                            message: "A group with this name has already been registered. Please enter a different name."
+                        });
                         $("#spinnerDiv").html("");
                     } else {
                         var queryTwo = new Parse.Query("ExtracurricularStructure");
@@ -644,13 +700,13 @@ $(function() {
               if(result) {
                   Parse.User.requestPasswordReset(Parse.User.current().get("email"), {
                       success: function() {
-                        var alertString = "Success! Check your e-mail for password reset instructions.";
-                        $('#alertDiv').html('<div class="alert alert-success fade in"><a href="#" class="close" data-dismiss="alert" aria-label="close">Close</a><strong>'+alertString+'</strong></div>');
-                        $('#alertDiv').delay(5000).fadeOut(500);
+                        $("#spinnerDiv").html("");
+                        localStorage.setItem("alertString", "Success! Check your e-mail for password reset instructions.");
+                        window.location.replace("./index");
                       },
                       error: function(error) {
                         errorFunction(error.code.toString() + " - " + error.message.toString(), "ParseError", "Script 652");
-                    $("#spinnerDiv").html("");
+                        $("#spinnerDiv").html("");
                         BootstrapDialog.show({
                             type: BootstrapDialog.TYPE_DEFAULT,
                             title: "Error",
@@ -1121,7 +1177,8 @@ $(function() {
                             };
                             Parse.Object.saveAll(array, {
                                 success: function(objects) {
-                                    alert("Breakfasts and lunches successfully updated.");
+                                    var alertString = "Breakfasts and lunches successfully updated.";
+                                    localStorage.setItem("lunchAlertString", alertString);
                                     $("#spinnerDiv").html("");
                                     window.location.replace("./lunch");
                                 },
@@ -1198,7 +1255,11 @@ $(function() {
                                         var titleString = $(titleID).val();
                                         if (! titleString) {
                                             work = false;
-                                            alert("Please ensure you have correctly filled all fields!");
+                                            BootstrapDialog.show({
+                                                type: BootstrapDialog.TYPE_DEFAULT,
+                                                title: "Error",
+                                                message: "Please ensure you have correctly filled all fields!"
+                                            });
                                             var test = $(titleID).css("border-color");
                                             $(titleID).css("border-color", "red");
                                             break;
@@ -1210,7 +1271,11 @@ $(function() {
                                         var linkString = $(linkID).val();
                                         if (! linkString) {
                                             work = false;
-                                            alert("Please ensure you have correctly filled all fields!");
+                                            BootstrapDialog.show({
+                                                type: BootstrapDialog.TYPE_DEFAULT,
+                                                title: "Error",
+                                                message: "Please ensure you have correctly filled all fields!"
+                                            });
                                             $(linkID).css("border-color", "red");
                                             break;
                                         } else {
@@ -1230,13 +1295,14 @@ $(function() {
                                 if (work == true) {
                                     Parse.Object.saveAll(finalArray, {
                                         success: function(objects) {
-                                            alert("Links successfully updated.");
+                                            var alertString = "Links successfully updated.";
+                                            localStorage.setItem("linksAlertString", alertString);
                                             $("#spinnerDiv").html("");
                                             window.location.replace("./links");
                                         },
                                         error: function(error) {
                                             errorFunction(error.code.toString() + " - " + error.message.toString(), "ParseError", "Script 1238");
-                                           BootstrapDialog.show({
+                                            BootstrapDialog.show({
                                                 type: BootstrapDialog.TYPE_DEFAULT,
                                                 title: "Error",
                                                 message: "Error occurred. Please try again."
@@ -1756,6 +1822,15 @@ function loadExistingUserTable() {
 
 function loadLunchTable() {
 	return function() {
+
+        $('#lunchAlertDiv').css("display", "block");
+
+        var alertString = localStorage.getItem("lunchAlertString");
+        if (alertString && alertString.length > 0) {
+            localStorage.setItem("lunchAlertString", "");
+            $('#lunchAlertDiv').html('<div class="alert alert-success fade in"><a href="#" class="close" data-dismiss="alert" aria-label="close">Close</a><strong>'+alertString+'</strong></div>');
+            $('#lunchAlertDiv').delay(5000).fadeOut(500);
+        };
 
 		$("#spinnerDiv").html('<a><img src="./../spinner.gif" alt="Logo" width="40" style="vertical-align: middle; padding-top:12px; padding-left:10px;"/></a>');
 
@@ -2548,6 +2623,15 @@ function loadGroupTable() {
 function loadErrorTable() {
     return function() {
 
+        $('#errorAlertDiv').css("display", "block");
+
+        var alertString = localStorage.getItem("errorAlertString");
+        if (alertString && alertString.length > 0) {
+            localStorage.setItem("errorAlertString", "");
+            $('#errorAlertDiv').html('<div class="alert alert-success fade in"><a href="#" class="close" data-dismiss="alert" aria-label="close">Close</a><strong>'+alertString+'</strong></div>');
+            $('#errorAlertDiv').delay(5000).fadeOut(500);
+        };
+
         $("#spinnerDiv").html('<a><img src="./../spinner.gif" alt="Logo" width="40" style="vertical-align: middle; padding-top:12px; padding-left:10px;"/></a>');
 
         var query = new Parse.Query("ErrorStructure");
@@ -2632,7 +2716,9 @@ function loadErrorTable() {
 
                             structures[count].destroy({
                                 success: function() {
-                                    alert("Error successfully deleted.");
+                                    $("#spinnerDiv").html("");
+                                    var alertString = "Error successfully deleted.";
+                                    localStorage.setItem("errorAlertString", alertString);
                                     $(document).ready(loadErrorTable());
                                 },
                                 error: function(error) {
@@ -2669,6 +2755,15 @@ function loadErrorTable() {
 
 function loadLinksTable() {
     return function() {
+
+        $('#linksAlertDiv').css("display", "block");
+
+        var alertString = localStorage.getItem("linksAlertString");
+        if (alertString && alertString.length > 0) {
+            localStorage.setItem("linksAlertString", "");
+            $('#linksAlertDiv').html('<div class="alert alert-success fade in"><a href="#" class="close" data-dismiss="alert" aria-label="close">Close</a><strong>'+alertString+'</strong></div>');
+            $('#linksAlertDiv').delay(5000).fadeOut(500);
+        };
 
         $("#spinnerDiv").html('<a><img src="./../spinner.gif" alt="Logo" width="40" style="vertical-align: middle; padding-top:12px; padding-left:10px;"/></a>');
 
