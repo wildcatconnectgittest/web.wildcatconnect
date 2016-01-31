@@ -100,7 +100,7 @@
     </nav>
 
     <div id="scheduleAlertDiv">
-      
+
     </div>
 
     <div class="main-container" style="padding-left:20px; padding-right:20px;">
@@ -149,7 +149,7 @@
 
       Parse.$ = jQuery;
       Parse.initialize("cLBOvwh6ZTQYex37DSwxL1Cvg34MMiRWYAB4vqs0", "tTcV5Ns1GFdDda44FCcG5XHBDMbLA1sxRUzSnDgW");
-      if (Parse.User.current() && (Parse.User.current().get("userType") === "Administration" || Parse.User.current().get("userType") === "Developer")) {
+      if (Parse.User.current() && (Parse.User.current().get("userType") === "Developer" || Parse.User.current().get("userType") === "Administrator")) {
         //
       } else {
         window.location.replace("./login");
