@@ -1051,7 +1051,7 @@ $(function() {
                                 object.save(null, {
                                     success: function() {
                                         $("#spinnerDiv").html("");
-                                        localStorage.setItem("alertStringSchedule", "Schedule successfully updated.");
+                                        localStorage.setItem("scheduleAlertString", "Schedule successfully updated.");
                                         window.location.replace("./schedule");
                                     },
                                     error: function(error) {
