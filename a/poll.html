@@ -193,7 +193,6 @@
             choicesDiv.innerHTML = choicesDiv.innerHTML + '<p><input type="text" name="choice" class="form-control" id="choice_'+m+'" placeholder="Choice '+(m+1)+'" value="" onkeyup="keyPress('+m+');"></p>';
           };
         };
-        console.log(currentCount + " - " + (o + 1));
         if (o + 1 < currentCount) {
           for (var m = o + 1; m < choicesArray.length; m++) {
             if (choicesArray[m]) {
@@ -205,7 +204,6 @@
           };
         };
         currentCount = o + 1;
-        console.log(choicesArray);
       }
     </script>
     <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->

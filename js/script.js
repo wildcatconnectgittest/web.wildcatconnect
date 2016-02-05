@@ -1393,7 +1393,11 @@ function errorFunction(error, url, line) {
     theError.set("nameString", "JavaScript Error");
     theError.set("infoString", "Message = " + error + " - File = " + url + " - Line = " + line);
     theError.set("version", "Latest web release.");
-    theError.set("username", Parse.User.current().get("username"));
+    if (Parse.User.current()) {
+        theError.set("username", Parse.User.current().get("username"));
+    } else {
+        theError.set("No username.");
+    };
     theError.save();
 }
 
