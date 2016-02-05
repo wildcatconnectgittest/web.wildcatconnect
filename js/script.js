@@ -1167,6 +1167,11 @@ $(function() {
         };
     });
 
+    $('.forgot').click(function() {
+        event.preventDefault();
+        window.location.href = "./forgot";
+    });
+
     $('.saveLunch').click(function() {
         event.preventDefault();
 
