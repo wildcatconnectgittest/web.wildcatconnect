@@ -123,6 +123,12 @@
 
     <script type="text/javascript">
 
+      if (Parse.User.current()) {
+        //
+      } else {
+        window.location.replace("./login");
+      };
+
       window.onerror = function(error, url, line) {
           $(document).ready(errorFunction(error, url, line));
       };

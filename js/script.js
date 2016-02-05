@@ -341,7 +341,6 @@ var CommunityServiceStructure = Parse.Object.extend("CommunityServiceStructure",
 var EventStructure = Parse.Object.extend("EventStructure", {
     create: function(title, location, eventDate, eventTime, message) {
         eventDate = new Date(eventDate + " " + eventTime);
-        console.log(eventDate);
         var now = new Date();
         now = new Date(now.getFullYear(), now.getMonth(), now.getDate(), now.getHours(), now.getMinutes(), 0, 0);
         if (! title || ! location || ! eventDate || ! eventTime || ! message || eventDate < now ) {
@@ -445,10 +444,25 @@ var PollStructure = Parse.Object.extend("PollStructure", {
     }
 });
 
+function ordinal_suffix_of(i) {
+    var j = i % 10,
+        k = i % 100;
+    if (j == 1 && k != 11) {
+        return i + "st";
+    }
+    if (j == 2 && k != 12) {
+        return i + "nd";
+    }
+    if (j == 3 && k != 13) {
+        return i + "rd";
+    }
+    return i + "th";
+}
+
 var AlertStructure = Parse.Object.extend("AlertStructure", {
     create: function(title, author, alertTiming, dateDate, dateTime, content) {
         dateTime = new Date(dateDate + " " + dateTime);
-        dateDate = new Date(dateDate);
+        dateDate = new Date(dateTime);
         if (! title || ! author || ! alertTiming || (alertTiming === "time" && (! dateDate || ! dateTime))) {
             BootstrapDialog.show({
                 type: BootstrapDialog.TYPE_DEFAULT,
@@ -476,18 +490,24 @@ var AlertStructure = Parse.Object.extend("AlertStructure", {
                     month[9] = "October";
                     month[10] = "November";
                     month[11] = "December";
-                    var alertDate = new Date(dateDate.getFullYear(), dateDate.getMonth(), dateDate.getDate(), dateTime.getHours(), dateTime.getMinutes(), 0, 0);
-                    var now = new Date();
-                    if (alertDate < now && alertTiming === "time") {
-                           BootstrapDialog.show({
-                                type: BootstrapDialog.TYPE_DEFAULT,
-                                title: "Whoops!",
-                                message: "You can't send an alert in the past. No one would ever see it. :("
-                            });
-                            $("#spinnerDiv").html("");
+                    var nowDate = new Date();
+                    var now = moment();
+                    var date = moment(dateDate);
+                    if (now.diff(date, 'seconds') > 0) {
+                        BootstrapDialog.show({
+                            type: BootstrapDialog.TYPE_DEFAULT,
+                            title: "Whoops!",
+                            message: "You can't send an alert in the past. No one would ever see it. :("
+                        });
+                        $("#spinnerDiv").html("");
                     } else {
                         if (alertTiming === "now") {
-                            var dateString = month[now.getMonth()] + " " + now.getDate().toString() + ", " + now.getFullYear().toString();
+                            var date =  moment();
+                            var stringOne = date.format("MMMM ");
+                            var stringTwo = date.format(", h:mm A");
+                            var number = parseInt(date.format("d"));
+                            var suffix = ordinal_suffix_of(number);
+                            var dateString = stringOne + suffix + stringTwo;
                             object.save({
                                 'alertID' : alertID + 1,
                                 'titleString' : title,
@@ -515,7 +535,12 @@ var AlertStructure = Parse.Object.extend("AlertStructure", {
                                 }
                             });
                         } else if (alertTiming === "time") {
-                            var dateString = month[alertDate.getMonth()] + " " + alertDate.getDate().toString() + ", " + alertDate.getFullYear().toString();
+                            var date =  moment(dateDate);
+                            var stringOne = date.format("MMMM ");
+                            var stringTwo = date.format(", h:mm A");
+                            var number = parseInt(date.format("d"));
+                            var suffix = ordinal_suffix_of(number);
+                            var dateString = stringOne + suffix + stringTwo;
                             object.save({
                                 'alertID' : alertID + 1,
                                 'titleString' : title,
@@ -523,7 +548,7 @@ var AlertStructure = Parse.Object.extend("AlertStructure", {
                                 'dateString' : dateString,
                                 'isReady' : 0,
                                 'views' : 0,
-                                'alertTime' : alertDate,
+                                'alertTime' : dateDate,
                                 'contentString' : content,
                                 'hasTime' : 1
                             },  {
@@ -814,7 +839,7 @@ $(function() {
           callback: function(result) {
               // result will be true if button was click, while it will be false if users close the dialog directly.
               if(result) {
-                  history.back();
+                  window.location.replace("./index");
               };
           }
       });
