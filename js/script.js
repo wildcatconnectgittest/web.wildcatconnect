@@ -3692,18 +3692,25 @@ function loadScheduleTable() {
 
                                     //Schedule Type
 
-                                    var schedule = structures[i].get("scheduleType");
-
-                                    if (schedule === "*") {
+                                    if (structures[i].get("isSnow") == 1) {
                                         var tdOne = document.createElement("TD");
-                                        tdOne.appendChild(document.createTextNode("CUSTOM SCHEDULE - " + structures[i].get("customString")));
+                                        tdOne.appendChild(document.createTextNode("SNOW DAY"));
                                         tdOne.style.fontWeight = 'bold';
                                         tr.appendChild(tdOne);
                                     } else {
-                                        var actual = dictionary[schedule];
-                                        var tdOne = document.createElement("TD");
-                                        tdOne.appendChild(document.createTextNode(actual));
-                                        tr.appendChild(tdOne);
+                                        var schedule = structures[i].get("scheduleType");
+
+                                        if (schedule === "*") {
+                                            var tdOne = document.createElement("TD");
+                                            tdOne.appendChild(document.createTextNode("CUSTOM SCHEDULE - " + structures[i].get("customString")));
+                                            tdOne.style.fontWeight = 'bold';
+                                            tr.appendChild(tdOne);
+                                        } else {
+                                            var actual = dictionary[schedule];
+                                            var tdOne = document.createElement("TD");
+                                            tdOne.appendChild(document.createTextNode(actual));
+                                            tr.appendChild(tdOne);
+                                        };
                                     };
 
                                     if (! date < today && (i != 0 || structures[i].get("isActive") == 1)) {
@@ -3779,7 +3786,7 @@ function loadScheduleTable() {
 
                                     var tdFour = document.createElement("TD");
 
-                                    if (i < 2) {
+                                    if (i < 2 && structures[i].get("isSnow") == 0) {
                                         var button =document.createElement("INPUT");
                                         button.type = "button";
                                         button.className = "btn btn-lg btn-primary";
@@ -3842,7 +3849,11 @@ function loadScheduleTable() {
                                         })();
                                         tdFour.appendChild(button);
                                         tr.appendChild(tdFour);
-                                    };
+                                    } else if (i < 2) {
+                                        var tdThree = document.createElement("TD");
+                                        tdThree.appendChild(document.createTextNode("No actions available."));
+                                        tr.appendChild(tdThree);
+                                    };;
 
                                     if (! date < today && (i != 0 || structures[i].get("isActive") == 1)) {
                                         var buttonTwo =document.createElement("INPUT");
