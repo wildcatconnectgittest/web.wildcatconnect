@@ -1715,7 +1715,7 @@ function loadExistingUserTable() {
                     option.text = "NONE SELECTED";
                     selectList.appendChild(option);
 
-                    var theArray = ["Developer", "Administration", "Faculty", "Lunch Manager"];
+                    var theArray = ["Developer", "Administration", "Faculty", "Lunch Manager", "Student"];
 
                     for (var j = 0; j < theArray.length; j++) {
                         var option = document.createElement("option");
@@ -3787,7 +3787,7 @@ function loadScheduleTable() {
                                     var tdFour = document.createElement("TD");
 
                                     if (i < 2 && structures[i].get("isSnow") == 0) {
-                                        var button =document.createElement("INPUT");
+                                        var button = document.createElement("INPUT");
                                         button.type = "button";
                                         button.className = "btn btn-lg btn-primary";
                                         button.value = "Snow Day";
@@ -3848,12 +3848,7 @@ function loadScheduleTable() {
                                             };
                                         })();
                                         tdFour.appendChild(button);
-                                        tr.appendChild(tdFour);
-                                    } else if (i < 2) {
-                                        var tdThree = document.createElement("TD");
-                                        tdThree.appendChild(document.createTextNode("No actions available."));
-                                        tr.appendChild(tdThree);
-                                    };;
+                                    };
 
                                     if (! date < today && (i != 0 || structures[i].get("isActive") == 1)) {
                                         var buttonTwo =document.createElement("INPUT");
@@ -3884,7 +3879,9 @@ function loadScheduleTable() {
                                             };
                                         })();
                                         tdFour.appendChild(buttonTwo);
-                                    };
+                                    } else if (i < 2) {
+                                        tdFour.appendChild(document.createTextNode("No actions available."));
+                                    }
 
                                     tr.appendChild(tdFour);
                                     tableBody.appendChild(tr);
