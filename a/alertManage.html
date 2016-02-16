@@ -99,23 +99,19 @@
       </div>
     </nav>
 
-    <div id="newsAlertDiv">
+    <div id="theAlertDiv">
 
     </div>
 
     <div class="main-container" style="padding-left:20px; padding-right:20px;">
 
-      <h2>News Management</h2>
-      <button class="cancel btn btn-lg btn-primary" type="cancel">Back</button>
+      <h2>Alert Management</h2>
+      <button class="cancel-schedule btn btn-lg btn-primary" type="cancel">Back</button>
+      <a href="./alert"><button class="btn btn-lg btn-primary" style="float:right;">Post a New Alert</button></a>
       <hr style="border-color:#561838";></hr>
-      <h4 id="titleLabel">Pending Wildcat News Requests</h4>
-      <div id="newsRequests">
-
-      </div>
-      <hr style="border-color:#561838";></hr>
-      <h6 style="float:right;"><i><b>NOTE: If a story needs to be edited in any way, it should be deleted and a new story should be created with the correct information.</b></i></h6>
-      <h4 id="existingLabel">Current Active Wildcat News Stories</h4>
-      <div id="currentNews">
+      <h4 id="titleLabel">Recently Posted Alerts</h4><input type="text" id="search" placeholder=" SEARCH">
+      <br><br>
+      <div id="alerts">
 
       </div>
 
@@ -128,18 +124,14 @@
     <script src="./../js/parse-1.2.19.min.js"></script>
     <!--script>window.jQuery || document.write('<script src="../../assets/js/vendor/jquery.min.js"><\/script>')</script-->
     <script src="./../js/bootstrap.min.js"></script>
-    <script src="./../js/uglyScript.js"></script>
+    <script src="./../js/script.js"></script>
     <script src="./../js/date.js"></script>
     <script src="./../js/dialog.js"></script>
 
     <script type="text/javascript">
-
-      window.onerror = function(error, url, line) {
-          $(document).ready(errorFunction(error, url, line));
-      };
-
       Parse.$ = jQuery;
       Parse.initialize("cLBOvwh6ZTQYex37DSwxL1Cvg34MMiRWYAB4vqs0", "tTcV5Ns1GFdDda44FCcG5XHBDMbLA1sxRUzSnDgW");
+
       if (Parse.User.current() && (Parse.User.current().get("userType") === "Developer" || Parse.User.current().get("userType") === "Administration")) {
         //
       } else {
@@ -152,8 +144,25 @@
       Parse.$ = jQuery;
       Parse.initialize("cLBOvwh6ZTQYex37DSwxL1Cvg34MMiRWYAB4vqs0", "tTcV5Ns1GFdDda44FCcG5XHBDMbLA1sxRUzSnDgW");
 
-      $(document).ready(loadNewsTable());
-      $(document).ready(loadExistingNewsTable());
+      $(document).ready(loadAlertTable());
+
+      $('#search').keyup(function() {
+
+        var $rows = $('#alertTable tr');
+
+        $rows.splice(0, 1);
+
+          var val = $.trim($(this).val()).replace(/ +/g, ' ').toLowerCase();
+          
+          $rows.show().filter(function() {
+              var text = $(this).text().replace(/\s+/g, ' ').toLowerCase();
+              return !~text.indexOf(val);
+          }).hide();
+      });
+
+      window.onerror = function(error, url, line) {
+          $(document).ready(errorFunction(error, url, line));
+      };
 
     </script>
     <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->

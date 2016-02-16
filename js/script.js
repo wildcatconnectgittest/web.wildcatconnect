@@ -152,6 +152,14 @@ var NewsArticleStructure = Parse.Object.extend("NewsArticleStructure", {
                         var articleID = structure.get("articleID") + 1;
                     };
                     var object = new NewsArticleStructure();
+                    var approveNumber = 0;
+                    if (Parse.User.current() && (Parse.User.current().get("userType") === "Developer" || Parse.User.current().get("userType") === "Administration")) {
+                        approveNumber = 1;
+                    } else {
+                        approveNumber = 0;
+                    }
+                    var userString = Parse.User.current().get("firstName") + " " + Parse.User.current().get("lastName");
+                    var email = Parse.User.current().get("email");
                     if (window.imageFile === null) {
                         object.save({
                             'articleID' : articleID,
@@ -164,7 +172,9 @@ var NewsArticleStructure = Parse.Object.extend("NewsArticleStructure", {
                             'summaryString' : summary,
                             'titleString' : title,
                             'views' : 0,
-                            'isApproved' : 0
+                            'isApproved' : approveNumber,
+                            'userString' : userString,
+                            'email' : email
                         },  {
                             success: function(object) {
                                 $("#spinnerDiv").html("");
@@ -188,7 +198,9 @@ var NewsArticleStructure = Parse.Object.extend("NewsArticleStructure", {
                             'summaryString' : summary,
                             'titleString' : title,
                             'views' : 0,
-                            'isApproved' : 0
+                            'isApproved' : approveNumber,
+                            'userString' : userString,
+                            'email' : email
                         },  {
                             success: function(object) {
                                 $("#spinnerDiv").html("");
@@ -301,6 +313,14 @@ var CommunityServiceStructure = Parse.Object.extend("CommunityServiceStructure",
                         var theID = structure.get("communityServiceID") + 1;
                     };
                     var object = new CommunityServiceStructure();
+                    var approveNumber = 0;
+                    if (Parse.User.current() && (Parse.User.current().get("userType") === "Developer" || Parse.User.current().get("userType") === "Administration")) {
+                        approveNumber = 1;
+                    } else {
+                        approveNumber = 0;
+                    }
+                    var userString = Parse.User.current().get("firstName") + " " + Parse.User.current().get("lastName");
+                    var email = Parse.User.current().get("email");
                     var startDate = new Date(startDateDate.getFullYear(), startDateDate.getMonth(), startDateDate.getDate(), startDateTime.getHours(), startDateTime.getMinutes(), 0, 0);
                     var endDate = new Date(endDateDate.getFullYear(), endDateDate.getMonth(), endDateDate.getDate(), endDateTime.getHours(), endDateTime.getMinutes(), 0, 0);
                     object.save({
@@ -308,7 +328,10 @@ var CommunityServiceStructure = Parse.Object.extend("CommunityServiceStructure",
                         'commTitleString' : title,
                         'commSummaryString' : message,
                         'startDate' : startDate,
-                        'endDate' : endDate
+                        'endDate' : endDate,
+                        'isApproved' : approveNumber,
+                        'userString' : userString,
+                        'email' : email
                     },  {
                         success: function(object) {
                             $("#spinnerDiv").html("");
@@ -352,14 +375,22 @@ var EventStructure = Parse.Object.extend("EventStructure", {
         } else {
             $("#spinnerDiv").html('<a><img src="./../spinner.gif" alt="Logo" width="40" style="vertical-align: middle; padding-top:12px; padding-left:10px;"/></a>');
             var object = new EventStructure();
+            var approveNumber = 0;
+            if (Parse.User.current() && (Parse.User.current().get("userType") === "Developer" || Parse.User.current().get("userType") === "Administration")) {
+                approveNumber = 1;
+            } else {
+                approveNumber = 0;
+            }
+            var email = Parse.User.current().get("email");
             var theDate = new Date(eventDate.getFullYear(), eventDate.getMonth(), eventDate.getDate(), eventDate.getHours(), eventDate.getMinutes(), 0, 0);
             object.save({
                 "titleString" : title,
                 "locationString" : location,
                 "eventDate" : theDate,
                 "messageString" : message,
-                "isApproved" : 0,
-                "userString" : Parse.User.current().get("firstName") + " " + Parse.User.current().get("lastName")
+                "isApproved" : approveNumber,
+                "userString" : Parse.User.current().get("firstName") + " " + Parse.User.current().get("lastName"),
+                'email' : email
             }, {
                 success: function(object) {
                     $("#spinnerDiv").html("");
@@ -613,32 +644,39 @@ var ExtracurricularStructure = Parse.Object.extend("ExtracurricularStructure", {
                             success: function(structure) {
                                 var ECID = structure.get("extracurricularID");
                                 var object = new ExtracurricularStructure();
+                                var userString = Parse.User.current().get("firstName") + " " + Parse.User.current().get("lastName");
                                 object.save({
                                     'extracurricularID' : ECID + 1,
                                     'titleString' : title,
                                     'descriptionString' : content,
                                     'hasImage' : 0,
-                                    'meetingIDs' : window.daysArray.join("")
+                                    'meetingIDs' : window.daysArray.join(""),
+                                    'userString' : userString
                                 },  {
                                     success: function(object) {
-                                        var ownedEC = Parse.User.current().get("ownedEC");
-                                        ownedEC.push(object.get("extracurricularID"));
-                                        Parse.User.current().save({
-                                            'ownedEC' : ownedEC
-                                        }, {
-                                            success : function(user) {
-                                                $("#spinnerDiv").html("");
-                                                localStorage.setItem("alertString", "Group successfully registered.");
-                                                window.location.replace("./index");
-                                            },
-                                            error: function(error) {
-                                                errorFunction(error.code.toString() + " - " + error.message.toString(), "ParseError", "Script 554");
-                                                BootstrapDialog.show({
-                                                    type: BootstrapDialog.TYPE_DEFAULT,
-                                                    title: "Error",
-                                                    message: "Error occurred. Please try again."
+                                        Parse.User.current().fetch({
+                                            success: function(user) {
+                                                var ownedEC = user.get("ownedEC");
+                                                ownedEC.push(ECID + 1);
+                                                console.log(ownedEC);
+                                                user.save({
+                                                    'ownedEC' : ownedEC
+                                                }, {
+                                                    success : function(user) {
+                                                        $("#spinnerDiv").html("");
+                                                        localStorage.setItem("alertString", "Group successfully registered.");
+                                                        window.location.replace("./groupManage");
+                                                    },
+                                                    error: function(error) {
+                                                        errorFunction(error.code.toString() + " - " + error.message.toString(), "ParseError", "Script 554");
+                                                        BootstrapDialog.show({
+                                                            type: BootstrapDialog.TYPE_DEFAULT,
+                                                            title: "Error",
+                                                            message: "Error occurred. Please try again."
+                                                        });
+                                                        $("#spinnerDiv").html("");
+                                                    }
                                                 });
-                                                $("#spinnerDiv").html("");
                                             }
                                         });
                                     },
@@ -1963,6 +2001,188 @@ function loadLunchTable() {
 	}
 }
 
+function loadExistingNewsTable() {
+    return function() {
+
+        $("#spinnerDiv").html('<a><img src="./../spinner.gif" alt="Logo" width="40" style="vertical-align: middle; padding-top:12px; padding-left:10px;"/></a>');
+
+        var query = new Parse.Query("NewsArticleStructure");
+        query.equalTo("isApproved", 1);
+        query.ascending("createdAt");
+        var structures = new Array();
+        query.find({
+            success: function(structures) {
+
+                $("#existingLabel").html("Current Active Wildcat News Stories (" + structures.length+")");
+
+                var tableDiv = document.getElementById("currentNews");
+                var table = document.createElement("TABLE");
+                var tableBody = document.createElement("TBODY");
+
+                table.appendChild(tableBody);
+                table.className = "table table-striped";
+                table.id = "newsTable";
+
+                var heading = new Array();
+                heading[0] = "Date Submitted";
+                heading[1] = "Author";
+                heading[2] = "Title";
+                heading[3] = "Content";
+                heading[4] = "Action";
+
+                //TABLE COLUMNS
+
+                var tr = document.createElement("TR");
+                tableBody.appendChild(tr);
+
+                $("#currentNews").html("");
+
+                for (var i = 0; i < heading.length; i++) {
+                    var th = document.createElement("TH");
+                    th.width = "15%";
+                    th.appendChild(document.createTextNode(heading[i]));
+                    tr.appendChild(th);
+                };
+
+                for (var i = 0; i < structures.length; i++) {
+                    var tr = document.createElement("TR");
+                    var tdTwo = document.createElement("TD");
+                    var date = structures[i].createdAt;
+                    var string = date.toString('dddd, MMMM d, yyyy @ h:mm tt');
+                    tdTwo.appendChild(document.createTextNode(string));
+                    tr.appendChild(tdTwo);
+
+                    var tdOne = document.createElement("TD");
+                    tdOne.appendChild(document.createTextNode(structures[i].get("authorString")));
+                    tr.appendChild(tdOne);
+
+                    var tdOne = document.createElement("TD");
+                    tdOne.appendChild(document.createTextNode(structures[i].get("titleString")));
+                    tr.appendChild(tdOne);
+
+                    var tdOne = document.createElement("TD");
+
+                    var contentButton =document.createElement("INPUT");
+                    contentButton.type = "button";
+                    contentButton.className = "btn btn-lg btn-primary";
+                    contentButton.value = "View Content";
+                    contentButton.name = i;
+                    contentButton.style.marginRight = "10px";
+                    contentButton.onclick = (function() {
+                        var count = i;
+
+                        return function(e) {
+
+                            var titleString = structures[count].get("titleString");
+                            var summaryString = structures[count].get("summaryString");
+                            var authorDate = structures[count].get("authorString") + " | " + structures[count].get("dateString");
+                            var content = structures[count].get("contentURLString");
+                            content = content.replace(/\r?\n/g, '<br />');
+                            var url = structures[count].get("imageFile").url();
+
+                            BootstrapDialog.show({
+                                  title: 'Article Preview',
+                                  size: BootstrapDialog.SIZE_WIDE,
+                                  message: function(dialogItself) {
+                                    var $form = $('<form></form>');
+                                    $form.append('<h1 style="margin-top:0;">'+titleString+'</h1><h4><i>'+summaryString+'</i></h4><h5>'+authorDate+'</h5>');
+                                    if (url) {
+                                        $form.append('<img src="'+url+'" style="width:50%;display:block;margin: 0 auto;">');
+                                    };
+                                    $form.append('<hr style="border-color:#561838">' + content);
+                                    return $form;
+                                  },// <-- Default value is BootstrapDialog.TYPE_PRIMARY
+                                  closable: true, // <-- Default value is false
+                                  draggable: true, // <-- Default value is false
+                                  buttons: [{
+                                       label: 'OK',
+                                        action: function (dialogItself) {
+                                            dialogItself.close();
+                                        } 
+                                    }]
+                              });
+
+                        };
+                    })();
+                    tdOne.appendChild(contentButton);
+                    tr.appendChild(tdOne);
+
+                    var tdFour = document.createElement("TD");
+
+                    var buttonTwo =document.createElement("INPUT");
+                    buttonTwo.type = "button";
+                    buttonTwo.className = "btn btn-lg btn-primary";
+                    buttonTwo.value = "Delete";
+                    buttonTwo.style.marginRight = "10px";
+                    buttonTwo.style.backgroundColor = "red";
+                    buttonTwo.style.borderColor = "red";
+                    buttonTwo.onclick = (function() {
+                        var count = i;
+
+                        return function(e) {
+
+                            BootstrapDialog.confirm({
+                                  title: 'Confirmation',
+                                  message: 'Are you sure you want to delete this story?',
+                                  type: BootstrapDialog.TYPE_DANGER, // <-- Default value is BootstrapDialog.TYPE_PRIMARY
+                                  closable: true, // <-- Default value is false
+                                  draggable: true, // <-- Default value is false
+                                  btnCancelLabel: 'No', // <-- Default value is 'Cancel',
+                                  btnOKLabel: 'Yes', // <-- Default value is 'OK',
+                                  btnOKClass: 'btn-primary', // <-- If you didn't specify it, dialog type will be used,
+                                  callback: function(result) {
+                                      // result will be true if button was click, while it will be false if users close the dialog directly.
+                                      if(result) {
+                                         $("#spinnerDiv").html('<a><img src="./../spinner.gif" alt="Logo" width="40" style="vertical-align: middle; padding-top:12px; padding-left:10px;"/></a>');
+
+                                        structures[count].destroy({
+                                            success: function() {
+                                                $("#spinnerDiv").html("");
+                                                var alertString = "Story successfully deleted.";
+                                                localStorage.setItem("newsAlertString", alertString);
+                                                $(document).ready(loadNewsTable());
+                                                $(document).ready(loadExistingNewsTable());
+                                              },
+                                              error: function(error) {
+                                                errorFunction(error.code.toString() + " - " + error.message.toString(), "ParseError", "Script 2379");
+                                               BootstrapDialog.show({
+                                                    type: BootstrapDialog.TYPE_DEFAULT,
+                                                    title: "Error",
+                                                    message: "Error occurred. Please try again."
+                                                });
+                                                $("#spinnerDiv").html("");
+                                              }
+                                        });
+                                      };
+                                  }
+                              });
+
+                        };
+                    })();
+                    tdFour.appendChild(buttonTwo);
+                    tr.appendChild(tdFour);
+
+                    tableBody.appendChild(tr);
+
+                    tableDiv.appendChild(table);
+                };
+
+                $("#spinnerDiv").html("");
+
+            },
+            error: function(error) {
+                errorFunction(error.code.toString() + " - " + error.message.toString(), "ParseError", "Script 2047");
+               BootstrapDialog.show({
+                    type: BootstrapDialog.TYPE_DEFAULT,
+                    title: "Error",
+                    message: "Error occurred. Please try again."
+                });
+                $("#spinnerDiv").html("");
+            }
+        });
+    }
+}
+
 function loadNewsTable() {
     return function() {
 
@@ -1996,7 +2216,7 @@ function loadNewsTable() {
                 var heading = new Array();
                 heading[0] = "Date Submitted";
                 heading[1] = "Author";
-                heading[2] = "Summary";
+                heading[2] = "Title";
                 heading[3] = "Content";
                 heading[4] = "Action";
 
@@ -2009,11 +2229,7 @@ function loadNewsTable() {
 
                 for (var i = 0; i < heading.length; i++) {
                     var th = document.createElement("TH");
-                    if (i != 3) {
-                        th.width = '10%';
-                    } else {
-                        th.width = '60%';
-                    };
+                    th.width = "15%";
                     th.appendChild(document.createTextNode(heading[i]));
                     tr.appendChild(th);
                 };
@@ -2031,11 +2247,54 @@ function loadNewsTable() {
                     tr.appendChild(tdOne);
 
                     var tdOne = document.createElement("TD");
-                    tdOne.appendChild(document.createTextNode(structures[i].get("summaryString")));
+                    tdOne.appendChild(document.createTextNode(structures[i].get("titleString")));
                     tr.appendChild(tdOne);
 
                     var tdOne = document.createElement("TD");
-                    tdOne.appendChild(document.createTextNode(structures[i].get("contentURLString")));
+
+                    var contentButton =document.createElement("INPUT");
+                    contentButton.type = "button";
+                    contentButton.className = "btn btn-lg btn-primary";
+                    contentButton.value = "View Content";
+                    contentButton.name = i;
+                    contentButton.style.marginRight = "10px";
+                    contentButton.onclick = (function() {
+                        var count = i;
+
+                        return function(e) {
+
+                            var titleString = structures[count].get("titleString");
+                            var summaryString = structures[count].get("summaryString");
+                            var authorDate = structures[count].get("authorString") + " | " + structures[count].get("dateString");
+                            var content = structures[count].get("contentURLString");
+                            content = content.replace(/\r?\n/g, '<br />');
+                            var url = structures[count].get("imageFile").url();
+
+                            BootstrapDialog.show({
+                                  title: 'Article Preview',
+                                  size: BootstrapDialog.SIZE_WIDE,
+                                  message: function(dialogItself) {
+                                    var $form = $('<form></form>');
+                                    $form.append('<h1 style="margin-top:0;">'+titleString+'</h1><h4><i>'+summaryString+'</i></h4><h5>'+authorDate+'</h5>');
+                                    if (url) {
+                                        $form.append('<img src="'+url+'" style="width:50%;display:block;margin: 0 auto;">');
+                                    };
+                                    $form.append('<hr style="border-color:#561838">' + content);
+                                    return $form;
+                                  },// <-- Default value is BootstrapDialog.TYPE_PRIMARY
+                                  closable: true, // <-- Default value is false
+                                  draggable: true, // <-- Default value is false
+                                  buttons: [{
+                                       label: 'OK',
+                                        action: function (dialogItself) {
+                                            dialogItself.close();
+                                        } 
+                                    }]
+                              });
+
+                        };
+                    })();
+                    tdOne.appendChild(contentButton);
                     tr.appendChild(tdOne);
 
                     var tdFour = document.createElement("TD");
@@ -2044,7 +2303,7 @@ function loadNewsTable() {
                     button.className = "approveUser btn btn-lg btn-primary";
                     button.value = "Approve";
                     button.name = i;
-                    button.style.marginBottom = "10px";
+                    button.style.marginRight = "10px";
                     button.onclick = (function() {
                         var count = i;
 
@@ -2073,6 +2332,7 @@ function loadNewsTable() {
                                                 var alertString = "Story successfully approved.";
                                                 localStorage.setItem("newsAlertString", alertString);
                                                 $(document).ready(loadNewsTable());
+                                                $(document).ready(loadExistingNewsTable());
                                               },
                                               error: function(error) {
                                                 errorFunction(error.code.toString() + " - " + error.message.toString(), "ParseError", "Script 1969");
@@ -2104,29 +2364,61 @@ function loadNewsTable() {
 
                         return function(e) {
 
-                            BootstrapDialog.confirm({
-                                  title: 'Confirmation',
-                                  message: 'Are you sure you want to deny this Wildcat News Story?',
-                                  type: BootstrapDialog.TYPE_DANGER, // <-- Default value is BootstrapDialog.TYPE_PRIMARY
-                                  closable: true, // <-- Default value is false
-                                  draggable: true, // <-- Default value is false
-                                  btnCancelLabel: 'No', // <-- Default value is 'Cancel',
-                                  btnOKLabel: 'Yes', // <-- Default value is 'OK',
-                                  btnOKClass: 'btn-primary', // <-- If you didn't specify it, dialog type will be used,
-                                  callback: function(result) {
-                                      // result will be true if button was click, while it will be false if users close the dialog directly.
-                                      if(result) {
-                                         $("#spinnerDiv").html('<a><img src="./../spinner.gif" alt="Logo" width="40" style="vertical-align: middle; padding-top:12px; padding-left:10px;"/></a>');
+                            var name = structures[count].get("userString");
+                            var e = structures[count].get("email");
+                            var title = structures[count].get("titleString");
+                            var admin = Parse.User.current().get("firstName") + " " + Parse.User.current().get("lastName");
 
-                                        structures[count].destroy({
-                                            success: function() {
-                                                $("#spinnerDiv").html("");
-                                                var alertString = "Story successfully denied.";
-                                                localStorage.setItem("newsAlertString", alertString);
-                                                $(document).ready(loadNewsTable());
+                            BootstrapDialog.show({
+                                  title: 'Confirmation',
+                                  message: function(dialogItself) {
+                                    var $form = $('<form></form>');
+                                    var $message = $('<textarea maxlength="400" rows="4" style="overflow-y: scroll; resize: none; width:100%;"></textarea>');
+                                    dialogItself.setData('message', $message);
+                                    $form.append('Are you sure you want to deny this Wildcat News Story? Please enter a brief message explaining the reason for the denial. This will be sent in an e-mail to the story\'s creator, '+name+'.<br><br><label>Message</label><br>').append($message);
+                                    return $form;
+                                  },// <-- Default value is BootstrapDialog.TYPE_PRIMARY
+                                  closable: false, // <-- Default value is false
+                                  draggable: true, // <-- Default value is false
+                                  buttons: [{
+                                       label: 'Cancel',
+                                        action: function (dialogItself) {
+                                            dialogItself.close();
+                                        } 
+                                    }, {
+                                        label: 'Deny',
+                                        cssClass: 'btn-primary',
+                                        action: function (dialogItself) {
+                                            var text = dialogItself.getData('message').val();
+
+                                            $("#spinnerDiv").html('<a><img src="./../spinner.gif" alt="Logo" width="40" style="vertical-align: middle; padding-top:12px; padding-left:10px;"/></a>');
+
+                                            Parse.Cloud.run('denyStructure', { "name" : name , "type" : "news" , "email" : e , "message" : text , "title" : title , "admin" : admin}, {
+                                              success: function() {
+                                                structures[count].destroy({
+                                                    success: function() {
+                                                        $("#spinnerDiv").html("");
+                                                        dialogItself.close();
+                                                        var alertString = "Story successfully denied.";
+                                                        localStorage.setItem("newsAlertString", alertString);
+                                                        $(document).ready(loadNewsTable());
+                                                        $(document).ready(loadExistingNewsTable());
+                                                      },
+                                                      error: function(error) {
+                                                        dialogItself.close();
+                                                        errorFunction(error.code.toString() + " - " + error.message.toString(), "ParseError", "Script 2020");
+                                                       BootstrapDialog.show({
+                                                            type: BootstrapDialog.TYPE_DEFAULT,
+                                                            title: "Error",
+                                                            message: "Error occurred. Please try again."
+                                                        });
+                                                        $("#spinnerDiv").html("");
+                                                      }
+                                                });
                                               },
                                               error: function(error) {
-                                                errorFunction(error.code.toString() + " - " + error.message.toString(), "ParseError", "Script 2020");
+                                                dialogItself.close();
+                                                errorFunction(error.code.toString() + " - " + error.message.toString(), "ParseError", "Script 1659");
                                                BootstrapDialog.show({
                                                     type: BootstrapDialog.TYPE_DEFAULT,
                                                     title: "Error",
@@ -2134,9 +2426,9 @@ function loadNewsTable() {
                                                 });
                                                 $("#spinnerDiv").html("");
                                               }
-                                        });
-                                      };
-                                  }
+                                            });
+                                        }
+                                    }]
                               });
 
                         };
@@ -2253,7 +2545,7 @@ function loadEventTable() {
 
                             BootstrapDialog.confirm({
                                   title: 'Confirmation',
-                                  message: 'Are you sure you want to approve this event? It will be live to all app users.?',
+                                  message: 'Are you sure you want to approve this event? It will be live to all app users.',
                                   type: BootstrapDialog.TYPE_DANGER, // <-- Default value is BootstrapDialog.TYPE_PRIMARY
                                   closable: true, // <-- Default value is false
                                   draggable: true, // <-- Default value is false
@@ -2304,40 +2596,71 @@ function loadEventTable() {
 
                         return function(e) {
 
-                            BootstrapDialog.confirm({
-                                  title: 'Confirmation',
-                                  message: 'Are you sure you want to deny this event?',
-                                  type: BootstrapDialog.TYPE_DANGER, // <-- Default value is BootstrapDialog.TYPE_PRIMARY
-                                  closable: true, // <-- Default value is false
-                                  draggable: true, // <-- Default value is false
-                                  btnCancelLabel: 'No', // <-- Default value is 'Cancel',
-                                  btnOKLabel: 'Yes', // <-- Default value is 'OK',
-                                  btnOKClass: 'btn-primary', // <-- If you didn't specify it, dialog type will be used,
-                                  callback: function(result) {
-                                      // result will be true if button was click, while it will be false if users close the dialog directly.
-                                      if(result) {
-                                         $("#spinnerDiv").html('<a><img src="./../spinner.gif" alt="Logo" width="40" style="vertical-align: middle; padding-top:12px; padding-left:10px;"/></a>');
+                            var name = structures[count].get("userString");
+                            var e = structures[count].get("email");
+                            var title = structures[count].get("titleString");
+                            var admin = Parse.User.current().get("firstName") + " " + Parse.User.current().get("lastName");
 
-                                        structures[count].destroy({
-                                            success: function() {
-                                                $("#spinnerDiv").html("");
-                                                var alertString = "Event successfully denied.";
-                                                localStorage.setItem("eventAlertString", alertString);
-                                                $(document).ready(loadEventTable());
-                                                $(document).ready(loadExistingEventTable());
+                            BootstrapDialog.show({
+                                  title: 'Confirmation',
+                                  message: function(dialogItself) {
+                                    var $form = $('<form></form>');
+                                    var $message = $('<textarea maxlength="400" rows="4" style="overflow-y: scroll; resize: none; width:100%;"></textarea>');
+                                    dialogItself.setData('message', $message);
+                                    $form.append('Are you sure you want to deny this event? Please enter a brief message explaining the reason for the denial. This will be sent in an e-mail to the event\'s creator, '+name+'.<br><br><label>Message</label><br>').append($message);
+                                    return $form;
+                                  },// <-- Default value is BootstrapDialog.TYPE_PRIMARY
+                                  closable: false, // <-- Default value is false
+                                  draggable: true, // <-- Default value is false
+                                  buttons: [{
+                                       label: 'Cancel',
+                                        action: function (dialogItself) {
+                                            dialogItself.close();
+                                        } 
+                                    }, {
+                                        label: 'Deny',
+                                        cssClass: 'btn-primary',
+                                        action: function (dialogItself) {
+                                            var text = dialogItself.getData('message').val();
+
+                                            $("#spinnerDiv").html('<a><img src="./../spinner.gif" alt="Logo" width="40" style="vertical-align: middle; padding-top:12px; padding-left:10px;"/></a>');
+
+                                            Parse.Cloud.run('denyStructure', { "name" : name , "type" : "event" , "email" : e , "message" : text , "title" : title , "admin" : admin }, {
+                                              success: function() {
+                                                structures[count].destroy({
+                                                    success: function() {
+                                                        $("#spinnerDiv").html("");
+                                                        dialogItself.close();
+                                                        var alertString = "Event successfully denied.";
+                                                        localStorage.setItem("eventAlertString", alertString);
+                                                        $(document).ready(loadEventTable());
+                                                        $(document).ready(loadExistingEventTable());
+                                                      },
+                                                      error: function(error) {
+                                                        dialogItself.close();
+                                                        errorFunction(error.code.toString() + " - " + error.message.toString(), "ParseError", "Script 2020");
+                                                       BootstrapDialog.show({
+                                                            type: BootstrapDialog.TYPE_DEFAULT,
+                                                            title: "Error",
+                                                            message: "Error occurred. Please try again."
+                                                        });
+                                                        $("#spinnerDiv").html("");
+                                                      }
+                                                });
                                               },
                                               error: function(error) {
-                                                errorFunction(error.code.toString() + " - " + error.message.toString(), "ParseError", "Script 2221");
-                                                   BootstrapDialog.show({
-                                                        type: BootstrapDialog.TYPE_DEFAULT,
-                                                        title: "Error",
-                                                        message: "Error occurred. Please try again."
-                                                    });
-                                                    $("#spinnerDiv").html("");
+                                                dialogItself.close();
+                                                errorFunction(error.code.toString() + " - " + error.message.toString(), "ParseError", "Script 1659");
+                                               BootstrapDialog.show({
+                                                    type: BootstrapDialog.TYPE_DEFAULT,
+                                                    title: "Error",
+                                                    message: "Error occurred. Please try again."
+                                                });
+                                                $("#spinnerDiv").html("");
                                               }
-                                        });
-                                      };
-                                  }
+                                            });
+                                        }
+                                    }]
                               });
 
                         };
@@ -2524,6 +2847,400 @@ function loadExistingEventTable() {
     }
 }
 
+function loadCommunityTable() {
+    return function() {
+
+        $("#spinnerDiv").html('<a><img src="./../spinner.gif" alt="Logo" width="40" style="vertical-align: middle; padding-top:12px; padding-left:10px;"/></a>');
+
+        var query = new Parse.Query("CommunityServiceStructure");
+        query.equalTo("isApproved", 0);
+        query.ascending("startDate");
+        var structures = new Array();
+        query.find({
+            success: function(structures) {
+
+                $("#titleLabel").html("Pending Community Service Requests (" + structures.length+")");
+
+                var tableDiv = document.getElementById("communityRequests");
+                var table = document.createElement("TABLE");
+                var tableBody = document.createElement("TBODY");
+
+                table.appendChild(tableBody);
+                table.className = "table table-striped";
+
+                var heading = new Array();
+                heading[0] = "Title";
+                heading[1] = "Start Date";
+                heading[2] = "End Date";
+                heading[3] = "Message";
+                heading[4] = "User";
+                heading[5] = "Action";
+
+                //TABLE COLUMNS
+
+                var tr = document.createElement("TR");
+                tableBody.appendChild(tr);
+
+                $("#communityRequests").html("");
+
+                for (var i = 0; i < heading.length; i++) {
+                    var th = document.createElement("TH");
+                    if (i != 3) {
+                        th.width = '12%';
+                    } else {
+                        th.width = '40%';
+                    };
+                    th.appendChild(document.createTextNode(heading[i]));
+                    tr.appendChild(th);
+                };
+
+                for (var i = 0; i < structures.length; i++) {
+                    var tr = document.createElement("TR");
+
+                    var tdOne = document.createElement("TD");
+                    tdOne.appendChild(document.createTextNode(structures[i].get("commTitleString")));
+                    tr.appendChild(tdOne);
+
+                    var tdTwo = document.createElement("TD");
+                    var date = structures[i].get("startDate");
+                    var string = date.toString('dddd, MMMM d, yyyy @ h:mm tt');
+                    tdTwo.appendChild(document.createTextNode(string));
+                    tr.appendChild(tdTwo);
+
+                    var tdTwo = document.createElement("TD");
+                    var date = structures[i].get("endDate");
+                    var string = date.toString('dddd, MMMM d, yyyy @ h:mm tt');
+                    tdTwo.appendChild(document.createTextNode(string));
+                    tr.appendChild(tdTwo);
+
+                    var tdOne = document.createElement("TD");
+                    tdOne.appendChild(document.createTextNode(structures[i].get("commSummaryString")));
+                    tr.appendChild(tdOne);
+
+                    var tdOne = document.createElement("TD");
+                    tdOne.appendChild(document.createTextNode(structures[i].get("userString")));
+                    tr.appendChild(tdOne);
+
+                    var tdFour = document.createElement("TD");
+                    var button =document.createElement("INPUT");
+                    button.type = "button";
+                    button.className = "approveUser btn btn-lg btn-primary";
+                    button.value = "Approve";
+                    button.name = i;
+                    button.style.marginBottom = "10px";
+                    button.onclick = (function() {
+                        var count = i;
+
+                        return function(e) {
+                            
+                            //Approve the user at i
+
+                            BootstrapDialog.confirm({
+                                  title: 'Confirmation',
+                                  message: 'Are you sure you want to approve this opportunity? It will be live to all app users.',
+                                  type: BootstrapDialog.TYPE_DANGER, // <-- Default value is BootstrapDialog.TYPE_PRIMARY
+                                  closable: true, // <-- Default value is false
+                                  draggable: true, // <-- Default value is false
+                                  btnCancelLabel: 'No', // <-- Default value is 'Cancel',
+                                  btnOKLabel: 'Yes', // <-- Default value is 'OK',
+                                  btnOKClass: 'btn-primary', // <-- If you didn't specify it, dialog type will be used,
+                                  callback: function(result) {
+                                      // result will be true if button was click, while it will be false if users close the dialog directly.
+                                      if(result) {
+                                         $("#spinnerDiv").html('<a><img src="./../spinner.gif" alt="Logo" width="40" style="vertical-align: middle; padding-top:12px; padding-left:10px;"/></a>');
+
+                                        structures[count].set("isApproved", 1);
+                                        structures[count].save({
+                                            success: function() {
+                                                $("#spinnerDiv").html("");
+                                                var alertString = "Opportunity successfully approved.";
+                                                localStorage.setItem("commAlertString", alertString);
+                                                $(document).ready(loadCommunityTable());
+                                                $(document).ready(loadExistingCommunityTable());
+                                              },
+                                              error: function(error) {
+                                                errorFunction(error.code.toString() + " - " + error.message.toString(), "ParseError", "Script 2169");
+                                                   BootstrapDialog.show({
+                                                        type: BootstrapDialog.TYPE_DEFAULT,
+                                                        title: "Error",
+                                                        message: "Error occurred. Please try again."
+                                                    });
+                                                    $("#spinnerDiv").html("");
+                                              }
+                                        });
+                                      };
+                                  }
+                              });
+                        };
+                    })();
+                    tdFour.appendChild(button);
+
+                    var buttonTwo =document.createElement("INPUT");
+                    buttonTwo.type = "button";
+                    buttonTwo.className = "btn btn-lg btn-primary";
+                    buttonTwo.value = "Deny";
+                    button.name = i;
+                    buttonTwo.style.marginRight = "10px";
+                    buttonTwo.style.backgroundColor = "red";
+                    buttonTwo.style.borderColor = "red";
+                    buttonTwo.onclick = (function() {
+                        var count = i;
+
+                        return function(e) {
+
+                            var name = structures[count].get("userString");
+                            var e = structures[count].get("email");
+                            var title = structures[count].get("titleString");
+                            var admin = Parse.User.current().get("firstName") + " " + Parse.User.current().get("lastName");
+
+                            BootstrapDialog.show({
+                                  title: 'Confirmation',
+                                  message: function(dialogItself) {
+                                    var $form = $('<form></form>');
+                                    var $message = $('<textarea maxlength="400" rows="4" style="overflow-y: scroll; resize: none; width:100%;"></textarea>');
+                                    dialogItself.setData('message', $message);
+                                    $form.append('Are you sure you want to deny this opportunity? Please enter a brief message explaining the reason for the denial. This will be sent in an e-mail to the opportunity\'s creator, '+name+'.<br><br><label>Message</label><br>').append($message);
+                                    return $form;
+                                  },// <-- Default value is BootstrapDialog.TYPE_PRIMARY
+                                  closable: false, // <-- Default value is false
+                                  draggable: true, // <-- Default value is false
+                                  buttons: [{
+                                       label: 'Cancel',
+                                        action: function (dialogItself) {
+                                            dialogItself.close();
+                                        } 
+                                    }, {
+                                        label: 'Deny',
+                                        cssClass: 'btn-primary',
+                                        action: function (dialogItself) {
+                                            var text = dialogItself.getData('message').val();
+
+                                            $("#spinnerDiv").html('<a><img src="./../spinner.gif" alt="Logo" width="40" style="vertical-align: middle; padding-top:12px; padding-left:10px;"/></a>');
+
+                                            Parse.Cloud.run('denyStructure', { "name" : name , "type" : "comm" , "email" : e , "message" : text , "title" : title , "admin" : admin }, {
+                                              success: function() {
+                                                structures[count].destroy({
+                                                    success: function() {
+                                                        $("#spinnerDiv").html("");
+                                                        dialogItself.close();
+                                                        var alertString = "Opportunity successfully denied.";
+                                                        localStorage.setItem("commAlertString", alertString);
+                                                        $(document).ready(loadCommunityTable());
+                                                        $(document).ready(loadExistingCommunityTable());
+                                                      },
+                                                      error: function(error) {
+                                                        dialogItself.close();
+                                                        errorFunction(error.code.toString() + " - " + error.message.toString(), "ParseError", "Script 2020");
+                                                       BootstrapDialog.show({
+                                                            type: BootstrapDialog.TYPE_DEFAULT,
+                                                            title: "Error",
+                                                            message: "Error occurred. Please try again."
+                                                        });
+                                                        $("#spinnerDiv").html("");
+                                                      }
+                                                });
+                                              },
+                                              error: function(error) {
+                                                dialogItself.close();
+                                                errorFunction(error.code.toString() + " - " + error.message.toString(), "ParseError", "Script 1659");
+                                               BootstrapDialog.show({
+                                                    type: BootstrapDialog.TYPE_DEFAULT,
+                                                    title: "Error",
+                                                    message: "Error occurred. Please try again."
+                                                });
+                                                $("#spinnerDiv").html("");
+                                              }
+                                            });
+                                        }
+                                    }]
+                              });
+
+                        };
+                    })();
+                    tdFour.appendChild(buttonTwo);
+                    tr.appendChild(tdFour);
+
+                    tableBody.appendChild(tr);
+
+                    tableDiv.appendChild(table);
+                };
+
+                $("#spinnerDiv").html("");
+
+            },
+            error: function(error) {
+                errorFunction(error.code.toString() + " - " + error.message.toString(), "ParseError", "Script 2248");
+               BootstrapDialog.show({
+                    type: BootstrapDialog.TYPE_DEFAULT,
+                    title: "Error",
+                    message: "Error occurred. Please try again."
+                });
+                $("#spinnerDiv").html("");
+            }
+        });
+    }
+}
+
+function loadExistingCommunityTable() {
+    return function() {
+
+        $('#communityAlertDiv').css("display", "block");
+
+        var alertString = localStorage.getItem("commAlertString");
+        if (alertString && alertString.length > 0) {
+            localStorage.setItem("commAlertString", "");
+            $('#communityAlertDiv').html('<div class="alert alert-success fade in"><a href="#" class="close" data-dismiss="alert" aria-label="close">Close</a><strong>'+alertString+'</strong></div>');
+            $('#communityAlertDiv').delay(5000).fadeOut(500);
+        };
+
+        $("#spinnerDiv").html('<a><img src="./../spinner.gif" alt="Logo" width="40" style="vertical-align: middle; padding-top:12px; padding-left:10px;"/></a>');
+
+        var query = new Parse.Query("CommunityServiceStructure");
+        query.equalTo("isApproved", 1);
+        query.ascending("startDate");
+        var structures = new Array();
+        query.find({
+            success: function(structures) {
+
+                $("#existingLabel").html("Current Active Community Service Opportunities (" + structures.length+")");
+
+                var tableDiv = document.getElementById("currentCommunity");
+                var table = document.createElement("TABLE");
+                var tableBody = document.createElement("TBODY");
+
+                table.appendChild(tableBody);
+                table.className = "table table-striped";
+                table.id = "communityTable";
+
+                var heading = new Array();
+                heading[0] = "Title";
+                heading[1] = "Start Date";
+                heading[2] = "End Date";
+                heading[3] = "Message";
+                heading[4] = "User";
+                heading[5] = "Action";
+
+                //TABLE COLUMNS
+
+                var tr = document.createElement("TR");
+                tableBody.appendChild(tr);
+
+                $("#currentCommunity").html("");
+
+                for (var i = 0; i < heading.length; i++) {
+                    var th = document.createElement("TH");
+                    if (i != 3) {
+                        th.width = '12%';
+                    } else {
+                        th.width = '40%';
+                    };
+                    th.appendChild(document.createTextNode(heading[i]));
+                    tr.appendChild(th);
+                };
+
+                for (var i = 0; i < structures.length; i++) {
+                    var tr = document.createElement("TR");
+
+                    var tdOne = document.createElement("TD");
+                    tdOne.appendChild(document.createTextNode(structures[i].get("commTitleString")));
+                    tr.appendChild(tdOne);
+
+                    var tdTwo = document.createElement("TD");
+                    var date = structures[i].get("startDate");
+                    var string = date.toString('dddd, MMMM d, yyyy @ h:mm tt');
+                    tdTwo.appendChild(document.createTextNode(string));
+                    tr.appendChild(tdTwo);
+
+                    var tdTwo = document.createElement("TD");
+                    var date = structures[i].get("endDate");
+                    var string = date.toString('dddd, MMMM d, yyyy @ h:mm tt');
+                    tdTwo.appendChild(document.createTextNode(string));
+                    tr.appendChild(tdTwo);
+
+                    var tdOne = document.createElement("TD");
+                    tdOne.appendChild(document.createTextNode(structures[i].get("commSummaryString")));
+                    tr.appendChild(tdOne);
+
+                    var tdOne = document.createElement("TD");
+                    tdOne.appendChild(document.createTextNode(structures[i].get("userString")));
+                    tr.appendChild(tdOne);
+
+                    var tdFour = document.createElement("TD");
+
+                    var buttonTwo =document.createElement("INPUT");
+                    buttonTwo.type = "button";
+                    buttonTwo.className = "btn btn-lg btn-primary";
+                    buttonTwo.value = "Delete";
+                    buttonTwo.style.marginRight = "10px";
+                    buttonTwo.style.backgroundColor = "red";
+                    buttonTwo.style.borderColor = "red";
+                    buttonTwo.onclick = (function() {
+                        var count = i;
+
+                        return function(e) {
+
+                            BootstrapDialog.confirm({
+                                  title: 'Confirmation',
+                                  message: 'Are you sure you want to delete this opportunity?',
+                                  type: BootstrapDialog.TYPE_DANGER, // <-- Default value is BootstrapDialog.TYPE_PRIMARY
+                                  closable: true, // <-- Default value is false
+                                  draggable: true, // <-- Default value is false
+                                  btnCancelLabel: 'No', // <-- Default value is 'Cancel',
+                                  btnOKLabel: 'Yes', // <-- Default value is 'OK',
+                                  btnOKClass: 'btn-primary', // <-- If you didn't specify it, dialog type will be used,
+                                  callback: function(result) {
+                                      // result will be true if button was click, while it will be false if users close the dialog directly.
+                                      if(result) {
+                                         $("#spinnerDiv").html('<a><img src="./../spinner.gif" alt="Logo" width="40" style="vertical-align: middle; padding-top:12px; padding-left:10px;"/></a>');
+
+                                        structures[count].destroy({
+                                            success: function() {
+                                                $("#spinnerDiv").html("");
+                                                var alertString = "Opportunity successfully deleted.";
+                                                localStorage.setItem("commAlertString", alertString);
+                                                $(document).ready(loadCommunityTable());
+                                                $(document).ready(loadExistingCommunityTable());
+                                              },
+                                              error: function(error) {
+                                                errorFunction(error.code.toString() + " - " + error.message.toString(), "ParseError", "Script 2379");
+                                               BootstrapDialog.show({
+                                                    type: BootstrapDialog.TYPE_DEFAULT,
+                                                    title: "Error",
+                                                    message: "Error occurred. Please try again."
+                                                });
+                                                $("#spinnerDiv").html("");
+                                              }
+                                        });
+                                      };
+                                  }
+                              });
+
+                        };
+                    })();
+                    tdFour.appendChild(buttonTwo);
+                    tr.appendChild(tdFour);
+
+                    tableBody.appendChild(tr);
+
+                    tableDiv.appendChild(table);
+                };
+
+                $("#spinnerDiv").html("");
+
+            },
+            error: function(error) {
+                errorFunction(error.code.toString() + " - " + error.message.toString(), "ParseError", "Script 2406");
+               BootstrapDialog.show({
+                    type: BootstrapDialog.TYPE_DEFAULT,
+                    title: "Error",
+                    message: "Error occurred. Please try again."
+                });
+                $("#spinnerDiv").html("");
+            }
+        });
+    }
+}
+
 function loadGroupTable() {
     return function() {
 
@@ -2540,6 +3257,12 @@ function loadGroupTable() {
 
         var query = new Parse.Query("ExtracurricularStructure");
         query.ascending("titleString");
+        if (Parse.User.current() && (Parse.User.current().get("userType") === "Developer" || Parse.User.current().get("userType") === "Administration")) {
+            //
+          } else {
+            var array = Parse.User.current().get("ownedEC");
+            query.containedIn("extracurricularID", array);
+          };
         var structures = new Array();
         query.find({
             success: function(structures) {
@@ -2556,8 +3279,9 @@ function loadGroupTable() {
 
                 var heading = new Array();
                 heading[0] = "Title";
-                heading[1] = "Message";
-                heading[2] = "Action";
+                heading[1] = "Owner";
+                heading[2] = "Description";
+                heading[3] = "Action";
 
                 //TABLE COLUMNS
 
@@ -2568,7 +3292,10 @@ function loadGroupTable() {
 
                 for (var i = 0; i < heading.length; i++) {
                     var th = document.createElement("TH");
-                    th.width = '33%';
+                    if (i == 2)
+                        th.width = '40%';
+                    else
+                        th.width = '20%';
                     th.appendChild(document.createTextNode(heading[i]));
                     tr.appendChild(th);
                 };
@@ -2581,10 +3308,86 @@ function loadGroupTable() {
                     tr.appendChild(tdOne);
 
                     var tdOne = document.createElement("TD");
+                    tdOne.appendChild(document.createTextNode(structures[i].get("userString")));
+                    tr.appendChild(tdOne);
+
+                    var tdOne = document.createElement("TD");
                     tdOne.appendChild(document.createTextNode(structures[i].get("descriptionString")));
                     tr.appendChild(tdOne);
 
                     var tdFour = document.createElement("TD");
+
+                    var button =document.createElement("INPUT");
+                    button.type = "button";
+                    button.className = "btn btn-lg btn-primary";
+                    button.value = "Edit";
+                    button.name = i;
+                    button.style.marginRight = "10px";
+                    button.onclick = (function() {
+                        var count = i;
+
+                        return function(e) {
+
+                            var titleString = structures[count].get("titleString");
+                            var descriptionString = structures[count].get("descriptionString");
+
+                            BootstrapDialog.show({
+                                  title: 'Edit Group',
+                                  message: function(dialogItself) {
+                                    var $form = $('<form></form>');
+                                    var $title = $('<input type="text" style="width:80%;">');
+                                    $title.val(titleString);
+                                    dialogItself.setData('title', $title);
+                                    $form.append('Group Title  ').append($title);
+                                    var $message = $('<textarea maxlength="400" rows="4" style="overflow-y: scroll; resize: none; width:100%;"></textarea>');
+                                    $message.val(descriptionString);
+                                    dialogItself.setData('message', $message);
+                                    $form.append('<br><br>Group Description<br><br>').append($message);
+                                    return $form;
+                                  },// <-- Default value is BootstrapDialog.TYPE_PRIMARY
+                                  closable: false, // <-- Default value is false
+                                  draggable: true, // <-- Default value is false
+                                  buttons: [{
+                                       label: 'Cancel',
+                                        action: function (dialogItself) {
+                                            dialogItself.close();
+                                        } 
+                                    }, {
+                                        label: 'Save',
+                                        cssClass: 'btn-primary',
+                                        action: function (dialogItself) {
+                                            var title = dialogItself.getData('title').val();
+                                            var message = dialogItself.getData('message').val();
+
+                                            $("#spinnerDiv").html('<a><img src="./../spinner.gif" alt="Logo" width="40" style="vertical-align: middle; padding-top:12px; padding-left:10px;"/></a>');
+
+                                            structures[count].set("titleString", title);
+                                            structures[count].set("descriptionString", message);
+                                            structures[count].save(null, {
+                                                success: function(object) {
+                                                    dialogItself.close();
+                                                    $("#spinnerDiv").html("");
+                                                    var alertString = "Group successfully updated.";
+                                                    localStorage.setItem("groupAlertString", alertString);
+                                                    $(document).ready(loadGroupTable());
+                                                  },
+                                              error: function(error) {
+                                               errorFunction(error.code.toString() + " - " + error.message.toString(), "ParseError", "Script 2514");
+                                               BootstrapDialog.show({
+                                                    type: BootstrapDialog.TYPE_DEFAULT,
+                                                    title: "Error",
+                                                    message: "Error occurred. Please try again."
+                                                });
+                                                $("#spinnerDiv").html("");
+                                              }
+                                            });
+                                        }
+                                    }]
+                              });
+
+                        };
+                    })();
+                    tdFour.appendChild(button);
 
                     var buttonTwo =document.createElement("INPUT");
                     buttonTwo.type = "button";
@@ -2618,6 +3421,190 @@ function loadGroupTable() {
                                                 var alertString = "Group successfully deleted.";
                                                 localStorage.setItem("groupAlertString", alertString);
                                                 $(document).ready(loadGroupTable());
+                                              },
+                                              error: function(error) {
+                                               errorFunction(error.code.toString() + " - " + error.message.toString(), "ParseError", "Script 2514");
+                                               BootstrapDialog.show({
+                                                    type: BootstrapDialog.TYPE_DEFAULT,
+                                                    title: "Error",
+                                                    message: "Error occurred. Please try again."
+                                                });
+                                                $("#spinnerDiv").html("");
+                                              }
+                                        });
+                                      };
+                                  }
+                              });
+
+                        };
+                    })();
+                    tdFour.appendChild(buttonTwo);
+                    tr.appendChild(tdFour);
+
+                    tableBody.appendChild(tr);
+
+                    tableDiv.appendChild(table);
+                };
+
+                $("#spinnerDiv").html("");
+
+            },
+            error: function(error) {
+                $("#spinnerDiv").html("");
+                alert(error);
+            }
+        });
+    }
+}
+
+function loadAlertTable() {
+    return function() {
+
+        $('#theAlertDiv').css("display", "block");
+
+        var alertString = localStorage.getItem("theAlertString");
+        if (alertString && alertString.length > 0) {
+            localStorage.setItem("theAlertString", "");
+            $('#theAlertDiv').html('<div class="alert alert-success fade in"><a href="#" class="close" data-dismiss="alert" aria-label="close">Close</a><strong>'+alertString+'</strong></div>');
+            $('#theAlertDiv').delay(5000).fadeOut(500);
+        };
+
+        $("#spinnerDiv").html('<a><img src="./../spinner.gif" alt="Logo" width="40" style="vertical-align: middle; padding-top:12px; padding-left:10px;"/></a>');
+
+        var query = new Parse.Query("AlertStructure");
+        query.descending("createdAt");
+        var structures = new Array();
+        query.find({
+            success: function(structures) {
+
+                $("#titleLabel").html("Recently Posted Alerts (" + structures.length+")");
+
+                var tableDiv = document.getElementById("alerts");
+                var table = document.createElement("TABLE");
+                var tableBody = document.createElement("TBODY");
+
+                table.appendChild(tableBody);
+                table.className = "table table-striped";
+                table.id = "alertTable";
+
+                var heading = new Array();
+                heading[0] = "Date Posted";
+                heading[1] = "Title";
+                heading[2] = "Author";
+                heading[3] = "Content";
+                heading[4] = "Views";
+                heading[5] = "Action";
+
+                //TABLE COLUMNS
+
+                var tr = document.createElement("TR");
+                tableBody.appendChild(tr);
+
+                $("#alerts").html("");
+
+                for (var i = 0; i < heading.length; i++) {
+                    var th = document.createElement("TH");
+                    th.width = '19%';
+                    th.appendChild(document.createTextNode(heading[i]));
+                    tr.appendChild(th);
+                };
+
+                for (var i = 0; i < structures.length; i++) {
+                    var tr = document.createElement("TR");
+
+                    var tdTwo = document.createElement("TD");
+                    var date = structures[i].createdAt;
+                    string = date.toString('dddd, MMMM d, yyyy @ h:mm tt');
+                    tdTwo.appendChild(document.createTextNode(string));
+                    tr.appendChild(tdTwo);
+
+                    var tdOne = document.createElement("TD");
+                    tdOne.appendChild(document.createTextNode(structures[i].get("titleString")));
+                    tr.appendChild(tdOne);
+
+                    var tdOne = document.createElement("TD");
+                    tdOne.appendChild(document.createTextNode(structures[i].get("authorString")));
+                    tr.appendChild(tdOne);
+
+                    var tdOne = document.createElement("TD");
+                    var contentButton =document.createElement("INPUT");
+                    contentButton.type = "button";
+                    contentButton.className = "btn btn-lg btn-primary";
+                    contentButton.value = "View Content";
+                    contentButton.name = i;
+                    contentButton.style.marginRight = "10px";
+                    contentButton.onclick = (function() {
+                        var count = i;
+
+                        return function(e) {
+
+                            var titleString = structures[count].get("titleString");
+                            var authorDate = structures[count].get("authorString") + " | " + structures[count].get("dateString");
+                            var content = structures[count].get("contentString");
+                            content = content.replace(/\r?\n/g, '<br />');
+
+                            BootstrapDialog.show({
+                                  title: 'Alert Preview',
+                                  size: BootstrapDialog.SIZE_WIDE,
+                                  message: function(dialogItself) {
+                                    var $form = $('<form></form>');
+                                    $form.append('<h1 style="margin-top:0;">'+titleString+'</h1><h5>'+authorDate+'</h5>');
+                                    $form.append('<hr style="border-color:#561838">' + content);
+                                    return $form;
+                                  },// <-- Default value is BootstrapDialog.TYPE_PRIMARY
+                                  closable: true, // <-- Default value is false
+                                  draggable: true, // <-- Default value is false
+                                  buttons: [{
+                                       label: 'OK',
+                                        action: function (dialogItself) {
+                                            dialogItself.close();
+                                        } 
+                                    }]
+                              });
+
+                        };
+                    })();
+                    tdOne.appendChild(contentButton);
+                    tr.appendChild(tdOne);
+
+                    var tdOne = document.createElement("TD");
+                    tdOne.appendChild(document.createTextNode(structures[i].get("views")));
+                    tr.appendChild(tdOne);
+
+                    var tdFour = document.createElement("TD");
+
+                    var buttonTwo =document.createElement("INPUT");
+                    buttonTwo.type = "button";
+                    buttonTwo.className = "btn btn-lg btn-primary";
+                    buttonTwo.value = "Delete";
+                    buttonTwo.style.marginRight = "10px";
+                    buttonTwo.style.backgroundColor = "red";
+                    buttonTwo.style.borderColor = "red";
+                    buttonTwo.onclick = (function() {
+                        var count = i;
+
+                        return function(e) {
+
+                            BootstrapDialog.confirm({
+                                  title: 'Confirmation',
+                                  message: 'Are you sure you want to delete this alert?',
+                                  type: BootstrapDialog.TYPE_DANGER, // <-- Default value is BootstrapDialog.TYPE_PRIMARY
+                                  closable: true, // <-- Default value is false
+                                  draggable: true, // <-- Default value is false
+                                  btnCancelLabel: 'No', // <-- Default value is 'Cancel',
+                                  btnOKLabel: 'Yes', // <-- Default value is 'OK',
+                                  btnOKClass: 'btn-primary', // <-- If you didn't specify it, dialog type will be used,
+                                  callback: function(result) {
+                                      // result will be true if button was click, while it will be false if users close the dialog directly.
+                                      if(result) {
+                                         $("#spinnerDiv").html('<a><img src="./../spinner.gif" alt="Logo" width="40" style="vertical-align: middle; padding-top:12px; padding-left:10px;"/></a>');
+
+                                        structures[count].destroy({
+                                            success: function() {
+                                                $("#spinnerDiv").html("");
+                                                var alertString = "Alert successfully deleted.";
+                                                localStorage.setItem("theAlertString", alertString);
+                                                $(document).ready(loadAlertTable());
                                               },
                                               error: function(error) {
                                                errorFunction(error.code.toString() + " - " + error.message.toString(), "ParseError", "Script 2514");

@@ -112,6 +112,8 @@
       <h2 id="modeLabel" style="color:#561838;">LOADING...</h2>
       <select id='modeSelect' name="modeSelect" onchange="changeFunction();">
       </select>
+      <br>
+      <h6><i><b>NOTE: If you change the mode to a vacation, you must manually select "Snow Day" for those days that we will miss. Thank you.</b></i></h6>
       <hr style="border-color:#561838";></hr>
       <h6 style="float:right;"><i>NOTE: "Snow Day" refers to any missed school day.</i></h6>
       <h4 id="titleLabel">Available School Days</h4>
@@ -186,7 +188,7 @@
       });
 
       function changeFunction() {
-        $("#spinnerDiv").html('<a><img src="./../../spinner.gif" alt="Logo" width="40" style="vertical-align: middle; padding-top:12px; padding-left:10px;"/></a>');
+        $("#spinnerDiv").html('<a><img src="./../spinner.gif" alt="Logo" width="40" style="vertical-align: middle; padding-top:12px; padding-left:10px;"/></a>');
         var selected = $("select[name='modeSelect'] option:selected").index();
         var newMode = arrayList[selected];
         var query = new Parse.Query("SpecialKeyStructure");

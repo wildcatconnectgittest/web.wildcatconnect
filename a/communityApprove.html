@@ -99,23 +99,23 @@
       </div>
     </nav>
 
-    <div id="newsAlertDiv">
+    <div id="communityAlertDiv">
 
     </div>
 
     <div class="main-container" style="padding-left:20px; padding-right:20px;">
-
-      <h2>News Management</h2>
+      <h2>Community Service Management</h2>
       <button class="cancel btn btn-lg btn-primary" type="cancel">Back</button>
       <hr style="border-color:#561838";></hr>
-      <h4 id="titleLabel">Pending Wildcat News Requests</h4>
-      <div id="newsRequests">
+      <h4 id="titleLabel">Pending Community Service Requests</h4>
+      <div id="communityRequests">
 
       </div>
       <hr style="border-color:#561838";></hr>
-      <h6 style="float:right;"><i><b>NOTE: If a story needs to be edited in any way, it should be deleted and a new story should be created with the correct information.</b></i></h6>
-      <h4 id="existingLabel">Current Active Wildcat News Stories</h4>
-      <div id="currentNews">
+      <h6 style="float:right;"><i><b>NOTE: If something needs to be edited, it should be deleted and a new opportunity should be created with the correct information.</b></i></h6>
+      <h4 id="existingLabel">Current Active Community Service Opportunities</h4><input type="text" id="search" placeholder=" SEARCH">
+      <br><br>
+      <div id="currentCommunity">
 
       </div>
 
@@ -152,8 +152,22 @@
       Parse.$ = jQuery;
       Parse.initialize("cLBOvwh6ZTQYex37DSwxL1Cvg34MMiRWYAB4vqs0", "tTcV5Ns1GFdDda44FCcG5XHBDMbLA1sxRUzSnDgW");
 
-      $(document).ready(loadNewsTable());
-      $(document).ready(loadExistingNewsTable());
+      $(document).ready(loadCommunityTable());
+      $(document).ready(loadExistingCommunityTable());
+
+      $('#search').keyup(function() {
+
+        var $rows = $('#communityTable tr');
+
+        $rows.splice(0, 1);
+
+          var val = $.trim($(this).val()).replace(/ +/g, ' ').toLowerCase();
+          
+          $rows.show().filter(function() {
+              var text = $(this).text().replace(/\s+/g, ' ').toLowerCase();
+              return !~text.indexOf(val);
+          }).hide();
+      });
 
     </script>
     <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->

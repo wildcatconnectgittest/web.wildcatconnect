@@ -107,8 +107,8 @@
 
       <h2>Group Management</h2>
       <button class="cancel-schedule btn btn-lg btn-primary" type="cancel">Back</button>
+      <a href="./groupRegister"><button class="btn btn-lg btn-primary" style="float:right;">Register a New Group</button></a>
       <hr style="border-color:#561838";></hr>
-      <h6 style="float:right;"><i><b>NOTE: If a group needs to be edited in any way, it should be deleted and a new group should be created with the correct information.</b></i></h6>
       <h4 id="titleLabel">Currently Registered Groups</h4><input type="text" id="search" placeholder=" SEARCH">
       <br><br>
       <div id="groups">
@@ -131,11 +131,6 @@
     <script type="text/javascript">
       Parse.$ = jQuery;
       Parse.initialize("cLBOvwh6ZTQYex37DSwxL1Cvg34MMiRWYAB4vqs0", "tTcV5Ns1GFdDda44FCcG5XHBDMbLA1sxRUzSnDgW");
-      if (Parse.User.current() && (Parse.User.current().get("userType") === "Developer" || Parse.User.current().get("userType") === "Administration")) {
-        //
-      } else {
-        window.location.replace("./login");
-      };
     </script>
     
     <script>
