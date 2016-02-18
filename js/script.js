@@ -850,6 +850,31 @@ $(function() {
       });
     });
 
+    $('.saveMessage').click(function() {
+        event.preventDefault();
+
+        var text = $("#message").val();
+
+        var query = new Parse.Query("SpecialKeyStructure");
+          query.equalTo("key", "appMessage");
+          query.first({
+            success: function(object) {
+              object.set("value", text);
+              object.save(null, {
+                success: function() {
+                    location.reload();
+                },
+                error: function(error) {
+                    //
+                }
+              });
+            },
+            error: function(error) {
+              //
+            }
+        });
+    });
+
     $('.cancel-errors').click(function() {
         event.preventDefault();
 
@@ -3335,7 +3360,7 @@ function loadGroupTable() {
                                   title: 'Edit Group',
                                   message: function(dialogItself) {
                                     var $form = $('<form></form>');
-                                    var $title = $('<input type="text" style="width:80%;">');
+                                    var $title = $('<input type="text" style="width:80%;" maxlength="40">');
                                     $title.val(titleString);
                                     dialogItself.setData('title', $title);
                                     $form.append('Group Title  ').append($title);
@@ -3453,6 +3478,341 @@ function loadGroupTable() {
                 $("#spinnerDiv").html("");
                 alert(error);
             }
+        });
+    }
+}
+
+function backFunction() {
+    BootstrapDialog.show({
+          title: 'Developer Access',
+          message: function(dialogItself) {
+            var $form = $('<form></form>');
+            var $password = $('<input type="password" style="width:100%;">');
+            $form.append('Developer Password<br><br>').append($password);
+            dialogItself.setData('password', $password);
+            return $form;
+          },// <-- Default value is BootstrapDialog.TYPE_PRIMARY
+          closable: false, // <-- Default value is false
+          draggable: true, // <-- Default value is false
+          buttons: [{
+                label: 'Cancel',
+                action: function (dialogItself) {
+                    dialogItself.close();
+                } 
+            }, {
+                label: 'Enter',
+                cssClass: 'btn-primary',
+                action: function (dialogItself) {
+
+                    var password = dialogItself.getData('password').val();
+
+                    var query = new Parse.Query("SpecialKeyStructure");
+                    query.equalTo("key", "appActive");
+                    query.first({
+                      success: function(object) {
+                        if (object.get("password") === password) {
+                            $("#spinnerDiv").html("");
+                            dialogItself.close();
+                            localStorage.setItem("bypass", 1);
+                            location.reload();
+                        } else {
+                            $("#spinnerDiv").html("");
+                            dialogItself.close();
+                        };
+                      },
+                      error: function(error) {
+                        alert(error.code + " - " + error.message);
+                        dialogItself.close();
+                      }
+                    });
+                }
+            }]
+      });
+}
+
+function startFunction() {
+    if (Parse.User.current()) {
+        var query = new Parse.Query("SpecialKeyStructure");
+        query.equalTo("key", "appActive");
+        query.first({
+          success: function(object) {
+            if (object.get("value") === "0" && localStorage.getItem("bypass") != 1) {
+                if (Parse.User.current().get("userType") === "Developer") {
+                    $('.main-container').html($("#appInactive").html() + $("#pureDev").html());
+                } else {
+                    $('.main-container').html($("#appInactive").html());
+                };
+                $("#messageLabel").html("MESSAGE - " + object.get("message"));
+            } else {
+                $('.main-container').html($("#main-login").html());
+                homeFunction();
+            };
+          },
+          error: function(error) {
+            BootstrapDialog.show({
+                type: BootstrapDialog.TYPE_DEFAULT,
+                title: "Error",
+                message: "Error occurred."
+            });
+          }
+        });
+    } else {
+        window.location.replace("./login");
+    }; 
+}
+
+function homeFunction() {
+    localStorage.setItem("bypass", 0);
+    if (Parse.User.current()) {
+        if (Parse.User.current().get("userType") === "Administration" || Parse.User.current().get("userType") === "Developer") {
+          if (Parse.User.current().get("userType") === "Administration") {
+            $('.main-container').html($("#admin").html());
+          } else {
+            $('.main-container').html($("#dev").html());
+          };
+          $("#spinnerDiv").html('<a><img src="./../spinner.gif" alt="Logo" width="40" style="vertical-align: middle; padding-top:12px; padding-left:10px;"/></a>');
+          var query = new Parse.Query("UserRegisterStructure");
+          query.count({
+            success: function(count) {
+              if (count == 1) {
+                $("#newButton").html("User Management (" + count + ")");
+                $("#newButton").css('background-color', 'red');
+                $("#newButton").css('border-color', 'red');
+              } else if (count > 1) {
+                $("#newButton").html("User Management (" + count + ")");
+                $("#newButton").css('background-color', 'red');
+                $("#newButton").css('border-color', 'red');
+              };
+            },
+            error: function(error) {
+              if (error.code != 100) {
+                alert(error.code + " - " + error.message);
+              };
+              $("#spinnerDiv").html("");
+            }
+          });
+          var queryTwo = new Parse.Query("ErrorStructure");
+          queryTwo.count({
+            success: function(count) {
+              if (count == 1) {
+                $("#errorButton").html("Error Management (" + count + ")");
+                $("#errorButton").css('background-color', 'red');
+                $("#errorButton").css('border-color', 'red');
+              } else if (count > 1) {
+                $("#errorButton").html("Error Management (" + count + ")");
+                $("#errorButton").css('background-color', 'red');
+                $("#errorButton").css('border-color', 'red');
+              };
+            },
+            error: function(error) {
+              if (error.code != 100) {
+                alert(error.code + " - " + error.message);
+              };
+              $("#spinnerDiv").html("");
+            }
+          });
+          var queryThree = new Parse.Query("NewsArticleStructure");
+          queryThree.equalTo("isApproved", 0);
+          queryThree.count({
+            success: function(count) {
+              if (count == 1) {
+                $("#newsApproveButton").html("News Management (" + count + ")");
+                $("#newsApproveButton").css('background-color', 'red');
+                $("#newsApproveButton").css('border-color', 'red');
+              } else if (count > 1) {
+                $("#newsApproveButton").html("News Management (" + count + ")");
+                $("#newsApproveButton").css('background-color', 'red');
+                $("#newsApproveButton").css('border-color', 'red');
+              };
+            },
+            error: function(error) {
+              if (error.code != 100) {
+                alert(error.code + " - " + error.message);
+              };
+              $("#spinnerDiv").html("");
+            }
+          });
+          var queryFour = new Parse.Query("EventStructure");
+          queryFour.equalTo("isApproved", 0);
+          queryFour.count({
+            success: function(count) {
+              if (count == 1) {
+                $("#eventApproveButton").html("Event Management (" + count + ")");
+                $("#eventApproveButton").css('background-color', 'red');
+                $("#eventApproveButton").css('border-color', 'red');
+              } else if (count > 1) {
+                $("#eventApproveButton").html("Event Management (" + count + ")");
+                $("#eventApproveButton").css('background-color', 'red');
+                $("#eventApproveButton").css('border-color', 'red');
+              };
+              $("#spinnerDiv").html("");
+            },
+            error: function(error) {
+              if (error.code != 100) {
+                alert(error.code + " - " + error.message);
+              };
+              $("#spinnerDiv").html("");
+            }
+          });
+          var queryFive = new Parse.Query("CommunityServiceStructure");
+          queryFive.equalTo("isApproved", 0);
+          queryFive.count({
+            success: function(count) {
+              if (count > 0) {
+                $("#commButton").html("Community Management (" + count + ")");
+                $("#commButton").css('background-color', 'red');
+                $("#commButton").css('border-color', 'red');
+              };
+              $("#spinnerDiv").html("");
+            },
+            error: function(error) {
+              if (error.code != 100) {
+                alert(error.code + " - " + error.message);
+              };
+              $("#spinnerDiv").html("");
+            }
+          });
+        } else if (Parse.User.current().get("userType") === "Faculty") {
+          $('.main-container').html($("#faculty").html());
+        } else if (Parse.User.current().get("userType") === "Lunch Manager") {
+          $('.main-container').html($("#lunch").html());
+        };
+        $('#welcomeLabel').html("Welcome, " + Parse.User.current().get("firstName") + "!");
+        $('#nameLabel').html("Logged in as " + Parse.User.current().get("firstName") + " " + Parse.User.current().get("lastName") + " - " + Parse.User.current().get("userType"));
+        var query = new Parse.Query("SpecialKeyStructure");
+        query.equalTo("key", "appMessage");
+        query.first({
+          success: function(object) {
+            if (object.get("value") != "None.") {
+                var alertString = object.get("value");
+                  if (alertString && alertString.length > 0) {
+                    $("#alertDiv").html('<div class="alert alert-danger fade in"><strong>MESSAGE - '+alertString+'</strong></div>');
+                  };
+            };
+          },
+          error: function(error) {
+            BootstrapDialog.show({
+                type: BootstrapDialog.TYPE_DEFAULT,
+                title: "Error",
+                message: "Error occurred."
+            });
+          }
+        });
+      } else {
+        window.location.replace("./login");
+      };
+}
+
+function changeFunction() {
+    var selected = $("select[name='modeSelect'] option:selected").index();
+    if (selected == 0) {
+      BootstrapDialog.show({
+          title: 'Deactivate Application',
+          message: function(dialogItself) {
+            var $form = $('<form></form>');
+            var $password = $('<input type="password" style="width:100%;">');
+            $form.append('Application Password<br><br>').append($password);
+            var $message = $('<textarea maxlength="200" rows="3" style="overflow-y: scroll; resize: none; width:100%;"></textarea>');
+            dialogItself.setData('message', $message);
+            dialogItself.setData('password', $password);
+            $form.append('<br><br>Deactivation Message/Reason<br><br>').append($message);
+            return $form;
+          },// <-- Default value is BootstrapDialog.TYPE_PRIMARY
+          closable: false, // <-- Default value is false
+          draggable: true, // <-- Default value is false
+          buttons: [{
+                label: 'Cancel',
+                action: function (dialogItself) {
+                    dialogItself.close();
+                } 
+            }, {
+                label: 'Deactivate',
+                cssClass: 'btn-primary',
+                action: function (dialogItself) {
+
+                    BootstrapDialog.confirm({
+                        title: 'Confirmation',
+                        message: 'Are you sure you want to deactivate the application? This will go into effect immediately and disable both the iOS and web clients.',
+                        type: BootstrapDialog.TYPE_DANGER, // <-- Default value is BootstrapDialog.TYPE_PRIMARY
+                        closable: true, // <-- Default value is false
+                        draggable: true, // <-- Default value is false
+                        btnCancelLabel: 'No', // <-- Default value is 'Cancel',
+                        btnOKLabel: 'Yes', // <-- Default value is 'OK',
+                        btnOKClass: 'btn-primary', // <-- If you didn't specify it, dialog type will be used,
+                        callback: function(result) {
+                            // result will be true if button was click, while it will be false if users close the dialog directly.
+                            if(result) {
+
+                                var password = dialogItself.getData('password').val();
+                                var message = dialogItself.getData('message').val();
+
+                                if (message.length == 0) {
+                                    BootstrapDialog.show({
+                                            type: BootstrapDialog.TYPE_DEFAULT,
+                                            title: "Error",
+                                            message: "You must enter a valid deactivation message for users."
+                                        });
+                                } else {
+                                    var query = new Parse.Query("SpecialKeyStructure");
+                                query.equalTo("key", "appActive");
+                                query.first({
+                                  success: function(object) {
+                                        if (object.get("password") === password) {
+                                            object.set("value", selected.toString());
+                                            object.set("message", message);
+                                            object.save(null, {
+                                              success: function() {
+                                                $("#modeLabel").html(arrayList[selected]);
+                                                $("#spinnerDiv").html("");
+                                                dialogItself.close();
+                                              },
+                                              error: function(error) {
+                                                alert(error.code + " - " + error.message);
+                                                dialogItself.close();
+                                              }
+                                            });
+                                        } else {
+                                            BootstrapDialog.show({
+                                                type: BootstrapDialog.TYPE_DEFAULT,
+                                                title: "Error",
+                                                message: "Invalid password."
+                                            });
+                                            $("#spinnerDiv").html("");
+                                            dialogItself.close();
+                                        };
+                                      },
+                                      error: function(error) {
+                                        alert(error.code + " - " + error.message);
+                                        dialogItself.close();
+                                      }
+                                    });
+                                };
+                            };
+                        }
+                    });
+                }
+            }]
+      });
+    } else {
+        $("#spinnerDiv").html('<a><img src="./../spinner.gif" alt="Logo" width="40" style="vertical-align: middle; padding-top:12px; padding-left:10px;"/></a>');
+        var query = new Parse.Query("SpecialKeyStructure");
+        query.equalTo("key", "appActive");
+        query.first({
+          success: function(object) {
+            object.set("value", selected.toString());
+            object.save(null, {
+              success: function() {
+                $("#modeLabel").html(arrayList[selected]);
+                $("#spinnerDiv").html("");
+              },
+              error: function(error) {
+                alert(error.code + " - " + error.message);
+              }
+            });
+          },
+          error: function(error) {
+            alert(error.code + " - " + error.message);
+          }
         });
     }
 }

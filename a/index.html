@@ -167,14 +167,16 @@
             <td width="33%" style="padding-bottom: 1em; padding-top: 1em;"><a href="./eventApprove"><button class="add-ec btn btn-lg btn-primary" style="margin-bottom:100px; display: block; width: 80%; margin:auto; background-color:#561838; border-color:#561838;" id="eventApproveButton"><img src="./../event@2x.png" alt="Logo" width="30" style="vertical-align: middle; margin-right:10px;"/>Event Management</button></a></td>
           </tr>
         </table>
-        <h2 style="text-align:center;">Developer Tools</h2>
-        <table class="table">
-          <tr>
-            <td width="33%" style="padding-bottom: 1em; padding-top: 1em;"><a href="./errors"><button class="add-ec btn btn-lg btn-primary" style="margin-bottom:100px; display: block; width: 80%; margin:auto; background-color:#561838; border-color:#561838;" id="errorButton"><img src="./../error@2x.png" alt="Logo" width="30" style="vertical-align: middle; margin-right:10px;"/>Error Management</button></a></td>
-            <td width="33%" style="padding-bottom: 1em; padding-top: 1em;"></td>
-            <td width="33%" style="padding-bottom: 1em; padding-top: 1em;"><a href="./links"><button class="add-ec btn btn-lg btn-primary" style="margin-bottom:100px; display: block; width: 80%; margin:auto; background-color:#561838; border-color:#561838;"><img src="./../link@2x.png" alt="Logo" width="30" style="vertical-align: middle; margin-right:10px;"/>Links Management</button></a></td>
-          </tr>
-        </table>
+        <div id="pureDev">
+          <h2 style="text-align:center;">Developer Tools</h2>
+          <table class="table">
+            <tr>
+              <td width="33%" style="padding-bottom: 1em; padding-top: 1em;"><a href="./errors"><button class="add-ec btn btn-lg btn-primary" style="margin-bottom:100px; display: block; width: 80%; margin:auto; background-color:#561838; border-color:#561838;" id="errorButton"><img src="./../error@2x.png" alt="Logo" width="30" style="vertical-align: middle; margin-right:10px;"/>Error Management</button></a></td>
+              <td width="33%" style="padding-bottom: 1em; padding-top: 1em;"><a href="./app"><button class="add-ec btn btn-lg btn-primary" style="margin-bottom:100px; display: block; width: 80%; margin:auto; background-color:#561838; border-color:#561838;" id="errorButton"><img src="./../error@2x.png" alt="Logo" width="30" style="vertical-align: middle; margin-right:10px;"/>Application Status</button></a></td>
+              <td width="33%" style="padding-bottom: 1em; padding-top: 1em;"><a href="./links"><button class="add-ec btn btn-lg btn-primary" style="margin-bottom:100px; display: block; width: 80%; margin:auto; background-color:#561838; border-color:#561838;"><img src="./../link@2x.png" alt="Logo" width="30" style="vertical-align: middle; margin-right:10px;"/>Links Management</button></a></td>
+            </tr>
+          </table>
+        </div>
       </div>
 
       <div id="faculty">
@@ -201,6 +203,15 @@
         <h5 id="nameLabel">Logged in as ...</h5>
         <hr style="border-color:#561838";></hr>
         <a href="./lunch"><button class="add-ec btn btn-lg btn-primary" style="margin-bottom:100px; display: block; width: 40%; margin:auto; background-color:#561838; border-color:#561838;"><img src="./../food@2x.png" alt="Logo" width="30" style="vertical-align: middle; margin-right:10px;"/>Breakfast/Lunch Management</button></a>
+      </div>
+
+      <div id="appInactive">
+        <div style="width:400px; margin:0 auto;">
+          <h1 style="text-align:center;">:(</h1>
+          <h4 style="text-align:center;">WildcatConnect is currently disabled.</h4>
+          <a><img src="./../logoTransparent.gif" onclick="javascript:backFunction()" alt="Logo" width="200px;" style="display:block; margin:0 auto;"/></a>
+          <h4 style="text-align:center;width:100%" id="messageLabel">Message...</h4>
+        </div>
       </div>
 
     </div> <!-- /container -->
@@ -234,125 +245,8 @@
 
       Parse.$ = jQuery;
       Parse.initialize("cLBOvwh6ZTQYex37DSwxL1Cvg34MMiRWYAB4vqs0", "tTcV5Ns1GFdDda44FCcG5XHBDMbLA1sxRUzSnDgW");
-      if (Parse.User.current()) {
-        if (Parse.User.current().get("userType") === "Administration" || Parse.User.current().get("userType") === "Developer") {
-          if (Parse.User.current().get("userType") === "Administration") {
-            $('.main-container').html($("#admin").html());
-          } else {
-            $('.main-container').html($("#dev").html());
-          };
-          $("#spinnerDiv").html('<a><img src="./../spinner.gif" alt="Logo" width="40" style="vertical-align: middle; padding-top:12px; padding-left:10px;"/></a>');
-          var query = new Parse.Query("UserRegisterStructure");
-          query.count({
-            success: function(count) {
-              if (count == 1) {
-                $("#newButton").html("User Management (" + count + ")");
-                $("#newButton").css('background-color', 'red');
-                $("#newButton").css('border-color', 'red');
-              } else if (count > 1) {
-                $("#newButton").html("User Management (" + count + ")");
-                $("#newButton").css('background-color', 'red');
-                $("#newButton").css('border-color', 'red');
-              };
-            },
-            error: function(error) {
-              if (error.code != 100) {
-                alert(error.code + " - " + error.message);
-              };
-              $("#spinnerDiv").html("");
-            }
-          });
-          var queryTwo = new Parse.Query("ErrorStructure");
-          queryTwo.count({
-            success: function(count) {
-              if (count == 1) {
-                $("#errorButton").html("Error Management (" + count + ")");
-                $("#errorButton").css('background-color', 'red');
-                $("#errorButton").css('border-color', 'red');
-              } else if (count > 1) {
-                $("#errorButton").html("Error Management (" + count + ")");
-                $("#errorButton").css('background-color', 'red');
-                $("#errorButton").css('border-color', 'red');
-              };
-            },
-            error: function(error) {
-              if (error.code != 100) {
-                alert(error.code + " - " + error.message);
-              };
-              $("#spinnerDiv").html("");
-            }
-          });
-          var queryThree = new Parse.Query("NewsArticleStructure");
-          queryThree.equalTo("isApproved", 0);
-          queryThree.count({
-            success: function(count) {
-              if (count == 1) {
-                $("#newsApproveButton").html("News Management (" + count + ")");
-                $("#newsApproveButton").css('background-color', 'red');
-                $("#newsApproveButton").css('border-color', 'red');
-              } else if (count > 1) {
-                $("#newsApproveButton").html("News Management (" + count + ")");
-                $("#newsApproveButton").css('background-color', 'red');
-                $("#newsApproveButton").css('border-color', 'red');
-              };
-            },
-            error: function(error) {
-              if (error.code != 100) {
-                alert(error.code + " - " + error.message);
-              };
-              $("#spinnerDiv").html("");
-            }
-          });
-          var queryFour = new Parse.Query("EventStructure");
-          queryFour.equalTo("isApproved", 0);
-          queryFour.count({
-            success: function(count) {
-              if (count == 1) {
-                $("#eventApproveButton").html("Event Management (" + count + ")");
-                $("#eventApproveButton").css('background-color', 'red');
-                $("#eventApproveButton").css('border-color', 'red');
-              } else if (count > 1) {
-                $("#eventApproveButton").html("Event Management (" + count + ")");
-                $("#eventApproveButton").css('background-color', 'red');
-                $("#eventApproveButton").css('border-color', 'red');
-              };
-              $("#spinnerDiv").html("");
-            },
-            error: function(error) {
-              if (error.code != 100) {
-                alert(error.code + " - " + error.message);
-              };
-              $("#spinnerDiv").html("");
-            }
-          });
-          var queryFive = new Parse.Query("CommunityServiceStructure");
-          queryFive.equalTo("isApproved", 0);
-          queryFive.count({
-            success: function(count) {
-              if (count > 0) {
-                $("#commButton").html("Community Management (" + count + ")");
-                $("#commButton").css('background-color', 'red');
-                $("#commButton").css('border-color', 'red');
-              };
-              $("#spinnerDiv").html("");
-            },
-            error: function(error) {
-              if (error.code != 100) {
-                alert(error.code + " - " + error.message);
-              };
-              $("#spinnerDiv").html("");
-            }
-          });
-        } else if (Parse.User.current().get("userType") === "Faculty") {
-          $('.main-container').html($("#faculty").html());
-        } else if (Parse.User.current().get("userType") === "Lunch Manager") {
-          $('.main-container').html($("#lunch").html());
-        };
-        $('#welcomeLabel').html("Welcome, " + Parse.User.current().get("firstName") + "!");
-        $('#nameLabel').html("Logged in as " + Parse.User.current().get("firstName") + " " + Parse.User.current().get("lastName") + " - " + Parse.User.current().get("userType"));
-      } else {
-        window.location.replace("./login");
-      };
+
+      $(document).ready(startFunction());
     </script>
     <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
     <!--script src="../../assets/js/ie10-viewport-bug-workaround.js"></script>

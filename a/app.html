@@ -71,7 +71,7 @@
             <!--li><a href="#about">About</a></li>
             <li><a href="#contact">Contact</a></li-->
           </ul>
-          <!--ul class="nav navbar-nav navbar-right">
+          <ul class="nav navbar-nav navbar-right">
             <li class="dropdown">
               <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Account <span class="caret"></span></a>
               <ul class="dropdown-menu">
@@ -83,7 +83,7 @@
                 </li>
               </ul>
             </li>
-          </ul-->
+          </ul>
           <!--ul class="nav navbar-nav navbar-right">
             <li class="dropdown">
               <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Account<span class="caret"></span></a>
@@ -99,91 +99,25 @@
       </div>
     </nav>
 
+    <div id="errorAlertDiv">
+
+    </div>
+
     <div class="main-container" style="padding-left:20px; padding-right:20px;">
 
-      <div id="main-login">
-        <form class="form-signin" role="form">
-        <h2 class="form-signin-heading">Secure Login</h2>
-        <label for="username" class="col-md-3 control-label">Username</label>
-        <input type="text" name="username" class="form-control" placeholder="Username" required="" autofocus="" autocorrect="off" autocapitalize="off">
-        <label for="password" class="col-md-3 control-label">Password</label>
-        <input type="password" name="password" class="form-control" placeholder="Password" required="">
-        <button class="btn btn-lg btn-primary btn-block" type="submit" id="logIn" style="margin-bottom:10px;">Sign in</button>
-        <button class="forgot btn btn-lg btn-primary btn-block">Forgot Username/Password</button>
-      </form>
-      <!--form class="form-signin" role="form">
-          <h2 class="form-signin-heading">Register an Account</h2>
-          <input type="text" name="firstName" class="form-control" placeholder="First Name" required="">
-          <input type="text" name="lastName" class="form-control" placeholder="Last Name" required="">
-          <input type="text" name="newUsername" class="form-control" placeholder="Username" required="" autofocus="">
-          <input type="password" name="newPassword" class="form-control" placeholder="Password" required="">
-          <input type="email" name="email" class="form-control" placeholder="E-Mail" required="">
-          <button class="register btn btn-lg btn-primary btn-block" type="click">Register</button>
-      </form-->
-      <div id="signupbox" class="mainbox col-md-6 col-md-offset-3 col-sm-8 col-sm-offset-2">
-        <h2 class="form-signin-heading" style="text-align:center;">Register an Account (Faculty Only)</h2>
-          <div class="panel panel-info"> 
-              <div class="panel-body" >
-                  <form id="signupform" class="form-horizontal" role="form">
-                          
-                      <div class="form-group">
-                          <label for="firstname" class="col-md-3 control-label">First Name</label>
-                          <div class="col-md-9">
-                              <input type="text" class="form-control" name="firstname" placeholder="First Name">
-                          </div>
-                      </div>
-                      <div class="form-group">
-                          <label for="lastname" class="col-md-3 control-label">Last Name</label>
-                          <div class="col-md-9">
-                              <input type="text" class="form-control" name="lastname" placeholder="Last Name">
-                          </div>
-                      </div>
-
-                      <div class="form-group">
-                          <label for="email" class="col-md-3 control-label">Faculty E-Mail</label>
-                          <div class="col-md-9">
-                              <input type="email" class="form-control" name="email" placeholder="E-Mail">
-                          </div>
-                      </div>
-
-                      <div class="form-group">
-                          <label for="emailConfirm" class="col-md-3 control-label">Confirm Faculty E-Mail</label>
-                          <div class="col-md-9">
-                              <input type="email" class="form-control" name="emailConfirm" placeholder="Confirm E-Mail">
-                          </div>
-                      </div>
-
-                      <div class="form-group">
-                          <label for="username" class="col-md-3 control-label">Username</label>
-                          <div class="col-md-9">
-                              <input type="text" class="form-control" name="username" placeholder="Username" autocorrect="off" autocapitalize="off">
-                          </div>
-                      </div>
-                      <div class="form-group">
-                          <label for="password" class="col-md-3 control-label">Create Password</label>
-                          <div class="col-md-9">
-                              <input type="password" class="form-control" name="password" placeholder="Create Password">
-                          </div>
-                      </div>
-                      <div class="form-group">
-                          <label for="passwordConfirm" class="col-md-3 control-label">Confirm Password</label>
-                          <div class="col-md-9">
-                              <input type="password" class="form-control" name="passwordConfirm" placeholder="Confirm Password">
-                          </div>
-                      </div>
-                      <div class="form-group">                                        
-                          <div class="col-md-offset-3 col-md-9">
-                              <button id="signupButton" type="submit" class="register btn btn-lg btn-primary">Register</button> 
-                          </div>
-                      </div>
-                  </form>
-                </div>
-              </div>
-          </div> 
+      <h2>Application Status</h2>
+      <button class="cancel btn btn-lg btn-primary" type="cancel">Back</button>
+      <hr style="border-color:#561838";></hr>
+      <h4 id="mainLabel">Current Application Status</h4>
+      <h2 id="modeLabel" style="color:#561838;">LOADING...</h2>
+      <select id='modeSelect' name="modeSelect" onchange="changeFunction();">
+      </select>
+      <br><br>
+      <div class="form-group">
+        <label for="title">General Application Message (default is "None.")</label>
+        <input type="text" name="title" class="form-control" id="message" placeholder="Message">
       </div>
-      <br>
-
-      </div>
+      <button class="saveMessage btn btn-lg btn-primary">Save Message</button>
 
     </div> <!-- /container -->
 
@@ -200,21 +134,59 @@
 
     <script type="text/javascript">
 
-      Parse.$ = jQuery;
-      Parse.initialize("cLBOvwh6ZTQYex37DSwxL1Cvg34MMiRWYAB4vqs0", "tTcV5Ns1GFdDda44FCcG5XHBDMbLA1sxRUzSnDgW");
-
-      var isChrome = /Chrome/.test(navigator.userAgent) && /Google Inc/.test(navigator.vendor);
-      var isSafari = /Safari/.test(navigator.userAgent) && /Apple Computer/.test(navigator.vendor);
-
-      if( /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ) {
-       alert("We detect that you are accessing the WildcatConnect Web Portal on a mobile device. Please note that some features may not work correctly on mobile.");
-      } else if (isChrome == false && isSafari == false) {
-        window.location.replace("./browser");
-      };
-
       window.onerror = function(error, url, line) {
           $(document).ready(errorFunction(error, url, line));
       };
+
+      Parse.$ = jQuery;
+      Parse.initialize("cLBOvwh6ZTQYex37DSwxL1Cvg34MMiRWYAB4vqs0", "tTcV5Ns1GFdDda44FCcG5XHBDMbLA1sxRUzSnDgW");
+      if (Parse.User.current() && Parse.User.current().get("userType") === "Developer") {
+        //
+      } else {
+        window.location.replace("./login");
+      };
+    </script>
+    
+    <script>
+
+      Parse.$ = jQuery;
+      Parse.initialize("cLBOvwh6ZTQYex37DSwxL1Cvg34MMiRWYAB4vqs0", "tTcV5Ns1GFdDda44FCcG5XHBDMbLA1sxRUzSnDgW");
+
+       var select = document.getElementById("modeSelect");
+
+      var arrayList = ["INACTIVE", "ACTIVE"];
+
+      for (var i = 0; i < arrayList.length; i++) {
+        var option = document.createElement('option');
+        option.text = arrayList[i];
+        option.value = i;
+        select.appendChild(option);
+      };
+
+      var query = new Parse.Query("SpecialKeyStructure");
+      query.equalTo("key", "appActive");
+      query.first({
+        success: function(object) {
+          var theString = object.get("value");
+          $("#modeLabel").html(arrayList[parseInt(theString)]);
+          $('#modeSelect option[value='+parseInt(theString)+']').attr('selected', 'selected');
+        },
+        error: function(error) {
+          response.error(error);
+        }
+      });
+
+      var query = new Parse.Query("SpecialKeyStructure");
+      query.equalTo("key", "appMessage");
+      query.first({
+        success: function(object) {
+          var theString = object.get("value");
+          $("#message").val(theString);
+        },
+        error: function(error) {
+          response.error(error);
+        }
+      });
 
     </script>
     <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
