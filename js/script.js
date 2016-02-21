@@ -1237,6 +1237,28 @@ $(function() {
         window.location.href = "./forgot";
     });
 
+    $('#dayGen').click(function() {
+        event.preventDefault();
+        $("#spinnerDiv").html('<a><img src="./../spinner.gif" alt="Logo" width="40" style="vertical-align: middle; padding-top:12px; padding-left:10px;"/></a>');
+        Parse.Cloud.run('SDSgen', null, {
+          success: function() {
+            $("#spinnerDiv").html("");
+            var alertString = "Day successfully generated.";
+            localStorage.setItem("scheduleAlertString", alertString);
+            $(document).ready(loadScheduleTable());
+          },
+          error: function(error) {
+            errorFunction(error.code.toString() + " - " + error.message.toString(), "ParseError", "Script 1718");
+           BootstrapDialog.show({
+                type: BootstrapDialog.TYPE_DEFAULT,
+                title: "Error",
+                message: "Error occurred. Please try again."
+            });
+            $("#spinnerDiv").html("");
+          }
+        });
+    });
+
     $('.saveLunch').click(function() {
         event.preventDefault();
 
