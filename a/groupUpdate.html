@@ -104,7 +104,8 @@
       <button class="cancel btn btn-lg btn-primary" type="cancel">Cancel</button>
       <h2>Group Update</h2>
       <form class="form-add-groupUpdate" role="form">
-        <label for="ECselect" id="groupLabel">Select Group(s) ... LOADING</label>
+        <label for="ECselect" id="groupLabel">Select Group(s) ... LOADING</label><br>
+        <input type="text" id="search" placeholder=" SEARCH"><br><br>
         <div id="checkboxes">
           
         </div>
@@ -210,6 +211,19 @@
         };
         $(document).ready(startThree(structuresArray));
       }
+
+      $('#search').keyup(function() {
+
+        var $rows = $('#checkboxes div');
+
+        for (var i = 0; i < $rows.length; i++) {
+          if ($rows[i].innerHTML.toLowerCase().indexOf(($(this).val()).toLowerCase()) > -1) {
+            $($rows[i]).show();
+          } else {
+            $($rows[i]).hide();
+          };
+        }
+      });
     </script>
     <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
     <!--script src="../../assets/js/ie10-viewport-bug-workaround.js"></script>

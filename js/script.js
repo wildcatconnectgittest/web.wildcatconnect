@@ -253,10 +253,12 @@ var ExtracurricularUpdateStructure = Parse.Object.extend("ExtracurricularUpdateS
                     var array = new Array();
                     for (var i = 0; i < IDarray.length; i++) {
                         var object = new ExtracurricularUpdateStructure();
+                        var now = new Date();
                         object.set({
                             'extracurricularUpdateID' : theID + i,
                             'extracurricularID' : IDarray[i],
-                            'messageString' : message
+                            'messageString' : message,
+                            'postDate' : now
                         });
                         array.push(object);
                         Parse.Object.saveAll(array, {
@@ -664,7 +666,7 @@ var ExtracurricularStructure = Parse.Object.extend("ExtracurricularStructure", {
                                                 }, {
                                                     success : function(user) {
                                                         $("#spinnerDiv").html("");
-                                                        localStorage.setItem("alertString", "Group successfully registered.");
+                                                        localStorage.setItem("groupAlertString", "Group successfully registered.");
                                                         window.location.replace("./groupManage");
                                                     },
                                                     error: function(error) {
