@@ -1103,75 +1103,6 @@ $(function() {
 
     });
 
-    $('.form-add-custom').submit(function() {
-        event.preventDefault();
-
-        var data = $(this).serializeArray();
- 
-        var description = data[0].value;
-        var custom = data[1].value;
-
-        if (! custom) {
-            BootstrapDialog.show({
-                type: BootstrapDialog.TYPE_DEFAULT,
-                title: "Error",
-                message: "No data entered!"
-            });
-        } else {
-                BootstrapDialog.confirm({
-                  title: 'Confirmation',
-                  message: 'Are you sure you want to save this custom schedule?',
-                  type: BootstrapDialog.TYPE_DANGER, // <-- Default value is BootstrapDialog.TYPE_PRIMARY
-                  closable: true, // <-- Default value is false
-                  draggable: true, // <-- Default value is false
-                  btnCancelLabel: 'No', // <-- Default value is 'Cancel',
-                  btnOKLabel: 'Yes', // <-- Default value is 'OK',
-                  btnOKClass: 'btn-primary', // <-- If you didn't specify it, dialog type will be used,
-                  callback: function(result) {
-                      // result will be true if button was click, while it will be false if users close the dialog directly.
-                      if(result) {
-                         $("#spinnerDiv").html('<a><img src="./../spinner.gif" alt="Logo" width="40" style="vertical-align: middle; padding-top:12px; padding-left:10px;"/></a>');
-                        var query = new Parse.Query("SchoolDayStructure");
-                        query.equalTo("schoolDayID", parseInt(localStorage.getItem("customID")));
-                        query.first({
-                            success: function(object) {
-                                object.set("customString", description);
-                                object.set("customSchedule", custom);
-                                object.set("scheduleType", "*");
-                                object.save(null, {
-                                    success: function() {
-                                        $("#spinnerDiv").html("");
-                                        localStorage.setItem("scheduleAlertString", "Schedule successfully updated.");
-                                        window.location.replace("./schedule");
-                                    },
-                                    error: function(error) {
-                                        errorFunction(error.code.toString() + " - " + error.message.toString(), "ParseError", "Script 1002");
-                                        BootstrapDialog.show({
-                                            type: BootstrapDialog.TYPE_DEFAULT,
-                                            title: "Error",
-                                            message: "Error occurred. Please try again."
-                                        });
-                                        $("#spinnerDiv").html("");
-                                    }
-                                });
-                            },
-                            error: function(error) {
-                                errorFunction(error.code.toString() + " - " + error.message.toString(), "ParseError", "Script 1013");
-                                BootstrapDialog.show({
-                                    type: BootstrapDialog.TYPE_DEFAULT,
-                                    title: "Error",
-                                    message: "Error occurred. Please try again."
-                                });
-                                $("#spinnerDiv").html("");
-                            }
-                        });
-                      };
-                  }
-              });
-            
-        };
-    });
-
     $('.form-verify').submit(function() {
         event.preventDefault();
 
@@ -5233,19 +5164,108 @@ function loadScheduleTable() {
 
                                             return function(e) {
 
-                                                if (structures[count].get("scheduleType") === "*") {
-                                                    localStorage.setItem("customString", structures[count].get("customSchedule"));
-                                                } else {
-                                                    localStorage.setItem("customString", "Period 1: \nPeriod 2: \nPeriod 3: \nPeriod 4: \n1st: \n2nd: \n3rd: \nPeriod 6: \nPeriod 7: ");
-                                                };
+                                                var parts = structures[count].get("schoolDate").split('-');
+                                                var date = new Date(parts[2], parts[0]-1,parts[1]);
+                                                var string = date.toString('dddd, MMMM d, yyyy');
 
-                                                localStorage.setItem("customID", structures[count].get("schoolDayID"));
+                                                BootstrapDialog.show({
+                                                  title: 'Edit Custom Schedule',
+                                                  message: function(dialogItself) {
+                                                    var $form = $('<form></form>');
+                                                    var $title = $('<input type="text" style="width:100%;">');
+                                                    $form.append(string+'<br><br>Schedule Name (i.e. "Day D, Wildcat Way Period")').append($title);
+                                                    var $schedule = $('<textarea maxlength="200" rows="14" style="overflow-y: scroll; resize: none; width:100%;"></textarea>');
+                                                    if (structures[count].get("scheduleType") === "*") {
+                                                        $title.val(structures[count].get("customString"));
+                                                        $schedule.val(structures[count].get("customSchedule"));
+                                                    } else {
+                                                        $schedule.val("Period 1: \nPeriod 2: \nPeriod 3: \nPeriod 4: \n1st: \n2nd: \n3rd: \nPeriod 6: \nPeriod 7: ");
+                                                    };
+                                                    dialogItself.setData('schedule', $schedule);
+                                                    dialogItself.setData('title', $title);
+                                                    $form.append('<br><br>Schedule<br><br>').append($schedule);
+                                                    return $form;
+                                                  },// <-- Default value is BootstrapDialog.TYPE_PRIMARY
+                                                  closable: false, // <-- Default value is false
+                                                  draggable: true, // <-- Default value is false
+                                                  buttons: [{
+                                                        label: 'Cancel',
+                                                        action: function (dialogItself) {
+                                                            dialogItself.close();
+                                                        } 
+                                                    }, {
+                                                        label: 'Save',
+                                                        cssClass: 'btn-primary',
+                                                        action: function (dialogItself) {
 
-                                                localStorage.setItem("customDate", structures[count].get("schoolDate"));
+                                                            var title = dialogItself.getData('title').val();
+                                                            var schedule = dialogItself.getData('schedule').val();
 
-                                                localStorage.setItem("customDescription", structures[count].get("customString"));     
+                                                            if (! title || ! schedule) {
+                                                                BootstrapDialog.show({
+                                                                    type: BootstrapDialog.TYPE_DEFAULT,
+                                                                    title: "Error",
+                                                                    message: "No data entered!"
+                                                                });
+                                                            } else {
+                                                                BootstrapDialog.confirm({
+                                                                    title: 'Confirmation',
+                                                                    message: 'Are you sure you want to save this custom schedule?',
+                                                                    type: BootstrapDialog.TYPE_DANGER, // <-- Default value is BootstrapDialog.TYPE_PRIMARY
+                                                                    closable: true, // <-- Default value is false
+                                                                    draggable: true, // <-- Default value is false
+                                                                    btnCancelLabel: 'No', // <-- Default value is 'Cancel',
+                                                                    btnOKLabel: 'Yes', // <-- Default value is 'OK',
+                                                                    btnOKClass: 'btn-primary', // <-- If you didn't specify it, dialog type will be used,
+                                                                    callback: function(result) {
+                                                                        // result will be true if button was click, while it will be false if users close the dialog directly.
+                                                                        if(result) {
+                                                                            $("#spinnerDiv").html('<a><img src="./../spinner.gif" alt="Logo" width="40" style="vertical-align: middle; padding-top:12px; padding-left:10px;"/></a>');
+                                                                            var query = new Parse.Query("SchoolDayStructure");
+                                                                            query.equalTo("schoolDayID", parseInt(localStorage.getItem("customID")));
+                                                                            query.first({
+                                                                                success: function(object) {
+                                                                                    object.set("customString", title);
+                                                                                    object.set("customSchedule", schedule);
+                                                                                    object.set("scheduleType", "*");
+                                                                                    object.save(null, {
+                                                                                        success: function() {
+                                                                                            $("#spinnerDiv").html("");
+                                                                                            localStorage.setItem("scheduleAlertString", "Schedule successfully updated.");
+                                                                                            dialogItself.close();
+                                                                                            $(document).ready(loadScheduleTable());
+                                                                                        },
+                                                                                        error: function(error) {
+                                                                                            errorFunction(error.code.toString() + " - " + error.message.toString(), "ParseError", "Script 1002");
+                                                                                            BootstrapDialog.show({
+                                                                                                type: BootstrapDialog.TYPE_DEFAULT,
+                                                                                                title: "Error",
+                                                                                                message: "Error occurred. Please try again."
+                                                                                            });
+                                                                                            $("#spinnerDiv").html("");
+                                                                                            dialogItself.close();
+                                                                                        }
+                                                                                    });
+                                                                                },
+                                                                                error: function(error) {
+                                                                                    errorFunction(error.code.toString() + " - " + error.message.toString(), "ParseError", "Script 1013");
+                                                                                    BootstrapDialog.show({
+                                                                                        type: BootstrapDialog.TYPE_DEFAULT,
+                                                                                        title: "Error",
+                                                                                        message: "Error occurred. Please try again."
+                                                                                    });
+                                                                                    $("#spinnerDiv").html("");
+                                                                                    dialogItself.close();
+                                                                                }
+                                                                            });
 
-                                                window.location.replace("./custom");                       
+                                                                        };
+                                                                    }
+                                                                });
+                                                            };
+                                                        }
+                                                    }]
+                                              });                       
 
                                             };
                                         })();
