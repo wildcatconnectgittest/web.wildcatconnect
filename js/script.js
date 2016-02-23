@@ -1232,6 +1232,103 @@ $(function() {
         });
     });
 
+    $("#eventGen").click(function() {
+        event.preventDefault();
+        $("#spinnerDiv").html('<a><img src="./../spinner.gif" alt="Logo" width="40" style="vertical-align: middle; padding-top:12px; padding-left:10px;"/></a>');
+        var finalString = "";
+        var query = new Parse.Query("EventStructure");
+        query.equalTo("isApproved", 1);
+        query.ascending("eventDate");
+        var structures = new Array();
+        query.find({
+            success: function(structures) {
+                for (var i = 0; i < structures.length; i++) {
+                    if (i > 0) {
+                        finalString = finalString + "\n\n";
+                    };
+                    finalString = finalString + structures[i].get("titleString").toUpperCase() + "\n";
+                    finalString = finalString + structures[i].get("locationString") + "\n";
+                    var parts = structures[i].get("eventDate");
+                    var string = parts.toString('dddd, MMMM d, yyyy  @ h:mm');
+                    finalString = finalString + string + "\n";
+                    finalString = finalString + structures[i].get("messageString");
+                };
+                BootstrapDialog.show({
+                    type: BootstrapDialog.TYPE_DEFAULT,
+                    title: "Text Generation",
+                    message: finalString
+                });
+                $("#spinnerDiv").html("");
+            },
+            error: function(error) {
+                errorFunction(error.code.toString() + " - " + error.message.toString(), "ParseError", "Script 1718");
+                BootstrapDialog.show({
+                    type: BootstrapDialog.TYPE_DEFAULT,
+                    title: "Error",
+                    message: "Error occurred. Please try again."
+                });
+                $("#spinnerDiv").html("");
+            }
+        });
+    });
+
+    $("#scheduleGen").click(function() {
+        event.preventDefault();
+        $("#spinnerDiv").html('<a><img src="./../spinner.gif" alt="Logo" width="40" style="vertical-align: middle; padding-top:12px; padding-left:10px;"/></a>');
+        var finalString = "";
+        var query = new Parse.Query("SchoolDayStructure");
+        query.equalTo("isActive", 1);
+        query.ascending("schoolDayID");
+        query.first({
+            success: function(object) {
+                var finalString = "";
+                if (object.get("scheduleType") === "*") {
+                    finalString = finalString + object.get("customString") + "\n\n";
+                    finalString = finalString + object.get("customSchedule");
+                    BootstrapDialog.show({
+                        type: BootstrapDialog.TYPE_DEFAULT,
+                        title: "Schedule Generation",
+                        message: finalString
+                    });
+                    $("#spinnerDiv").html("");
+                } else {
+                    var queryTwo = new Parse.Query("ScheduleType");
+                    queryTwo.equalTo("typeID", object.get("scheduleType"));
+                    queryTwo.first({
+                        success: function(schedule) {
+                            finalString = finalString + schedule.get("fullScheduleString") + "\n\n";
+                            finalString = finalString + schedule.get("scheduleString");
+                            BootstrapDialog.show({
+                                type: BootstrapDialog.TYPE_DEFAULT,
+                                title: "Schedule Generation",
+                                message: finalString
+                            });
+                            $("#spinnerDiv").html("");
+                        },
+                        error: function(error) {
+                            errorFunction(error.code.toString() + " - " + error.message.toString(), "ParseError", "Script 1718");
+                            BootstrapDialog.show({
+                                type: BootstrapDialog.TYPE_DEFAULT,
+                                title: "Error",
+                                message: "Error occurred. Please try again."
+                            });
+                            $("#spinnerDiv").html("");
+                        }
+                    });
+                };
+            },
+            error: function(error) {
+                errorFunction(error.code.toString() + " - " + error.message.toString(), "ParseError", "Script 1718");
+                BootstrapDialog.show({
+                    type: BootstrapDialog.TYPE_DEFAULT,
+                    title: "Error",
+                    message: "Error occurred. Please try again."
+                });
+                $("#spinnerDiv").html("");
+            }
+        });
+    });
+
     $('.saveLunch').click(function() {
         event.preventDefault();
 
@@ -2100,7 +2197,10 @@ function loadExistingNewsTable() {
                             var authorDate = structures[count].get("authorString") + " | " + structures[count].get("dateString");
                             var content = structures[count].get("contentURLString");
                             content = content.replace(/\r?\n/g, '<br />');
-                            var url = structures[count].get("imageFile").url();
+                            var url = null;
+                            if (structures[count].get("imageFile")) {
+                                url = structures[count].get("imageFile").url();
+                            };
 
                             BootstrapDialog.show({
                                   title: 'Article Preview',
