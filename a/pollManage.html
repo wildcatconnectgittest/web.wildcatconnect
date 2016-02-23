@@ -99,27 +99,20 @@
       </div>
     </nav>
 
-    <div id="errorAlertDiv">
+    <div id="pollAlertDiv">
 
     </div>
 
     <div class="main-container" style="padding-left:20px; padding-right:20px;">
 
-      <h2>Application Status</h2>
-      <button class="cancel btn btn-lg btn-primary" type="cancel">Back</button>
+      <h2>Poll Management</h2>
+      <button class="cancel-schedule btn btn-lg btn-primary" type="cancel">Back</button>
+      <a href="./poll"><button class="btn btn-lg btn-primary" style="float:right;">Post a New Poll</button></a>
       <hr style="border-color:#561838";></hr>
-      <h4 id="mainLabel">Current Installation Count</h4>
-      <h2 id="countLabel" style="color:#561838;">LOADING...</h2>
-      <h4 id="mainLabel">Current Application Status</h4>
-      <h2 id="modeLabel" style="color:#561838;">LOADING...</h2>
-      <select id='modeSelect' name="modeSelect" onchange="changeFunction();">
-      </select>
-      <br><br>
-      <div class="form-group">
-        <label for="title">General Application Message (default is "None.")</label>
-        <input type="text" name="title" class="form-control" id="message" placeholder="Message">
+      <h4 id="titleLabel">Recently Posted Polls</h4>
+      <div id="polls">
+
       </div>
-      <button class="saveMessage btn btn-lg btn-primary">Save Message</button>
 
     </div> <!-- /container -->
 
@@ -130,19 +123,15 @@
     <script src="./../js/parse-1.2.19.min.js"></script>
     <!--script>window.jQuery || document.write('<script src="../../assets/js/vendor/jquery.min.js"><\/script>')</script-->
     <script src="./../js/bootstrap.min.js"></script>
-    <script src="./../js/uglyScript.js"></script>
+    <script src="./../js/script.js"></script>
     <script src="./../js/date.js"></script>
     <script src="./../js/dialog.js"></script>
 
     <script type="text/javascript">
-
-      window.onerror = function(error, url, line) {
-          $(document).ready(errorFunction(error, url, line));
-      };
-
       Parse.$ = jQuery;
       Parse.initialize("cLBOvwh6ZTQYex37DSwxL1Cvg34MMiRWYAB4vqs0", "tTcV5Ns1GFdDda44FCcG5XHBDMbLA1sxRUzSnDgW");
-      if (Parse.User.current() && Parse.User.current().get("userType") === "Developer") {
+
+      if (Parse.User.current() && (Parse.User.current().get("userType") === "Developer" || Parse.User.current().get("userType") === "Administration")) {
         //
       } else {
         window.location.replace("./login");
@@ -154,50 +143,11 @@
       Parse.$ = jQuery;
       Parse.initialize("cLBOvwh6ZTQYex37DSwxL1Cvg34MMiRWYAB4vqs0", "tTcV5Ns1GFdDda44FCcG5XHBDMbLA1sxRUzSnDgW");
 
-      Parse.Cloud.run("countInstallations", null, {
-        success: function(response) {
-          $("#countLabel").html(response);
-        },
-        error: function(error) {
+      $(document).ready(loadPollTable());
 
-        }
-      });
-
-      var select = document.getElementById("modeSelect");
-
-      var arrayList = ["INACTIVE", "ACTIVE"];
-
-      for (var i = 0; i < arrayList.length; i++) {
-        var option = document.createElement('option');
-        option.text = arrayList[i];
-        option.value = i;
-        select.appendChild(option);
+      window.onerror = function(error, url, line) {
+          $(document).ready(errorFunction(error, url, line));
       };
-
-      var query = new Parse.Query("SpecialKeyStructure");
-      query.equalTo("key", "appActive");
-      query.first({
-        success: function(object) {
-          var theString = object.get("value");
-          $("#modeLabel").html(arrayList[parseInt(theString)]);
-          $('#modeSelect option[value='+parseInt(theString)+']').attr('selected', 'selected');
-        },
-        error: function(error) {
-          //
-        }
-      });
-
-      var query = new Parse.Query("SpecialKeyStructure");
-      query.equalTo("key", "appMessage");
-      query.first({
-        success: function(object) {
-          var theString = object.get("value");
-          $("#message").val(theString);
-        },
-        error: function(error) {
-          //
-        }
-      });
 
     </script>
     <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->

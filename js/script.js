@@ -382,7 +382,7 @@ var EventStructure = Parse.Object.extend("EventStructure", {
                 approveNumber = 1;
             } else {
                 approveNumber = 0;
-            }
+            } 
             var email = Parse.User.current().get("email");
             var theDate = new Date(eventDate.getFullYear(), eventDate.getMonth(), eventDate.getDate(), eventDate.getHours(), eventDate.getMinutes(), 0, 0);
             object.save({
@@ -1190,6 +1190,48 @@ $(function() {
         });
     });
 
+    $("#commGen").click(function() {
+        event.preventDefault();
+        $("#spinnerDiv").html('<a><img src="./../spinner.gif" alt="Logo" width="40" style="vertical-align: middle; padding-top:12px; padding-left:10px;"/></a>');
+        var finalString = "";
+        var query = new Parse.Query("CommunityServiceStructure");
+        query.equalTo("isApproved", 1);
+        query.ascending("startDate");
+        var structures = new Array();
+        query.find({
+            success: function(structures) {
+                for (var i = 0; i < structures.length; i++) {
+                    if (i > 0) {
+                        finalString = finalString + "\n\n";
+                    };
+                    finalString = finalString + structures[i].get("commTitleString").toUpperCase() + "\n";
+                    var parts = structures[i].get("startDate");
+                    var string = parts.toString('dddd, MMMM d, yyyy  @ h:mm');
+                    finalString = finalString + "STARTS - " + string + "\n";
+                    var parts = structures[i].get("endDate");
+                    var string = parts.toString('dddd, MMMM d, yyyy @ h:mm');
+                    finalString = finalString + "ENDS - " + string + "\n";
+                    finalString = finalString + structures[i].get("commSummaryString");
+                };
+                BootstrapDialog.show({
+                    type: BootstrapDialog.TYPE_DEFAULT,
+                    title: "Text Generation",
+                    message: finalString
+                });
+                $("#spinnerDiv").html("");
+            },
+            error: function(error) {
+                errorFunction(error.code.toString() + " - " + error.message.toString(), "ParseError", "Script 1718");
+                BootstrapDialog.show({
+                    type: BootstrapDialog.TYPE_DEFAULT,
+                    title: "Error",
+                    message: "Error occurred. Please try again."
+                });
+                $("#spinnerDiv").html("");
+            }
+        });
+    });
+
     $('.saveLunch').click(function() {
         event.preventDefault();
 
@@ -1232,7 +1274,7 @@ $(function() {
                                 },
                                 error: function(error) {
                                     errorFunction(error.code.toString() + " - " + error.message.toString(), "ParseError", "Script 1129");
-                                       BootstrapDialog.show({
+                                        BootstrapDialog.show({
                                             type: BootstrapDialog.TYPE_DEFAULT,
                                             title: "Error",
                                             message: "Error occurred. Please try again."
@@ -2248,7 +2290,10 @@ function loadNewsTable() {
                             var authorDate = structures[count].get("authorString") + " | " + structures[count].get("dateString");
                             var content = structures[count].get("contentURLString");
                             content = content.replace(/\r?\n/g, '<br />');
-                            var url = structures[count].get("imageFile").url();
+                            var url = null;
+                            if (structures[count].get("imageFile")) {
+                                url = structures[count].get("imageFile").url();
+                            };
 
                             BootstrapDialog.show({
                                   title: 'Article Preview',
@@ -3920,6 +3965,200 @@ function loadAlertTable() {
                                                 var alertString = "Alert successfully deleted.";
                                                 localStorage.setItem("theAlertString", alertString);
                                                 $(document).ready(loadAlertTable());
+                                              },
+                                              error: function(error) {
+                                               errorFunction(error.code.toString() + " - " + error.message.toString(), "ParseError", "Script 2514");
+                                               BootstrapDialog.show({
+                                                    type: BootstrapDialog.TYPE_DEFAULT,
+                                                    title: "Error",
+                                                    message: "Error occurred. Please try again."
+                                                });
+                                                $("#spinnerDiv").html("");
+                                              }
+                                        });
+                                      };
+                                  }
+                              });
+
+                        };
+                    })();
+                    tdFour.appendChild(buttonTwo);
+                    tr.appendChild(tdFour);
+
+                    tableBody.appendChild(tr);
+
+                    tableDiv.appendChild(table);
+                };
+
+                $("#spinnerDiv").html("");
+
+            },
+            error: function(error) {
+                $("#spinnerDiv").html("");
+                alert(error);
+            }
+        });
+    }
+}
+
+function loadPollTable() {
+    return function() {
+
+        $('#pollAlertDiv').css("display", "block");
+
+        var alertString = localStorage.getItem("pollAlertString");
+        if (alertString && alertString.length > 0) {
+            localStorage.setItem("pollAlertString", "");
+            $('#pollAlertDiv').html('<div class="alert alert-success fade in"><a href="#" class="close" data-dismiss="alert" aria-label="close">Close</a><strong>'+alertString+'</strong></div>');
+            $('#pollAlertDiv').delay(5000).fadeOut(500);
+        };
+
+        $("#spinnerDiv").html('<a><img src="./../spinner.gif" alt="Logo" width="40" style="vertical-align: middle; padding-top:12px; padding-left:10px;"/></a>');
+
+        var query = new Parse.Query("PollStructure");
+        query.descending("createdAt");
+        var structures = new Array();
+        query.find({
+            success: function(structures) {
+
+                $("#titleLabel").html("Recently Posted Polls (" + structures.length+")");
+
+                var tableDiv = document.getElementById("polls");
+                var table = document.createElement("TABLE");
+                var tableBody = document.createElement("TBODY");
+
+                table.appendChild(tableBody);
+                table.className = "table table-striped";
+                table.id = "pollTable";
+
+                var heading = new Array();
+                heading[0] = "Date Posted";
+                heading[1] = "Title";
+                heading[2] = "Question";
+                heading[3] = "Total Votes";
+                heading[4] = "View Content";
+                heading[5] = "Action";
+
+                //TABLE COLUMNS
+
+                var tr = document.createElement("TR");
+                tableBody.appendChild(tr);
+
+                $("#polls").html("");
+
+                for (var i = 0; i < heading.length; i++) {
+                    var th = document.createElement("TH");
+                    th.width = '19%';
+                    th.appendChild(document.createTextNode(heading[i]));
+                    tr.appendChild(th);
+                };
+
+                for (var i = 0; i < structures.length; i++) {
+                    var tr = document.createElement("TR");
+
+                    var tdTwo = document.createElement("TD");
+                    var date = structures[i].createdAt;
+                    string = date.toString('dddd, MMMM d, yyyy @ h:mm tt');
+                    tdTwo.appendChild(document.createTextNode(string));
+                    tr.appendChild(tdTwo);
+
+                    var tdOne = document.createElement("TD");
+                    tdOne.appendChild(document.createTextNode(structures[i].get("pollTitle")));
+                    tr.appendChild(tdOne);
+
+                    var tdOne = document.createElement("TD");
+                    tdOne.appendChild(document.createTextNode(structures[i].get("pollQuestion")));
+                    tr.appendChild(tdOne);
+
+                    var tdOne = document.createElement("TD");
+                    tdOne.appendChild(document.createTextNode(structures[i].get("totalResponses")));
+                    tr.appendChild(tdOne);
+
+                    var tdOne = document.createElement("TD");
+                    var contentButton =document.createElement("INPUT");
+                    contentButton.type = "button";
+                    contentButton.className = "btn btn-lg btn-primary";
+                    contentButton.value = "View Responses";
+                    contentButton.name = i;
+                    contentButton.style.marginRight = "10px";
+                    contentButton.onclick = (function() {
+                        var count = i;
+
+                        return function(e) {
+
+                            var titleString = structures[count].get("pollTitle");
+                            var question = structures[count].get("pollQuestion");
+                            var finalString = "";
+
+                            var total = structures[count].get("totalResponses");
+
+                            var choices = structures[count].get("pollMultipleChoices");
+
+                            for (var key in choices) {
+                                var percent = Math.round((parseInt(choices[key]) / total * 100 * 10)) / 10;
+                                finalString = finalString + key + " - " + percent.toString() + "%" + "\n";
+                            };
+
+                            finalString = finalString.replace(/\n/g, '<br />');
+
+                            BootstrapDialog.show({
+                                  title: 'Poll Preview',
+                                  size: BootstrapDialog.SIZE_WIDE,
+                                  message: function(dialogItself) {
+                                    var $form = $('<form></form>');
+                                    $form.append('<h1 style="margin-top:0;">'+titleString+'</h1><h3><i>'+question+'</i></h3>');
+                                    $form.append('<hr style="border-color:#561838">' + finalString);
+                                    return $form;
+                                  },// <-- Default value is BootstrapDialog.TYPE_PRIMARY
+                                  closable: true, // <-- Default value is false
+                                  draggable: true, // <-- Default value is false
+                                  buttons: [{
+                                       label: 'OK',
+                                        action: function (dialogItself) {
+                                            dialogItself.close();
+                                        } 
+                                    }]
+                              });
+
+                        };
+                    })();
+                    tdOne.appendChild(contentButton);
+                    tr.appendChild(tdOne);
+
+                    var tdFour = document.createElement("TD");
+
+                    var buttonTwo =document.createElement("INPUT");
+                    buttonTwo.type = "button";
+                    buttonTwo.className = "btn btn-lg btn-primary";
+                    buttonTwo.value = "Delete";
+                    buttonTwo.style.marginRight = "10px";
+                    buttonTwo.style.backgroundColor = "red";
+                    buttonTwo.style.borderColor = "red";
+                    buttonTwo.onclick = (function() {
+                        var count = i;
+
+                        return function(e) {
+
+                            BootstrapDialog.confirm({
+                                  title: 'Confirmation',
+                                  message: 'Are you sure you want to delete this poll?',
+                                  type: BootstrapDialog.TYPE_DANGER, // <-- Default value is BootstrapDialog.TYPE_PRIMARY
+                                  closable: true, // <-- Default value is false
+                                  draggable: true, // <-- Default value is false
+                                  btnCancelLabel: 'No', // <-- Default value is 'Cancel',
+                                  btnOKLabel: 'Yes', // <-- Default value is 'OK',
+                                  btnOKClass: 'btn-primary', // <-- If you didn't specify it, dialog type will be used,
+                                  callback: function(result) {
+                                      // result will be true if button was click, while it will be false if users close the dialog directly.
+                                      if(result) {
+                                         $("#spinnerDiv").html('<a><img src="./../spinner.gif" alt="Logo" width="40" style="vertical-align: middle; padding-top:12px; padding-left:10px;"/></a>');
+
+                                        structures[count].destroy({
+                                            success: function() {
+                                                $("#spinnerDiv").html("");
+                                                var alertString = "Poll successfully deleted.";
+                                                localStorage.setItem("pollAlertString", alertString);
+                                                $(document).ready(loadPollTable());
                                               },
                                               error: function(error) {
                                                errorFunction(error.code.toString() + " - " + error.message.toString(), "ParseError", "Script 2514");
