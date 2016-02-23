@@ -5509,7 +5509,7 @@ function loadScheduleTable() {
                                             };
                                         })();
                                         tdFour.appendChild(buttonTwo);
-                                    } else if (i < 2) {
+                                    } else if (i < 2 && structures[i].get("isSnow") === 1) {
                                         tdFour.appendChild(document.createTextNode("No actions available."));
                                     }
 
