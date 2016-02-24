@@ -3631,6 +3631,7 @@ function backFunction() {
 }
 
 function startFunction() {
+    $("#spinnerDiv").html('<a><img src="./../spinner.gif" alt="Logo" width="40" style="vertical-align: middle; padding-top:12px; padding-left:10px;"/></a>');
     if (Parse.User.current()) {
         var query = new Parse.Query("SpecialKeyStructure");
         query.equalTo("key", "appActive");

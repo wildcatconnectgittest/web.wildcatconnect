@@ -123,6 +123,9 @@
 
     <script type="text/javascript">
 
+      Parse.$ = jQuery;
+      Parse.initialize("cLBOvwh6ZTQYex37DSwxL1Cvg34MMiRWYAB4vqs0", "tTcV5Ns1GFdDda44FCcG5XHBDMbLA1sxRUzSnDgW");
+
       if (Parse.User.current()) {
         //
       } else {
@@ -133,8 +136,6 @@
           $(document).ready(errorFunction(error, url, line));
       };
 
-      Parse.$ = jQuery;
-      Parse.initialize("cLBOvwh6ZTQYex37DSwxL1Cvg34MMiRWYAB4vqs0", "tTcV5Ns1GFdDda44FCcG5XHBDMbLA1sxRUzSnDgW");
     </script>
     <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
     <!--script src="../../assets/js/ie10-viewport-bug-workaround.js"></script>
