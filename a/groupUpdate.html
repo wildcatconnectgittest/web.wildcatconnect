@@ -172,10 +172,18 @@
                 $("#spinnerDiv").html("");
                 BootstrapDialog.show({
                   type: BootstrapDialog.TYPE_DEFAULT,
+                  closable: false,
                   title: "Whoops!",
-                  message: "You are not the owner of any Extracurricular groups. However, you can register a new group on the home page, where you will be able to send push notifications to users who subscribe."
+                  message: "You are not the owner of any Extracurricular groups. However, you can REGISTER a new group on the home page, where you will be able to send push notifications to users who subscribe.",
+                  buttons: [
+                   {
+                    label: "Got it.",
+                    action: function(dialogItself) {
+                      window.location.replace("./index");
+                    }
+                    
+                  }]
                 });
-                window.location.replace("./index");
               };
               $("#spinnerDiv").html("");
             },

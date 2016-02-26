@@ -1190,6 +1190,29 @@ $(function() {
         });
     });
 
+    $("#deleteErrors").click(function() {
+        event.preventDefault();
+        var query = new Parse.Query("ErrorStructure");
+        query.find({
+            success: function(objects) {
+                Parse.Object.destroyAll(objects, {
+                    success: function() {
+                        $(document).ready(loadErrorTable());
+                    },
+                    error: function(objects, error) {
+                        errorFunction(error.code.toString() + " - " + error.message.toString(), "ParseError", "Script 1203");
+                        BootstrapDialog.show({
+                            type: BootstrapDialog.TYPE_DEFAULT,
+                            title: "Error",
+                            message: "Error occurred. Please try again."
+                        });
+                        $("#spinnerDiv").html("");
+                    }
+                });
+            }
+        });
+    });
+
     $("#commGen").click(function() {
         event.preventDefault();
         $("#spinnerDiv").html('<a><img src="./../spinner.gif" alt="Logo" width="40" style="vertical-align: middle; padding-top:12px; padding-left:10px;"/></a>');
@@ -1824,10 +1847,11 @@ function loadExistingUserTable() {
 				var heading = new Array();
 				heading[0] = "Last Name";
 				heading[1] = "First Name";
-				heading[2] = "E-Mail";
-                heading[3] = "User Type";
-                heading[4] = "Change Type";
-				heading[5] = "Action";
+                heading[2] = "Username";
+				heading[3] = "E-Mail";
+                heading[4] = "User Type";
+                heading[5] = "Change Type";
+				heading[6] = "Action";
 
 				//TABLE COLUMNS
 
@@ -1838,7 +1862,7 @@ function loadExistingUserTable() {
 
 				for (var i = 0; i < heading.length; i++) {
 					var th = document.createElement("TH");
-					th.width = '17%';
+					th.width = '15%';
 					th.appendChild(document.createTextNode(heading[i]));
 					tr.appendChild(th);
 				};
@@ -1855,6 +1879,10 @@ function loadExistingUserTable() {
 					var tdOne = document.createElement("TD");
 					tdOne.appendChild(document.createTextNode(structures[i].get("firstName")));
 					tr.appendChild(tdOne);
+
+                    var tdOne = document.createElement("TD");
+                    tdOne.appendChild(document.createTextNode(structures[i].get("username")));
+                    tr.appendChild(tdOne);
 
 					var tdOther = document.createElement("TD");
 					tdOther.innerHTML = '<a href="mailto:'+structures[i].get("email")+'">'+structures[i].get("email")+'</a>';
@@ -2127,7 +2155,7 @@ function loadExistingNewsTable() {
 
         var query = new Parse.Query("NewsArticleStructure");
         query.equalTo("isApproved", 1);
-        query.ascending("createdAt");
+        query.descending("createdAt");
         var structures = new Array();
         query.find({
             success: function(structures) {
@@ -2147,7 +2175,8 @@ function loadExistingNewsTable() {
                 heading[1] = "Author";
                 heading[2] = "Title";
                 heading[3] = "Content";
-                heading[4] = "Action";
+                heading[4] = "Likes";
+                heading[5] = "Action";
 
                 //TABLE COLUMNS
 
@@ -2227,6 +2256,10 @@ function loadExistingNewsTable() {
                         };
                     })();
                     tdOne.appendChild(contentButton);
+                    tr.appendChild(tdOne);
+
+                    var tdOne = document.createElement("TD");
+                    tdOne.appendChild(document.createTextNode(structures[i].get("likes")));
                     tr.appendChild(tdOne);
 
                     var tdFour = document.createElement("TD");
@@ -2321,7 +2354,7 @@ function loadNewsTable() {
 
         var query = new Parse.Query("NewsArticleStructure");
         query.equalTo("isApproved", 0);
-        query.ascending("createdAt");
+        query.descending("createdAt");
         var structures = new Array();
         query.find({
             success: function(structures) {
@@ -2589,7 +2622,7 @@ function loadEventTable() {
 
         var query = new Parse.Query("EventStructure");
         query.equalTo("isApproved", 0);
-        query.ascending("createdAt");
+        query.descending("createdAt");
         var structures = new Array();
         query.find({
             success: function(structures) {
@@ -2830,7 +2863,7 @@ function loadExistingEventTable() {
 
         var query = new Parse.Query("EventStructure");
         query.equalTo("isApproved", 1);
-        query.ascending("eventDate");
+        query.descending("eventDate");
         var structures = new Array();
         query.find({
             success: function(structures) {
@@ -3644,9 +3677,12 @@ function startFunction() {
                     $('.main-container').html($("#appInactive").html());
                 };
                 $("#messageLabel").html("MESSAGE - " + object.get("message"));
+                $("#spinnerDiv").html("");
             } else {
                 $('.main-container').html($("#main-login").html());
+                $("#spinnerDiv").html("");
                 homeFunction();
+                $("#spinnerDiv").html("");
             };
           },
           error: function(error) {
@@ -3684,6 +3720,7 @@ function homeFunction() {
                 $("#newButton").css('background-color', 'red');
                 $("#newButton").css('border-color', 'red');
               };
+              $("#spinnerDiv").html("");
             },
             error: function(error) {
               if (error.code != 100) {
@@ -3704,6 +3741,7 @@ function homeFunction() {
                 $("#errorButton").css('background-color', 'red');
                 $("#errorButton").css('border-color', 'red');
               };
+              $("#spinnerDiv").html("");
             },
             error: function(error) {
               if (error.code != 100) {
@@ -3725,6 +3763,7 @@ function homeFunction() {
                 $("#newsApproveButton").css('background-color', 'red');
                 $("#newsApproveButton").css('border-color', 'red');
               };
+              $("#spinnerDiv").html("");
             },
             error: function(error) {
               if (error.code != 100) {
@@ -3787,7 +3826,7 @@ function homeFunction() {
             if (object.get("value") != "None.") {
                 var alertString = object.get("value");
                   if (alertString && alertString.length > 0) {
-                    $("#alertDiv").html('<div class="alert alert-danger fade in"><strong>MESSAGE - '+alertString+'</strong></div>');
+                    $("#messageDiv").html('<div class="alert alert-danger fade in"><strong>MESSAGE - '+alertString+'</strong></div>');
                   };
             };
           },
@@ -3934,6 +3973,7 @@ function loadAlertTable() {
 
         var query = new Parse.Query("AlertStructure");
         query.descending("createdAt");
+        query.equalTo("isReady", 1);
         var structures = new Array();
         query.find({
             success: function(structures) {
@@ -4100,6 +4140,10 @@ function loadAlertTable() {
             }
         });
     }
+}
+
+function noMail() {
+    errorFunction("No confirmation e-mail maybe sent to " + Parse.User.current().get("email") + ".", "None.", "None.");
 }
 
 function loadPollTable() {

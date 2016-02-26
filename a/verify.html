@@ -103,9 +103,13 @@
 
       <form class="form-verify" style="width:400px; margin:0 auto;" role="form">
           <h2 class="form-signin-heading" style="text-align:center;">Verify Account</h2>
+          <h4 style="text-align:center;"><i>You can find your registration key in the confirmation e-mail from our team.</i></h4>
+          <h4><b>Registration Key...</b></h4>
           <input type="text" name="key" class="form-control" placeholder="Registration Key" required="" autofocus="" autocorrect="off" autocapitalize="off"><br>
           <button class="btn btn-lg btn-primary btn-block" type="submit" style="padding-bottom:10px;">Verify</button>
         <button class="cancel-verify btn btn-lg btn-primary btn-block" type="cancel">Cancel</button>
+        <hr style="border-color:#561838";></hr>
+        <a href="javascript:noMail();"><h4 style="text-align:center;">I didn't get a confirmation e-mail.</h4></a>
       </div>
 
     </div> <!-- /container -->
@@ -126,8 +130,8 @@
       Parse.$ = jQuery;
       Parse.initialize("cLBOvwh6ZTQYex37DSwxL1Cvg34MMiRWYAB4vqs0", "tTcV5Ns1GFdDda44FCcG5XHBDMbLA1sxRUzSnDgW");
 
-      if (Parse.User.current()) {
-        //
+      if (Parse.User.current() && Parse.User.current().get("verified") === 1) {
+        window.location.replace("./index");
       } else {
         window.location.replace("./login");
       };
