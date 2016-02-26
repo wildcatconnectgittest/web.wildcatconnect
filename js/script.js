@@ -5472,12 +5472,14 @@ function loadScheduleTable() {
 
                                     var tdFour = document.createElement("TD");
 
-                                    if (i < 2 && structures[i].get("isSnow") == 0) {
+                                    if (i < 3 && structures[i].get("isSnow") == 0) {
                                         var button = document.createElement("INPUT");
                                         button.type = "button";
                                         button.className = "btn btn-lg btn-primary";
                                         button.value = "Snow Day";
                                         button.name = i;
+                                        button.style.backgroundColor = "red";
+                                        button.style.borderColor = "red";
                                         button.style.marginBottom = "10px";
                                         button.onclick = (function() {
 
