@@ -2863,7 +2863,7 @@ function loadExistingEventTable() {
 
         var query = new Parse.Query("EventStructure");
         query.equalTo("isApproved", 1);
-        query.descending("eventDate");
+        query.ascending("eventDate");
         var structures = new Array();
         query.find({
             success: function(structures) {
