@@ -817,6 +817,7 @@ $(function() {
                     message: "Error occurred logging in with those credentials. Please try again."
                 });
                 $("#spinnerDiv").html("");
+                $("#logIn").html("Sign In");
             }
         });
     });
@@ -1210,6 +1211,25 @@ $(function() {
                     }
                 });
             }
+        });
+    });
+
+    $("#noMail").click(function() {
+        event.preventDefault();
+        errorFunction("No confirmation e-mail maybe sent to " + Parse.User.current().get("email") + ".", "None.", "None.");
+        BootstrapDialog.show({
+          type: BootstrapDialog.TYPE_DEFAULT,
+          closable: false,
+          title: "Whoops!",
+          message: "Our support team will look into this issue. We will contact you within 1-2 days to resolve this issue. Apologies for this inconvienence.",
+          buttons: [
+           {
+            label: "Got it.",
+            action: function(dialogItself) {
+              window.location.replace("./login");
+            }
+            
+          }]
         });
     });
 
@@ -2526,6 +2546,7 @@ function loadNewsTable() {
                             var e = structures[count].get("email");
                             var title = structures[count].get("titleString");
                             var admin = Parse.User.current().get("firstName") + " " + Parse.User.current().get("lastName");
+                            var adminMail = Parse.User.current().get("email");
 
                             BootstrapDialog.show({
                                   title: 'Confirmation',
@@ -2551,13 +2572,13 @@ function loadNewsTable() {
 
                                             $("#spinnerDiv").html('<a><img src="./../spinner.gif" alt="Logo" width="40" style="vertical-align: middle; padding-top:12px; padding-left:10px;"/></a>');
 
-                                            Parse.Cloud.run('denyStructure', { "name" : name , "type" : "news" , "email" : e , "message" : text , "title" : title , "admin" : admin}, {
+                                            Parse.Cloud.run('denyStructure', { "name" : name , "type" : "news" , "email" : e , "message" : text , "title" : title , "admin" : admin , "adminMail" : adminMail }, {
                                               success: function() {
                                                 structures[count].destroy({
                                                     success: function() {
                                                         $("#spinnerDiv").html("");
                                                         dialogItself.close();
-                                                        var alertString = "Story successfully denied.";
+                                                        var alertString = "Story successfully denied. You will receive an e-mail with the denial message, for your reference.";
                                                         localStorage.setItem("newsAlertString", alertString);
                                                         $(document).ready(loadNewsTable());
                                                         $(document).ready(loadExistingNewsTable());
@@ -2758,6 +2779,7 @@ function loadEventTable() {
                             var e = structures[count].get("email");
                             var title = structures[count].get("titleString");
                             var admin = Parse.User.current().get("firstName") + " " + Parse.User.current().get("lastName");
+                            var adminMail = Parse.User.current().get("email");
 
                             BootstrapDialog.show({
                                   title: 'Confirmation',
@@ -2783,13 +2805,13 @@ function loadEventTable() {
 
                                             $("#spinnerDiv").html('<a><img src="./../spinner.gif" alt="Logo" width="40" style="vertical-align: middle; padding-top:12px; padding-left:10px;"/></a>');
 
-                                            Parse.Cloud.run('denyStructure', { "name" : name , "type" : "event" , "email" : e , "message" : text , "title" : title , "admin" : admin }, {
+                                            Parse.Cloud.run('denyStructure', { "name" : name , "type" : "event" , "email" : e , "message" : text , "title" : title , "admin" : admin , "adminMail" : adminMail }, {
                                               success: function() {
                                                 structures[count].destroy({
                                                     success: function() {
                                                         $("#spinnerDiv").html("");
                                                         dialogItself.close();
-                                                        var alertString = "Event successfully denied.";
+                                                        var alertString = "Event successfully denied. You will receive an e-mail with the denial message, for your reference.";
                                                         localStorage.setItem("eventAlertString", alertString);
                                                         $(document).ready(loadEventTable());
                                                         $(document).ready(loadExistingEventTable());
@@ -3150,6 +3172,7 @@ function loadCommunityTable() {
                             var e = structures[count].get("email");
                             var title = structures[count].get("titleString");
                             var admin = Parse.User.current().get("firstName") + " " + Parse.User.current().get("lastName");
+                            var adminMail = Parse.User.current().get("email");
 
                             BootstrapDialog.show({
                                   title: 'Confirmation',
@@ -3175,13 +3198,13 @@ function loadCommunityTable() {
 
                                             $("#spinnerDiv").html('<a><img src="./../spinner.gif" alt="Logo" width="40" style="vertical-align: middle; padding-top:12px; padding-left:10px;"/></a>');
 
-                                            Parse.Cloud.run('denyStructure', { "name" : name , "type" : "comm" , "email" : e , "message" : text , "title" : title , "admin" : admin }, {
+                                            Parse.Cloud.run('denyStructure', { "name" : name , "type" : "comm" , "email" : e , "message" : text , "title" : title , "admin" : admin , "adminMail" : adminMail }, {
                                               success: function() {
                                                 structures[count].destroy({
                                                     success: function() {
                                                         $("#spinnerDiv").html("");
                                                         dialogItself.close();
-                                                        var alertString = "Opportunity successfully denied.";
+                                                        var alertString = "Opportunity successfully denied. You will receive an e-mail with the denial message, for your reference.";
                                                         localStorage.setItem("commAlertString", alertString);
                                                         $(document).ready(loadCommunityTable());
                                                         $(document).ready(loadExistingCommunityTable());
@@ -4140,10 +4163,6 @@ function loadAlertTable() {
             }
         });
     }
-}
-
-function noMail() {
-    errorFunction("No confirmation e-mail maybe sent to " + Parse.User.current().get("email") + ".", "None.", "None.");
 }
 
 function loadPollTable() {

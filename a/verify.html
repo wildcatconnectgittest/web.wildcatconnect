@@ -109,7 +109,7 @@
           <button class="btn btn-lg btn-primary btn-block" type="submit" style="padding-bottom:10px;">Verify</button>
         <button class="cancel-verify btn btn-lg btn-primary btn-block" type="cancel">Cancel</button>
         <hr style="border-color:#561838";></hr>
-        <a href="javascript:noMail();"><h4 style="text-align:center;">I didn't get a confirmation e-mail.</h4></a>
+        <button class="btn btn-lg btn-primary btn-block" type="submit" id="noMail" style="padding-bottom:10px;background-color:red;border-color:red;">Didn't get that message!</button>
       </div>
 
     </div> <!-- /container -->
@@ -129,12 +129,6 @@
 
       Parse.$ = jQuery;
       Parse.initialize("cLBOvwh6ZTQYex37DSwxL1Cvg34MMiRWYAB4vqs0", "tTcV5Ns1GFdDda44FCcG5XHBDMbLA1sxRUzSnDgW");
-
-      if (Parse.User.current() && Parse.User.current().get("verified") === 1) {
-        window.location.replace("./index");
-      } else {
-        window.location.replace("./login");
-      };
 
       window.onerror = function(error, url, line) {
           $(document).ready(errorFunction(error, url, line));
