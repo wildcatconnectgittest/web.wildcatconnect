@@ -1908,7 +1908,12 @@ function loadExistingUserTable() {
 					tr.appendChild(tdOne);
 
                     var tdOne = document.createElement("TD");
-                    tdOne.appendChild(document.createTextNode(structures[i].get("username")));
+                    if (structures[i].get("verified") === 0) {
+                        tdOne.appendChild(document.createTextNode(structures[i].get("username") + " - UNVERIFIED"));
+                        tdOne.style.color = "red";
+                    } else {
+                        tdOne.appendChild(document.createTextNode(structures[i].get("username")));
+                    }
                     tr.appendChild(tdOne);
 
 					var tdOther = document.createElement("TD");
