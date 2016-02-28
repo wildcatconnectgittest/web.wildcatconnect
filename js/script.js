@@ -1325,6 +1325,13 @@ $(function() {
         query.first({
             success: function(object) {
                 var finalString = "";
+                var parts = object.get("schoolDate").split('-');
+                  var date = new Date(parts[2], parts[0]-1,parts[1]);
+                  var theDate = moment(date);
+                  var number = parseInt(date.toString("d"));
+                    var suffix = ordinal_suffix_of(number);
+                  var string = date.toString('dddd, MMMM ') + suffix + date.toString(', yyyy');
+                finalString = finalString + string + "\n\n";
                 if (object.get("scheduleType") === "*") {
                     finalString = finalString + object.get("customString") + "\n\n";
                     finalString = finalString + object.get("customSchedule");
