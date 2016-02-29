@@ -127,16 +127,17 @@
     <script src="./../js/uglyScript.js"></script>
     <script src="./../js/date.js"></script>
     <script src="./../js/dialog.js"></script>
-
-    <script type="text/javascript">
-      Parse.$ = jQuery;
-      Parse.initialize("cLBOvwh6ZTQYex37DSwxL1Cvg34MMiRWYAB4vqs0", "tTcV5Ns1GFdDda44FCcG5XHBDMbLA1sxRUzSnDgW");
-    </script>
     
     <script>
 
       Parse.$ = jQuery;
       Parse.initialize("cLBOvwh6ZTQYex37DSwxL1Cvg34MMiRWYAB4vqs0", "tTcV5Ns1GFdDda44FCcG5XHBDMbLA1sxRUzSnDgW");
+
+      if (Parse.User.current() && (Parse.User.current().get("userType") === "Developer" || Parse.User.current().get("userType") === "Administration" || Parse.User.current().get("userType") === "Faculty")) {
+        //
+      } else {
+        window.location.replace("./login");
+      };
 
       $(document).ready(loadGroupTable());
 

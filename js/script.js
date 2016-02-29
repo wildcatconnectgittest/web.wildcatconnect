@@ -3849,6 +3849,8 @@ function homeFunction() {
           });
         } else if (Parse.User.current().get("userType") === "Faculty") {
           $('.main-container').html($("#faculty").html());
+        } else if (Parse.User.current().get("userType") === "Student") {
+          $('.main-container').html($("#student").html());
         } else if (Parse.User.current().get("userType") === "Lunch Manager") {
           $('.main-container').html($("#lunch").html());
         };
