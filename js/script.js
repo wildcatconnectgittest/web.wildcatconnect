@@ -1378,8 +1378,19 @@ $(function() {
         var query = new Parse.Query("SchoolDayStructure");
         query.equalTo("isActive", 1);
         query.ascending("schoolDayID");
-        query.first({
-            success: function(object) {
+        query.find({
+            success: function(objects) {
+                var today = new Date();
+                var now = moment();
+                var nowString = now.format("MM-DD-YYYY");
+                var index = 0;
+                if (nowString == objects[0].get("schoolDate")) {
+                    var hours = now.hour();
+                    if (hours >= 15) {
+                        index = 1;
+                    };
+                };
+                var object = objects[index];
                 var finalString = "";
                 var parts = object.get("schoolDate").split('-');
                   var date = new Date(parts[2], parts[0]-1,parts[1]);
