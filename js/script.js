@@ -841,6 +841,41 @@ $(function() {
         });
     });
 
+    $('.form-forgot').submit(function() {
+        event.preventDefault();
+
+        $("#spinnerDiv").html('<a><img src="./../spinner.gif" alt="Logo" width="40" style="vertical-align: middle; padding-top:12px; padding-left:10px;"/></a>');
+
+        var data = $(this).serializeArray();
+
+        var email = data[0].value;
+
+        Parse.User.requestPasswordReset(email, {
+            success: function() {
+                $("#spinnerDiv").html("");
+                BootstrapDialog.show({
+                    type: BootstrapDialog.TYPE_DEFAULT,
+                    title: "Success",
+                    message: "A recovery link has been sent to you at " + email + ". If you have any additional issues, <a href='mailto:support@wildcatconnect.org'>contact our support team</a>.",
+                    onhide: function(dialogRef) {
+                        window.location.replace("./login");
+                    }
+                });
+            },
+            error:function(error) {
+                $("#spinnerDiv").html("");
+                BootstrapDialog.show({
+                    type: BootstrapDialog.TYPE_DEFAULT,
+                    title: "Error",
+                    message: "An error occurred. Please try again.",
+                    onhide: function(dialogRef) {
+                        window.location.replace("./login");
+                    }
+                });
+            }
+        });
+    });
+
     $('.form-horizontal').submit(function() {
         event.preventDefault();
 
