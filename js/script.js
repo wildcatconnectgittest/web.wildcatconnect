@@ -292,16 +292,31 @@ var ExtracurricularUpdateStructure = Parse.Object.extend("ExtracurricularUpdateS
 });
 
 var CommunityServiceStructure = Parse.Object.extend("CommunityServiceStructure", {
-    create: function(title, startDateDate, startDateTime, endDateDate, endDateTime, message) {
-        startDateTime = new Date(startDateDate + " " + startDateTime);
-        startDateDate = new Date(startDateDate);
-        endDateTime = new Date(endDateDate + " " + endDateTime);
-        endDateDate = new Date(endDateDate);
-        if (! title || ! startDateDate || ! startDateTime || ! endDateDate || ! startDateTime || ! message || startDateDate > endDateDate || (startDateDate.getDate() === endDateDate.getDate() && startDateTime > endDateTime)) {
+    create: function(title, message) {
+        var startDateDate = $("#startDateDate").datepicker("getDate");
+        var startDateTime = $("#startDateTime").timepicker("getTime", startDateDate);
+        var endDateDate = $("#endDateDate").datepicker("getDate");
+        var endDateTime = $("#endDateTime").timepicker("getTime", endDateDate);
+        var startString = startDateDate.toString();
+        var endString = endDateDate.toString();
+        var now = new Date();
+        if (! title || ! message) {
             BootstrapDialog.show({
                 type: BootstrapDialog.TYPE_DEFAULT,
                 title: "Error",
                 message: "Please ensure you have filled out all required fields!"
+            });
+        } else if (startString === endString && startDateTime >= endDateTime) {
+            BootstrapDialog.show({
+                type: BootstrapDialog.TYPE_DEFAULT,
+                title: "Error",
+                message: "The start time cannot be greater than or equal to the end time. Please try again."
+            });
+        } else if (startDateTime < now || endDateTime < now) {
+            BootstrapDialog.show({
+                type: BootstrapDialog.TYPE_DEFAULT,
+                title: "Error",
+                message: "This opportunity cannot occur in the past. Please try again."
             });
         } else {
             $("#spinnerDiv").html('<a><img src="./../spinner.gif" alt="Logo" width="40" style="vertical-align: middle; padding-top:12px; padding-left:10px;"/></a>');
@@ -323,14 +338,12 @@ var CommunityServiceStructure = Parse.Object.extend("CommunityServiceStructure",
                     }
                     var userString = Parse.User.current().get("firstName") + " " + Parse.User.current().get("lastName");
                     var email = Parse.User.current().get("email");
-                    var startDate = new Date(startDateDate.getFullYear(), startDateDate.getMonth(), startDateDate.getDate(), startDateTime.getHours(), startDateTime.getMinutes(), 0, 0);
-                    var endDate = new Date(endDateDate.getFullYear(), endDateDate.getMonth(), endDateDate.getDate(), endDateTime.getHours(), endDateTime.getMinutes(), 0, 0);
                     object.save({
                         'communityServiceID' : theID,
                         'commTitleString' : title,
                         'commSummaryString' : message,
-                        'startDate' : startDate,
-                        'endDate' : endDate,
+                        'startDate' : startDateTime,
+                        'endDate' : endDateTime,
                         'isApproved' : approveNumber,
                         'userString' : userString,
                         'email' : email
@@ -364,15 +377,21 @@ var CommunityServiceStructure = Parse.Object.extend("CommunityServiceStructure",
 });
 
 var EventStructure = Parse.Object.extend("EventStructure", {
-    create: function(title, location, eventDate, eventTime, message) {
-        eventDate = new Date(eventDate + " " + eventTime);
+    create: function(title, location, message) {
+        var eventDate = $("#eventDate").datepicker("getDate");
+        var eventTime = $("#eventTime").timepicker("getTime", eventDate);
         var now = new Date();
-        now = new Date(now.getFullYear(), now.getMonth(), now.getDate(), now.getHours(), now.getMinutes(), 0, 0);
-        if (! title || ! location || ! eventDate || ! eventTime || ! message || eventDate < now ) {
+        if (! title || ! location || ! message) {
             BootstrapDialog.show({
                 type: BootstrapDialog.TYPE_DEFAULT,
                 title: "Error",
                 message: "Please ensure you have filled out all required fields!"
+            });
+        } else if (eventTime < now) {
+            BootstrapDialog.show({
+                type: BootstrapDialog.TYPE_DEFAULT,
+                title: "Error",
+                message: "This event cannot occur in the past. Please try again."
             });
         } else {
             $("#spinnerDiv").html('<a><img src="./../spinner.gif" alt="Logo" width="40" style="vertical-align: middle; padding-top:12px; padding-left:10px;"/></a>');
@@ -987,7 +1006,7 @@ $(function() {
  
                     var CS = new CommunityServiceStructure();
 
-                    CS.create(data[0].value, data[1].value, data[2].value, data[3].value, data[4].value, data[5].value);
+                    CS.create(data[0].value, data[1].value);
               };
           }
       });
@@ -1011,11 +1030,13 @@ $(function() {
           callback: function(result) {
               // result will be true if button was click, while it will be false if users close the dialog directly.
               if(result) {
-                  var data = here.serializeArray();
+                    var data = here.serializeArray();
  
                     var theEvent = new EventStructure();
 
-                    theEvent.create(data[0].value, data[1].value, data[2].value, data[3].value, data[4].value);
+                    console.log(data);
+
+                    theEvent.create(data[0].value, data[1].value, data[2].value);
               };
           }
       });
@@ -2257,7 +2278,11 @@ function loadExistingNewsTable() {
                             var summaryString = structures[count].get("summaryString");
                             var authorDate = structures[count].get("authorString") + " | " + structures[count].get("dateString");
                             var content = structures[count].get("contentURLString");
+
+                            content = linkifyStr(content);
+
                             content = content.replace(/\r?\n/g, '<br />');
+
                             var url = null;
                             if (structures[count].get("imageFile")) {
                                 url = structures[count].get("imageFile").url();
@@ -3182,7 +3207,7 @@ function loadCommunityTable() {
 
                             var name = structures[count].get("userString");
                             var e = structures[count].get("email");
-                            var title = structures[count].get("titleString");
+                            var title = structures[count].get("commTitleString");
                             var admin = Parse.User.current().get("firstName") + " " + Parse.User.current().get("lastName");
                             var adminMail = Parse.User.current().get("email");
 

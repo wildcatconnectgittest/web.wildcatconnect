@@ -111,23 +111,24 @@
         </div>
         <h6><i>NOTE: If you are unsure of the exact start or end time for this opportunity, please leave adequate time in the dates below.</i></h6>
         <label for="startDateDate">Select Start Date</label>
-        <input type="date" name="startDateDate" id="startDateDate"></input>
+        <input type='text' id="startDateDate" readOnly/>
         <label for="startDateTime">Select Start Time</label>
-        <input type="time" name="startDateTime" id="startDateTime"></input>
+        <input type="text" class="time" id='startDateTime'/>
         <br><br>
         <label for="endDateDate">Select End Date</label>
-        <input type="date" name="endDateDate" id="endDateDate"></input>
+        <input type='text' id="endDateDate" readOnly/>
         <label for="endDateTime">Select End Time</label>
-        <input type="time" name="endDateTime" id="endDateTime"> *** Format - 01/01/2016, then 02:02 PM</input>
+        <input type="text" class="time" id='endDateTime'/>
         <br><br>
         <div class="form-group">
-          <label for="message">Message (300 characters max)</label>
-          <textarea name="message" class="form-control" rows="4" maxlength="300"></textarea>
+          <label for="message">Message and Information</label>
+          <h6><i>NOTE: You can embed links in the content below and they will appear as hyperlinks in the iOS app. (i.e "http://www.wildcatconnect.org")</i></h6>
+          <textarea name="message" class="form-control" rows="4" style="overflow-y: scroll; resize: none;"></textarea>
         </div>
         <button class="btn btn-lg btn-primary btn-block" type="submit">Submit for Approval</button>
       </form>
       <script>
-        var today = new Date();
+        /*var today = new Date();
         document.getElementById('startDateDate').valueAsDate = today;
         document.getElementById('endDateDate').valueAsDate = today;
         if (today.getHours() < 10) {
@@ -136,21 +137,24 @@
           var currentTime = today.getHours() + ':' + today.getMinutes();
         };
         document.getElementById('startDateTime').value = currentTime;
-        document.getElementById('endDateTime').value = currentTime;
+        document.getElementById('endDateTime').value = currentTime;*/
       </script>
 
     </div> <!-- /container -->
 
-    <!-- Bootstrap core JavaScript
-    ================================================== -->
-    <!-- Placed at the end of the document so the pages load faster -->
     <script src="./../js/jquery.min.js"></script>
     <script src="./../js/parse-1.2.19.min.js"></script>
-    <!--script>window.jQuery || document.write('<script src="../../assets/js/vendor/jquery.min.js"><\/script>')</script-->
     <script src="./../js/bootstrap.min.js"></script>
     <script src="./../js/uglyScript.js"></script>
     <script src="./../js/date.js"></script>
     <script src="./../js/dialog.js"></script>
+    <script src="./../js/jquery-1.10.2.js"></script>
+    <script src="./../js/jquery-ui.js"></script>
+    <link rel="stylesheet" href="./../css/jquery-ui.css">
+    <script type="text/javascript" src="./../js/jquery.timepicker.js"></script>
+    <link rel="stylesheet" type="text/css" href="./../css/jquery.timepicker.css" />
+    <script type="text/javascript" src="./../js/bootstrap-datepicker.js"></script>
+    <link rel="stylesheet" type="text/css" href="./../css/bootstrap-datepicker.css" />
 
     <script type="text/javascript">
 
@@ -160,6 +164,39 @@
       
       Parse.$ = jQuery;
       Parse.initialize("cLBOvwh6ZTQYex37DSwxL1Cvg34MMiRWYAB4vqs0", "tTcV5Ns1GFdDda44FCcG5XHBDMbLA1sxRUzSnDgW");
+
+      $("#startDateDate").datepicker();
+      $("#startDateDate").datepicker( "option", "showAnim", "blind" );
+      $('#startDateDate').datepicker("setDate", new Date() );
+
+      $("#endDateDate").datepicker();
+      $("#endDateDate").datepicker( "option", "showAnim", "blind" );
+      $('#endDateDate').datepicker("setDate", new Date() );
+
+      $("#startDateDate").on('input change', function() {
+        var here = $("#startDateDate").datepicker("getDate");
+        $("#startDateDate").datepicker("hide");
+        var next = $("#endDateDate").datepicker("getDate");
+        if (here > next) {
+          $('#endDateDate').datepicker("setDate", here );
+        }
+      });
+
+      $("#endDateDate").on('input change', function() {
+        var here = $("#startDateDate").datepicker("getDate");
+        $("#startDateDate").datepicker("hide");
+        var next = $("#endDateDate").datepicker("getDate");
+        if (here > next) {
+          $('#endDateDate').datepicker("setDate", here );
+        }
+      });
+
+      $('#startDateTime').timepicker({ 'step' : 15 , 'scrollDefault': 'now' , 'disableTextInput' : true });
+      $('#startDateTime').timepicker('setTime', $("#startDateDate").datepicker("getDate"));
+
+      $('#endDateTime').timepicker({ 'step' : 15 , 'scrollDefault': 'now' , 'disableTextInput' : true });
+      $('#endDateTime').timepicker('setTime', $("#startDateDate").datepicker("getDate"));
+
       if (Parse.User.current()) {
         //
       } else {
