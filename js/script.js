@@ -380,6 +380,7 @@ var EventStructure = Parse.Object.extend("EventStructure", {
     create: function(title, location, message) {
         var eventDate = $("#eventDate").datepicker("getDate");
         var eventTime = $("#eventTime").timepicker("getTime", eventDate);
+        console.log(eventTime);
         var now = new Date();
         if (! title || ! location || ! message) {
             BootstrapDialog.show({
@@ -403,11 +404,10 @@ var EventStructure = Parse.Object.extend("EventStructure", {
                 approveNumber = 0;
             } 
             var email = Parse.User.current().get("email");
-            var theDate = new Date(eventDate.getFullYear(), eventDate.getMonth(), eventDate.getDate(), eventDate.getHours(), eventDate.getMinutes(), 0, 0);
             object.save({
                 "titleString" : title,
                 "locationString" : location,
-                "eventDate" : theDate,
+                "eventDate" : eventTime,
                 "messageString" : message,
                 "isApproved" : approveNumber,
                 "userString" : Parse.User.current().get("firstName") + " " + Parse.User.current().get("lastName"),
