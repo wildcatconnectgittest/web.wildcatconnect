@@ -102,26 +102,23 @@
     <div class="main-container" style="padding-left:20px; padding-right:20px;">
 
       <button class="cancel btn btn-lg btn-primary" type="cancel">Cancel</button>
-      <h2>Alert</h2>
-      <form class="form-add-alert" role="form">
+      <h2>Scholarship</h2>
+      <form class="form-add-scholarship" role="form">
         <div class="form-group">
-          <label for="title">Title (50 characters max)</label>
-          <input type="text" name="title" class="form-control" id="title" placeholder="Title" maxlength="50">
+          <label for="title">Title (60 characters max)</label>
+          <input type="text" name="title" class="form-control" id="title" placeholder="Title" maxlength="60">
         </div>
         <div class="form-group">
-          <label for="author">Author</label>
+          <label for="author">Creator</label>
           <input type="text" name="author" class="form-control" id="author" placeholder="Author">
         </div>
-        <label for="radio">Alert Timing</label>
-        <br>
-        <input checked type="radio" name="alertTiming" value="now" id="now"> Right now</input>
-        <br>
-        <input type="radio" name="alertTiming" value="time" id="time"> At certain time...</input>
-        <input type='text' id="alertDate" readOnly/><input type="text" class="time" id='alertTime'/>
-        <br>
+        <div class="form-group">
+          <label for="radio">Due Date</label>
+          <input type='text' id="dueDate" readOnly/>
+        </div>
         <div class="form-group">
           <label for="content">Content</label>
-          <h6><i>NOTE: You can embed links in the alert content below and they will appear as hyperlinks in the iOS app. (i.e "http://www.wildcatconnect.org")</i></h6>
+          <h6><i>NOTE: You can embed links in the scholarship content below and they will appear as hyperlinks in the iOS app. (i.e "http://www.wildcatconnect.org")</i></h6>
           <textarea name="content" class="form-control" rows="15" style="overflow-y: scroll; resize: none;"></textarea>
         </div>
         <button class="btn btn-lg btn-primary btn-block" type="submit">Submit</button>
@@ -167,31 +164,10 @@
         var authorLabel = document.getElementById('author');
         authorLabel.value = Parse.User.current().get("firstName") + " " + Parse.User.current().get("lastName");
         $("#author").attr("disabled", true);
-        // var today = new Date();
-        // document.getElementById('dateDate').valueAsDate = today;
-        // var minutes = today.getMinutes();
-        // if (minutes < 10) {
-        //   minutes = "0" + minutes.toString();
-        // };
-        // var currentTime = today.getHours() + ':' + minutes.toString();
-        // document.getElementById('dateTime').value = currentTime;
-
-        $("#alertDate").datepicker();
-        $("#alertDate").datepicker( "option", "showAnim", "blind" );
-        $('#alertDate').datepicker("setDate", new Date() );
-
-        $("#alertDate").on('input change', function() {
-          document.getElementById('now').checked = false;
-          document.getElementById('time').checked = true;
-        });
-
-        $('#alertTime').timepicker({ 'step' : 15 , 'scrollDefault': 'now' , 'disableTextInput' : true });
-        $('#alertTime').timepicker('setTime', $("#alertDate").datepicker("getDate"));
-
-        $("#alertTime").on('input change', function() {
-          document.getElementById('now').checked = false;
-          document.getElementById('time').checked = true;
-        });
+        
+        $("#dueDate").datepicker();
+        $("#dueDate").datepicker( "option", "showAnim", "blind" );
+        $('#dueDate').datepicker("setDate", new Date() );
 
       </script>
     <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->

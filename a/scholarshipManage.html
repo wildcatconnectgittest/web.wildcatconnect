@@ -99,33 +99,21 @@
       </div>
     </nav>
 
+    <div id="scholAlertDiv">
+
+    </div>
+
     <div class="main-container" style="padding-left:20px; padding-right:20px;">
 
-      <button class="cancel btn btn-lg btn-primary" type="cancel">Cancel</button>
-      <h2>Alert</h2>
-      <form class="form-add-alert" role="form">
-        <div class="form-group">
-          <label for="title">Title (50 characters max)</label>
-          <input type="text" name="title" class="form-control" id="title" placeholder="Title" maxlength="50">
-        </div>
-        <div class="form-group">
-          <label for="author">Author</label>
-          <input type="text" name="author" class="form-control" id="author" placeholder="Author">
-        </div>
-        <label for="radio">Alert Timing</label>
-        <br>
-        <input checked type="radio" name="alertTiming" value="now" id="now"> Right now</input>
-        <br>
-        <input type="radio" name="alertTiming" value="time" id="time"> At certain time...</input>
-        <input type='text' id="alertDate" readOnly/><input type="text" class="time" id='alertTime'/>
-        <br>
-        <div class="form-group">
-          <label for="content">Content</label>
-          <h6><i>NOTE: You can embed links in the alert content below and they will appear as hyperlinks in the iOS app. (i.e "http://www.wildcatconnect.org")</i></h6>
-          <textarea name="content" class="form-control" rows="15" style="overflow-y: scroll; resize: none;"></textarea>
-        </div>
-        <button class="btn btn-lg btn-primary btn-block" type="submit">Submit</button>
-      </form>
+      <h2>Scholarship Management</h2>
+      <button class="cancel-schedule btn btn-lg btn-primary" type="cancel">Back</button>
+      <a href="./scholarshipCompose"><button class="btn btn-lg btn-primary" style="float:right;">New Scholarship</button></a>
+      <hr style="border-color:#561838";></hr>
+      <h4 id="titleLabel">Currently Active Scholarships</h4><input type="text" id="search" placeholder=" SEARCH">
+      <br><br>
+      <div id="scholarships">
+
+      </div>
 
     </div> <!-- /container -->
 
@@ -139,61 +127,46 @@
     <script src="./../js/script.js"></script>
     <script src="./../js/date.js"></script>
     <script src="./../js/dialog.js"></script>
-    <script src="./../js/moment.js"></script>
-    <script src="./../js/jquery-1.10.2.js"></script>
-    <script src="./../js/jquery-ui.js"></script>
-    <link rel="stylesheet" href="./../css/jquery-ui.css">
-    <script type="text/javascript" src="./../js/jquery.timepicker.js"></script>
-    <link rel="stylesheet" type="text/css" href="./../css/jquery.timepicker.css" />
-    <script type="text/javascript" src="./../js/bootstrap-datepicker.js"></script>
-    <link rel="stylesheet" type="text/css" href="./../css/bootstrap-datepicker.css" />
+    <script src="./../js/linkify.min.js"></script>
+    <script src="./../js/linkify-string.min.js"></script>
 
     <script type="text/javascript">
-
-      window.onerror = function(error, url, line) {
-            $(document).ready(errorFunction(error, url, line));
-      };
-
       Parse.$ = jQuery;
       Parse.initialize("cLBOvwh6ZTQYex37DSwxL1Cvg34MMiRWYAB4vqs0", "tTcV5Ns1GFdDda44FCcG5XHBDMbLA1sxRUzSnDgW");
+
       if (Parse.User.current() && (Parse.User.current().get("userType") === "Developer" || Parse.User.current().get("userType") === "Administration")) {
-        //console.log("Logged in!!!");
+        //
       } else {
         window.location.replace("./login");
       };
     </script>
-
+    
     <script>
-        var authorLabel = document.getElementById('author');
-        authorLabel.value = Parse.User.current().get("firstName") + " " + Parse.User.current().get("lastName");
-        $("#author").attr("disabled", true);
-        // var today = new Date();
-        // document.getElementById('dateDate').valueAsDate = today;
-        // var minutes = today.getMinutes();
-        // if (minutes < 10) {
-        //   minutes = "0" + minutes.toString();
-        // };
-        // var currentTime = today.getHours() + ':' + minutes.toString();
-        // document.getElementById('dateTime').value = currentTime;
 
-        $("#alertDate").datepicker();
-        $("#alertDate").datepicker( "option", "showAnim", "blind" );
-        $('#alertDate').datepicker("setDate", new Date() );
+      Parse.$ = jQuery;
+      Parse.initialize("cLBOvwh6ZTQYex37DSwxL1Cvg34MMiRWYAB4vqs0", "tTcV5Ns1GFdDda44FCcG5XHBDMbLA1sxRUzSnDgW");
 
-        $("#alertDate").on('input change', function() {
-          document.getElementById('now').checked = false;
-          document.getElementById('time').checked = true;
-        });
+      $(document).ready(loadScholarshipTable());
 
-        $('#alertTime').timepicker({ 'step' : 15 , 'scrollDefault': 'now' , 'disableTextInput' : true });
-        $('#alertTime').timepicker('setTime', $("#alertDate").datepicker("getDate"));
+      $('#search').keyup(function() {
 
-        $("#alertTime").on('input change', function() {
-          document.getElementById('now').checked = false;
-          document.getElementById('time').checked = true;
-        });
+        var $rows = $('#scholTable tr');
 
-      </script>
+        $rows.splice(0, 1);
+
+          var val = $.trim($(this).val()).replace(/ +/g, ' ').toLowerCase();
+          
+          $rows.show().filter(function() {
+              var text = $(this).text().replace(/\s+/g, ' ').toLowerCase();
+              return !~text.indexOf(val);
+          }).hide();
+      });
+
+      window.onerror = function(error, url, line) {
+          $(document).ready(errorFunction(error, url, line));
+      };
+
+    </script>
     <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
     <!--script src="../../assets/js/ie10-viewport-bug-workaround.js"></script>
   </body>

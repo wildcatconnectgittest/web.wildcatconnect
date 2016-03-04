@@ -380,7 +380,6 @@ var EventStructure = Parse.Object.extend("EventStructure", {
     create: function(title, location, message) {
         var eventDate = $("#eventDate").datepicker("getDate");
         var eventTime = $("#eventTime").timepicker("getTime", eventDate);
-        console.log(eventTime);
         var now = new Date();
         if (! title || ! location || ! message) {
             BootstrapDialog.show({
@@ -511,15 +510,68 @@ function ordinal_suffix_of(i) {
     return i + "th";
 }
 
-var AlertStructure = Parse.Object.extend("AlertStructure", {
-    create: function(title, author, alertTiming, dateDate, dateTime, content) {
-        dateTime = new Date(dateDate + " " + dateTime);
-        dateDate = new Date(dateTime);
-        if (! title || ! author || ! alertTiming || (alertTiming === "time" && (! dateDate || ! dateTime))) {
+var ScholarshipStructure = Parse.Object.extend("ScholarshipStructure", {
+    create: function(title, creator, content) {
+        var dueDate = $("#dueDate").datepicker("getDate");
+        var now = new Date();
+        if (! title || ! author || ! dueDate || ! content) {
             BootstrapDialog.show({
                 type: BootstrapDialog.TYPE_DEFAULT,
                 title: "Error",
                 message: "Please ensure you have filled out all required fields!"
+            });
+        } else if (dueDate < now) {
+            BootstrapDialog.show({
+                type: BootstrapDialog.TYPE_DEFAULT,
+                title: "Error",
+                message: "This scholarship cannot be due in the past! Please try again."
+            });
+        } else {
+            $("#spinnerDiv").html('<a><img src="./../spinner.gif" alt="Logo" width="40" style="vertical-align: middle; padding-top:12px; padding-left:10px;"/></a>');
+            var object = new ScholarshipStructure();
+            var email = Parse.User.current().get("email");
+            object.save({
+                "dueDate" : dueDate,
+                "email": email,
+                "messageString" : content,
+                "titleString" : title,
+                "userString" : creator
+            }, {
+                success: function() {
+                    $("#spinnerDiv").html("");
+                    localStorage.setItem("scholAlertString", "Scholarship successfully posted.");
+                    window.location.replace("./scholarshipManage");
+                },
+                error: function(theObject, error) {
+                    errorFunction(error.code.toString() + " - " + error.message.toString(), "ParseError", "Script 546");
+                    BootstrapDialog.show({
+                        type: BootstrapDialog.TYPE_DEFAULT,
+                        title: "Error",
+                        message: "Error occurred. Please try again."
+                    });
+                    $("#spinnerDiv").html("");
+                }
+            });
+        }
+    }
+});
+
+var AlertStructure = Parse.Object.extend("AlertStructure", {
+    create: function(title, author, alertTiming, content) {
+        var alertDate = $("#alertDate").datepicker("getDate");
+        var alertTime = $("#alertTime").timepicker("getTime", alertDate);
+        var now = new Date();
+        if (! title || ! author || ! alertTiming || ! content || (alertTiming === "time" && (! alertTime || ! alertTime))) {
+            BootstrapDialog.show({
+                type: BootstrapDialog.TYPE_DEFAULT,
+                title: "Error",
+                message: "Please ensure you have filled out all required fields!"
+            });
+        } else if (alertTime < now) {
+            BootstrapDialog.show({
+                type: BootstrapDialog.TYPE_DEFAULT,
+                title: "Error",
+                message: "This alert cannot occur in the past! Please try again."
             });
         } else {
             $("#spinnerDiv").html('<a><img src="./../spinner.gif" alt="Logo" width="40" style="vertical-align: middle; padding-top:12px; padding-left:10px;"/></a>');
@@ -542,84 +594,72 @@ var AlertStructure = Parse.Object.extend("AlertStructure", {
                     month[9] = "October";
                     month[10] = "November";
                     month[11] = "December";
-                    var nowDate = new Date();
-                    var now = moment();
-                    var date = moment(dateDate);
-                    if (now.diff(date, 'seconds') > 0) {
-                        BootstrapDialog.show({
-                            type: BootstrapDialog.TYPE_DEFAULT,
-                            title: "Whoops!",
-                            message: "You can't send an alert in the past. No one would ever see it. :("
+                    if (alertTiming === "now") {
+                        var date =  moment();
+                        var stringOne = date.format("MMMM ");
+                        var stringTwo = date.format(", h:mm A");
+                        var number = parseInt(date.format("d"));
+                        var suffix = ordinal_suffix_of(number);
+                        var dateString = stringOne + suffix + stringTwo;
+                        object.save({
+                            'alertID' : alertID + 1,
+                            'titleString' : title,
+                            'authorString' : author,
+                            'dateString' : dateString,
+                            'isReady' : 1,
+                            'views' : 0,
+                            'alertTime' : null,
+                            'contentString' : content,
+                            'hasTime' : 0
+                        },  {
+                            success: function(object) {
+                                $("#spinnerDiv").html("");
+                                localStorage.setItem("alertString", "Alert successfully posted.");
+                                window.location.replace("./index");
+                            },
+                            error: function(error) {
+                                errorFunction(error.code.toString() + " - " + error.message.toString(), "ParseError", "Script 460");
+                               BootstrapDialog.show({
+                                    type: BootstrapDialog.TYPE_DEFAULT,
+                                    title: "Error",
+                                    message: "Error occurred. Please try again."
+                                });
+                                $("#spinnerDiv").html("");
+                            }
                         });
-                        $("#spinnerDiv").html("");
-                    } else {
-                        if (alertTiming === "now") {
-                            var date =  moment();
-                            var stringOne = date.format("MMMM ");
-                            var stringTwo = date.format(", h:mm A");
-                            var number = parseInt(date.format("d"));
-                            var suffix = ordinal_suffix_of(number);
-                            var dateString = stringOne + suffix + stringTwo;
-                            object.save({
-                                'alertID' : alertID + 1,
-                                'titleString' : title,
-                                'authorString' : author,
-                                'dateString' : dateString,
-                                'isReady' : 1,
-                                'views' : 0,
-                                'alertTime' : null,
-                                'contentString' : content,
-                                'hasTime' : 0
-                            },  {
-                                success: function(object) {
-                                    $("#spinnerDiv").html("");
-                                    localStorage.setItem("alertString", "Alert successfully posted.");
-                                    window.location.replace("./index");
-                                },
-                                error: function(error) {
-                                    errorFunction(error.code.toString() + " - " + error.message.toString(), "ParseError", "Script 460");
-                                   BootstrapDialog.show({
-                                        type: BootstrapDialog.TYPE_DEFAULT,
-                                        title: "Error",
-                                        message: "Error occurred. Please try again."
-                                    });
-                                    $("#spinnerDiv").html("");
-                                }
-                            });
-                        } else if (alertTiming === "time") {
-                            var date =  moment(dateDate);
-                            var stringOne = date.format("MMMM ");
-                            var stringTwo = date.format(", h:mm A");
-                            var number = parseInt(date.format("d"));
-                            var suffix = ordinal_suffix_of(number);
-                            var dateString = stringOne + suffix + stringTwo;
-                            object.save({
-                                'alertID' : alertID + 1,
-                                'titleString' : title,
-                                'authorString' : author,
-                                'dateString' : dateString,
-                                'isReady' : 0,
-                                'views' : 0,
-                                'alertTime' : dateDate,
-                                'contentString' : content,
-                                'hasTime' : 1
-                            },  {
-                                success: function(object) {
-                                    $("#spinnerDiv").html("");
-                                    localStorage.setItem("alertString", "Alert successfully posted.");
-                                    window.location.replace("./index");
-                                },
-                                error: function(error) {
-                                    errorFunction(error.code.toString() + " - " + error.message.toString(), "ParseError", "Script 488");
-                                    BootstrapDialog.show({
-                                        type: BootstrapDialog.TYPE_DEFAULT,
-                                        title: "Error",
-                                        message: "Error occurred. Please try again."
-                                    });
-                                    $("#spinnerDiv").html("");
-                                }
-                            });
-                        };  
+                    } else if (alertTiming === "time") {
+                        var date =  moment(alertTime);
+                        var stringOne = date.format("MMMM ");
+                        var stringTwo = date.format(", h:mm A");
+                        var number = parseInt(date.format("d"));
+                        var suffix = ordinal_suffix_of(number);
+                        var dateString = stringOne + suffix + stringTwo;
+                        object.save({
+                            'alertID' : alertID + 1,
+                            'titleString' : title,
+                            'authorString' : author,
+                            'dateString' : dateString,
+                            'isReady' : 0,
+                            'views' : 0,
+                            'alertTime' : alertTime,
+                            'contentString' : content,
+                            'hasTime' : 1
+                        },  {
+                            success: function(object) {
+                                $("#spinnerDiv").html("");
+                                localStorage.setItem("alertString", "Alert successfully posted.");
+                                window.location.replace("./index");
+                            },
+                            error: function(error) {
+                                errorFunction(error.code.toString() + " - " + error.message.toString(), "ParseError", "Script 488");
+                                BootstrapDialog.show({
+                                    type: BootstrapDialog.TYPE_DEFAULT,
+                                    title: "Error",
+                                    message: "Error occurred. Please try again."
+                                });
+                                $("#spinnerDiv").html("");
+                            }
+                        });
                     };
                 },
                 error: function(error) {
@@ -1123,10 +1163,41 @@ $(function() {
               // result will be true if button was click, while it will be false if users close the dialog directly.
               if(result) {
                  var data = here.serializeArray();
+
+                 console.log(data);
  
             var alert = new AlertStructure();
 
-            alert.create(data[0].value, Parse.User.current().get("firstName") + " " + Parse.User.current().get("lastName"), data[1].value, data[2].value, data[3].value, data[4].value);
+            alert.create(data[0].value, Parse.User.current().get("firstName") + " " + Parse.User.current().get("lastName"), data[1].value, data[2].value);
+              };
+          }
+      });
+    });
+
+    $('.form-add-scholarship').submit(function() {
+        event.preventDefault();
+
+        var here = $(this);
+
+        BootstrapDialog.confirm({
+          title: 'Confirmation',
+          message: 'Are you sure you want to submit this scholarship? It will be live to all app users.',
+          type: BootstrapDialog.TYPE_DANGER, // <-- Default value is BootstrapDialog.TYPE_PRIMARY
+          closable: true, // <-- Default value is false
+          draggable: true, // <-- Default value is false
+          btnCancelLabel: 'No', // <-- Default value is 'Cancel',
+          btnOKLabel: 'Yes', // <-- Default value is 'OK',
+          btnOKClass: 'btn-primary', // <-- If you didn't specify it, dialog type will be used,
+          callback: function(result) {
+              // result will be true if button was click, while it will be false if users close the dialog directly.
+              if(result) {
+                 var data = here.serializeArray();
+
+                 console.log(data);
+ 
+            var schol = new ScholarshipStructure();
+
+            schol.create(data[0].value, Parse.User.current().get("firstName") + " " + Parse.User.current().get("lastName"), data[1].value);
               };
           }
       });
@@ -1658,7 +1729,159 @@ $(function() {
 
     });
 
+    $('.generateA').click(function() {
+        var scheduleType;
+        var scheduleString;
+        var theDay;
+        $("input[name='schoolDay']").each(function() {
+            if (this.checked) {
+                var schoolDayID = parseInt(this.value);
+                var query = new Parse.Query("SchoolDayStructure");
+                query.equalTo("schoolDayID", schoolDayID);
+                query.first().then(function(day) {
+                    theDay = day;
+                    var type = day.get("scheduleType");
+                    if (type === "*") {
+                        scheduleType = day.get("customString");
+                        scheduleString = day.get("customSchedule");
+                        return;
+                    } else {
+                        var queryTwo = new Parse.Query("ScheduleType");
+                        queryTwo.equalTo("typeID", type);
+                        return queryTwo.first();
+                    };
+                }).then(function(struct) {
+                    if (! scheduleType && ! scheduleString) {
+                        scheduleType = struct.get("fullScheduleString");
+                        scheduleString = struct.get("scheduleString");
+                    };
+                });
+            };
+        });
+    });
+
 });
+
+function loadAnnouncements() {
+    BootstrapDialog.show({
+          title: 'Please wait as we load our database...',
+          size: BootstrapDialog.SIZE_SMALL,
+          message: function(dialogItself) {
+            var $form = $('<form></form>');
+            $form.append('<a><img src="./../spinner.gif" alt="Logo" width="40" style="margin:0 auto;display:block;"/></a>');
+            return $form;
+          },// <-- Default value is BootstrapDialog.TYPE_PRIMARY
+          closable: false,
+          onshow: function(dialog) {
+            var query = new Parse.Query("SchoolDayStructure");
+            query.equalTo("isActive", 1);
+            query.ascending("schoolDayID");
+            query.limit(3);
+            var schoolDays = new Array();
+            var news = new Array();
+            var scholarships = new Array();
+            var community = new Array();
+            var events = new Array();
+            query.find().then(function(list) {
+                schoolDays = list;
+                var queryTwo = new Parse.Query("NewsArticleStructure");
+                queryTwo.descending("createdAt");
+                queryTwo.equalTo("isApproved", 1);
+                queryTwo.limit(5);
+                return queryTwo.find();
+            }).then(function(list) {
+                news = list;
+                var queryThree = new Parse.Query("ScholarshipStructure");
+                queryThree.ascending("dueDate");
+                return queryThree.find();
+            }).then(function(list) {
+                scholarships = list;
+                var queryFour = new Parse.Query("CommunityServiceStructure");
+                queryFour.ascending("startDate");
+                queryFour.equalTo("isApproved", 1);
+                queryFour.limit(10);
+                return queryFour.find();
+            }).then(function(list) {
+                community = list;
+                var queryFive = new Parse.Query("EventStructure");
+                queryFive.ascending("eventDate");
+                queryFive.equalTo("isApproved", 1);
+                queryFive.limit(5);
+                return queryFive.find();
+            }).then(function(list) {
+                events = list;
+                for (var i = 0; i < schoolDays.length; i++) {
+                    var parts = schoolDays[i].get("schoolDate").split('-');
+                    var date = new Date(parts[2], parts[0]-1,parts[1]);
+                    var string = date.toString('dddd, MMMM d, yyyy');
+                    var radioBtn = $("<input type='radio' name='schoolDay' value='" + schoolDays[i].get("schoolDayID") + "'/> <label>" + string + "</label><br>");
+                    if (i == 0) {
+                        radioBtn.attr("checked", "checked");
+                    };
+                    radioBtn.appendTo('#schoolDays');
+                };
+                for (var i = 0; i < news.length; i++) {
+                    var string = news[i].get("titleString");
+                    var radioBtn = $("<input type='checkbox' class='news' value='" + news[i].get("articleID") + "'/> <a href='javascript:loadArticle(" + news[i].get("articleID") + ");'><label>" + string + "</label></a><br>");
+                    radioBtn.appendTo('#news');
+                };
+                if (news.length == 0) {
+                    var text = $("<h5>No data available.</h5>");
+                    text.appendTo('#news');
+                };
+                for (var i = 0; i < scholarships.length; i++) {
+                    var string = scholarships[i].get("titleString");
+                    var date = scholarships[i].get("dueDate");
+                    string = string + " - DUE " + date.toString('dddd, MMMM d, yyyy');
+                    var radioBtn = $("<input type='checkbox' class='scholarship' value=" + scholarships[i].get("ID") + "/> <a href='javascript:loadScholarship(" + scholarships[i].get("ID") + ");'><label>" + string + "</label></a><br>");
+                    radioBtn.appendTo('#schols');
+                };
+                if (scholarships.length == 0) {
+                    var text = $("<h5>No data available.</h5>");
+                    text.appendTo('#schols');
+                };
+                for (var i = 0; i < community.length; i++) {
+                    var string = community[i].get("commTitleString");
+                    var radioBtn = $("<input type='checkbox' class='community' value=" + community[i].get("communityServiceID") + "/> <a href='javascript:loadCommunity(" + community[i].get("communityServiceID") + ");'><label>" + string + "</label></a><br>");
+                    radioBtn.appendTo('#community');
+                };
+                if (community.length == 0) {
+                    var text = $("<h5>No data available.</h5>");
+                    text.appendTo('#community');
+                };
+                for (var i = 0; i < events.length; i++) {
+                    var string = events[i].get("titleString");
+                    var radioBtn = $("<input type='checkbox' class='event' value=" + events[i].get("ID") + "/> <a href='javascript:loadCommunity(" + events[i].get("ID") + ");'><label>" + string + "</label></a><br>");
+                    radioBtn.appendTo('#events');
+                };
+                if (events.length == 0) {
+                    var text = $("<h5>No data available.</h5>");
+                    text.appendTo('#events');
+                };
+                dialog.close();
+            }, function(error) {
+                errorFunction(error.code.toString() + " - " + error.message.toString(), "ParseError", "Script 4176");
+                BootstrapDialog.show({
+                    type: BootstrapDialog.TYPE_DEFAULT,
+                    title: "Error",
+                    message: "Error occurred."
+                });
+            });
+          }
+      });
+}
+
+function loadArticle(ID) {
+    console.log(ID);
+}
+
+function loadScholarship(ID) {
+    console.log(ID);
+}
+
+function loadCommunity(ID) {
+    console.log(ID);
+}
 
 function errorFunction(error, url, line) {
     var ErrorStructure = Parse.Object.extend("ErrorStructure");
@@ -4061,6 +4284,188 @@ function changeFunction() {
           error: function(error) {
             alert(error.code + " - " + error.message);
           }
+        });
+    }
+}
+
+function loadScholarshipTable() {
+    return function() {
+
+        $('#scholAlertDiv').css("display", "block");
+
+        var alertString = localStorage.getItem("scholAlertString");
+        if (alertString && alertString.length > 0) {
+            localStorage.setItem("scholAlertString", "");
+            $('#scholAlertDiv').html('<div class="alert alert-success fade in"><a href="#" class="close" data-dismiss="alert" aria-label="close">Close</a><strong>'+alertString+'</strong></div>');
+            $('#scholAlertDiv').delay(5000).fadeOut(500);
+        };
+
+        $("#spinnerDiv").html('<a><img src="./../spinner.gif" alt="Logo" width="40" style="vertical-align: middle; padding-top:12px; padding-left:10px;"/></a>');
+
+        var query = new Parse.Query("ScholarshipStructure");
+        query.ascending("dueDate");
+        var structures = new Array();
+        query.find({
+            success: function(structures) {
+
+                $("#titleLabel").html("Currently Active Scholarships (" + structures.length+")");
+
+                var tableDiv = document.getElementById("scholarships");
+                var table = document.createElement("TABLE");
+                var tableBody = document.createElement("TBODY");
+
+                table.appendChild(tableBody);
+                table.className = "table table-striped";
+                table.id = "scholTable";
+
+                var heading = new Array();
+                heading[0] = "Due Date";
+                heading[1] = "Title";
+                heading[2] = "Creator";
+                heading[3] = "Content";
+                heading[4] = "Action";
+
+                //TABLE COLUMNS
+
+                var tr = document.createElement("TR");
+                tableBody.appendChild(tr);
+
+                $("#scholarships").html("");
+
+                for (var i = 0; i < heading.length; i++) {
+                    var th = document.createElement("TH");
+                    th.width = '19%';
+                    th.appendChild(document.createTextNode(heading[i]));
+                    tr.appendChild(th);
+                };
+
+                for (var i = 0; i < structures.length; i++) {
+                    var tr = document.createElement("TR");
+
+                    var tdTwo = document.createElement("TD");
+                    var date = structures[i].get("dueDate");
+                    string = date.toString('dddd, MMMM d, yyyy');
+                    tdTwo.appendChild(document.createTextNode(string));
+                    tr.appendChild(tdTwo);
+
+                    var tdOne = document.createElement("TD");
+                    tdOne.appendChild(document.createTextNode(structures[i].get("titleString")));
+                    tr.appendChild(tdOne);
+
+                    var tdOne = document.createElement("TD");
+                    tdOne.appendChild(document.createTextNode(structures[i].get("userString")));
+                    tr.appendChild(tdOne);
+
+                    var tdOne = document.createElement("TD");
+                    var contentButton =document.createElement("INPUT");
+                    contentButton.type = "button";
+                    contentButton.className = "btn btn-lg btn-primary";
+                    contentButton.value = "View Content";
+                    contentButton.name = i;
+                    contentButton.style.marginRight = "10px";
+                    contentButton.onclick = (function() {
+                        var count = i;
+
+                        return function(e) {
+
+                            var titleString = structures[count].get("titleString");
+                            var date = structures[count].get("dueDate");
+                            string = "DUE - " + date.toString('dddd, MMMM d, yyyy');
+                            var content = structures[count].get("messageString");
+
+                            content = linkifyStr(content);
+
+                            content = content.replace(/\r?\n/g, '<br />');
+
+                            BootstrapDialog.show({
+                                  title: 'Scholarship Preview',
+                                  size: BootstrapDialog.SIZE_WIDE,
+                                  message: function(dialogItself) {
+                                    var $form = $('<form></form>');
+                                    $form.append('<h1 style="margin-top:0;">'+titleString+'</h1><h5>'+string+'</h5>');
+                                    $form.append('<hr style="border-color:#561838">' + content);
+                                    return $form;
+                                  },// <-- Default value is BootstrapDialog.TYPE_PRIMARY
+                                  closable: true, // <-- Default value is false
+                                  draggable: true, // <-- Default value is false
+                                  buttons: [{
+                                       label: 'OK',
+                                        action: function (dialogItself) {
+                                            dialogItself.close();
+                                        } 
+                                    }]
+                              });
+
+                        };
+                    })();
+                    tdOne.appendChild(contentButton);
+                    tr.appendChild(tdOne);
+                    var tdFour = document.createElement("TD");
+
+                    var buttonTwo =document.createElement("INPUT");
+                    buttonTwo.type = "button";
+                    buttonTwo.className = "btn btn-lg btn-primary";
+                    buttonTwo.value = "Delete";
+                    buttonTwo.style.marginRight = "10px";
+                    buttonTwo.style.backgroundColor = "red";
+                    buttonTwo.style.borderColor = "red";
+                    buttonTwo.onclick = (function() {
+                        var count = i;
+
+                        return function(e) {
+
+                            BootstrapDialog.confirm({
+                                  title: 'Confirmation',
+                                  message: 'Are you sure you want to delete this scholarship?',
+                                  type: BootstrapDialog.TYPE_DANGER, // <-- Default value is BootstrapDialog.TYPE_PRIMARY
+                                  closable: true, // <-- Default value is false
+                                  draggable: true, // <-- Default value is false
+                                  btnCancelLabel: 'No', // <-- Default value is 'Cancel',
+                                  btnOKLabel: 'Yes', // <-- Default value is 'OK',
+                                  btnOKClass: 'btn-primary', // <-- If you didn't specify it, dialog type will be used,
+                                  callback: function(result) {
+                                      // result will be true if button was click, while it will be false if users close the dialog directly.
+                                      if(result) {
+                                         $("#spinnerDiv").html('<a><img src="./../spinner.gif" alt="Logo" width="40" style="vertical-align: middle; padding-top:12px; padding-left:10px;"/></a>');
+
+                                        structures[count].destroy({
+                                            success: function() {
+                                                $("#spinnerDiv").html("");
+                                                var alertString = "Scholarship successfully deleted.";
+                                                localStorage.setItem("scholAlertString", alertString);
+                                                $(document).ready(loadScholarshipTable());
+                                              },
+                                              error: function(error) {
+                                               errorFunction(error.code.toString() + " - " + error.message.toString(), "ParseError", "Script 4213");
+                                               BootstrapDialog.show({
+                                                    type: BootstrapDialog.TYPE_DEFAULT,
+                                                    title: "Error",
+                                                    message: "Error occurred. Please try again."
+                                                });
+                                                $("#spinnerDiv").html("");
+                                              }
+                                        });
+                                      };
+                                  }
+                              });
+
+                        };
+                    })();
+                    tdFour.appendChild(buttonTwo);
+                    tr.appendChild(tdFour);
+
+                    tableBody.appendChild(tr);
+
+                    tableDiv.appendChild(table);
+                };
+
+                $("#spinnerDiv").html("");
+
+            },
+            error: function(error) {
+                $("#spinnerDiv").html("");
+                alert(error);
+            }
         });
     }
 }
