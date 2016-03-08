@@ -11,6 +11,7 @@ var customID = null;
 var reverseDictionary = new Array();
 var groupsArray = new Array();
 var showYesterday = true;
+var textArray = new Array();
 
 var UserRegisterStructure = Parse.Object.extend("UserRegisterStructure", {
     create: function(firstName, lastName, email, confirmEmail, username, password, confirmPassword) {
@@ -403,32 +404,49 @@ var EventStructure = Parse.Object.extend("EventStructure", {
                 approveNumber = 0;
             } 
             var email = Parse.User.current().get("email");
-            object.save({
-                "titleString" : title,
-                "locationString" : location,
-                "eventDate" : eventTime,
-                "messageString" : message,
-                "isApproved" : approveNumber,
-                "userString" : Parse.User.current().get("firstName") + " " + Parse.User.current().get("lastName"),
-                'email' : email
-            }, {
-                success: function(object) {
-                    $("#spinnerDiv").html("");
-                    localStorage.setItem("alertString", "Event successfully submitted for approval. Please allow 1-2 days for processing.");
-                    window.location.replace("./index");
-                },
-                error: function(object, error) {
-                    //console.log(error.code.toString() + error.message.toString() + " - " + object);
-                    //Create ErrorStructures with custom method!!!
-                    errorFunction(error.code.toString() + " - " + error.message.toString(), "ParseError", "Script 333");
-                    BootstrapDialog.show({
-                        type: BootstrapDialog.TYPE_DEFAULT,
-                        title: "Error",
-                        message: "Error occurred. Please try again."
-                    });
-                    $("#spinnerDiv").html("");
-                }
-            });
+            var query = new Parse.Query("EventStructure");
+            query.descending("ID");
+            var theID = 0;
+            query.first().then(function(theEvent) {
+                if (theEvent) {
+                    theID = theEvent.get("ID") + 1;
+                };
+                object.save({
+                    "titleString" : title,
+                    "locationString" : location,
+                    "eventDate" : eventTime,
+                    "messageString" : message,
+                    "isApproved" : approveNumber,
+                    "userString" : Parse.User.current().get("firstName") + " " + Parse.User.current().get("lastName"),
+                    'email' : email,
+                    'ID' : theID
+                }, {
+                    success: function(object) {
+                        $("#spinnerDiv").html("");
+                        localStorage.setItem("alertString", "Event successfully submitted for approval. Please allow 1-2 days for processing.");
+                        window.location.replace("./index");
+                    },
+                    error: function(object, error) {
+                        //console.log(error.code.toString() + error.message.toString() + " - " + object);
+                        //Create ErrorStructures with custom method!!!
+                        errorFunction(error.code.toString() + " - " + error.message.toString(), "ParseError", "Script 333");
+                        BootstrapDialog.show({
+                            type: BootstrapDialog.TYPE_DEFAULT,
+                            title: "Error",
+                            message: "Error occurred. Please try again."
+                        });
+                        $("#spinnerDiv").html("");
+                    }
+                });
+            }), function(error) {
+                errorFunction(error.code.toString() + " - " + error.message.toString(), "ParseError", "Script 333");
+                BootstrapDialog.show({
+                    type: BootstrapDialog.TYPE_DEFAULT,
+                    title: "Error",
+                    message: "Error occurred. Please try again."
+                });
+                $("#spinnerDiv").html("");
+            }
         };
     }
 });
@@ -530,28 +548,45 @@ var ScholarshipStructure = Parse.Object.extend("ScholarshipStructure", {
             $("#spinnerDiv").html('<a><img src="./../spinner.gif" alt="Logo" width="40" style="vertical-align: middle; padding-top:12px; padding-left:10px;"/></a>');
             var object = new ScholarshipStructure();
             var email = Parse.User.current().get("email");
-            object.save({
-                "dueDate" : dueDate,
-                "email": email,
-                "messageString" : content,
-                "titleString" : title,
-                "userString" : creator
-            }, {
-                success: function() {
-                    $("#spinnerDiv").html("");
-                    localStorage.setItem("scholAlertString", "Scholarship successfully posted.");
-                    window.location.replace("./scholarshipManage");
-                },
-                error: function(theObject, error) {
-                    errorFunction(error.code.toString() + " - " + error.message.toString(), "ParseError", "Script 546");
-                    BootstrapDialog.show({
-                        type: BootstrapDialog.TYPE_DEFAULT,
-                        title: "Error",
-                        message: "Error occurred. Please try again."
-                    });
-                    $("#spinnerDiv").html("");
-                }
-            });
+            var query = new Parse.Query("ScholarshipStructure");
+            query.descending("ID");
+            var theID = 0;
+            query.first().then(function(theSchol) {
+                if (theSchol) {
+                    theID = theSchol.get("ID") + 1;
+                };
+                object.save({
+                    "dueDate" : dueDate,
+                    "email": email,
+                    "messageString" : content,
+                    "titleString" : title,
+                    "userString" : creator,
+                    "ID" : theID
+                }, {
+                    success: function() {
+                        $("#spinnerDiv").html("");
+                        localStorage.setItem("scholAlertString", "Scholarship successfully posted.");
+                        window.location.replace("./scholarshipManage");
+                    },
+                    error: function(theObject, error) {
+                        errorFunction(error.code.toString() + " - " + error.message.toString(), "ParseError", "Script 546");
+                        BootstrapDialog.show({
+                            type: BootstrapDialog.TYPE_DEFAULT,
+                            title: "Error",
+                            message: "Error occurred. Please try again."
+                        });
+                        $("#spinnerDiv").html("");
+                    }
+                });
+            }), function(error) {
+                errorFunction(error.code.toString() + " - " + error.message.toString(), "ParseError", "Script 546");
+                BootstrapDialog.show({
+                    type: BootstrapDialog.TYPE_DEFAULT,
+                    title: "Error",
+                    message: "Error occurred. Please try again."
+                });
+                $("#spinnerDiv").html("");
+            }
         }
     }
 });
@@ -567,7 +602,7 @@ var AlertStructure = Parse.Object.extend("AlertStructure", {
                 title: "Error",
                 message: "Please ensure you have filled out all required fields!"
             });
-        } else if (alertTime < now) {
+        } else if (alertTime < now && alertTiming === "time") {
             BootstrapDialog.show({
                 type: BootstrapDialog.TYPE_DEFAULT,
                 title: "Error",
@@ -598,9 +633,10 @@ var AlertStructure = Parse.Object.extend("AlertStructure", {
                         var date =  moment();
                         var stringOne = date.format("MMMM ");
                         var stringTwo = date.format(", h:mm A");
-                        var number = parseInt(date.format("d"));
+                        var number = parseInt(date.format("D"));
                         var suffix = ordinal_suffix_of(number);
                         var dateString = stringOne + suffix + stringTwo;
+                        console.log(dateString);
                         object.save({
                             'alertID' : alertID + 1,
                             'titleString' : title,
@@ -1730,39 +1766,158 @@ $(function() {
     });
 
     $('.generateA').click(function() {
+
+        var dayString;
         var scheduleType;
+        var scheduleName;
         var scheduleString;
         var theDay;
-        $("input[name='schoolDay']").each(function() {
-            if (this.checked) {
-                var schoolDayID = parseInt(this.value);
-                var query = new Parse.Query("SchoolDayStructure");
-                query.equalTo("schoolDayID", schoolDayID);
-                query.first().then(function(day) {
-                    theDay = day;
-                    var type = day.get("scheduleType");
-                    if (type === "*") {
-                        scheduleType = day.get("customString");
-                        scheduleString = day.get("customSchedule");
-                        return;
-                    } else {
-                        var queryTwo = new Parse.Query("ScheduleType");
-                        queryTwo.equalTo("typeID", type);
-                        return queryTwo.first();
-                    };
-                }).then(function(struct) {
-                    if (! scheduleType && ! scheduleString) {
-                        scheduleType = struct.get("fullScheduleString");
-                        scheduleString = struct.get("scheduleString");
+        var theNews;
+        var theSchol;
+        var theCommunity;
+        var theEvents;
+
+        BootstrapDialog.show({
+          title: 'Generating your announcements...',
+          size: BootstrapDialog.SIZE_SMALL,
+          message: function(dialogItself) {
+            var $form = $('<form></form>');
+            $form.append('<a><img src="./../spinner.gif" alt="Logo" width="40" style="margin:0 auto;display:block;"/></a>');
+            return $form;
+          },// <-- Default value is BootstrapDialog.TYPE_PRIMARY
+          closable: false,
+          onshow: function(dialog) {
+            $("input[name='schoolDay']").each(function() {
+                if (this.checked) {
+                    var schoolDayID = parseInt(this.value);
+                    var query = new Parse.Query("SchoolDayStructure");
+                    query.equalTo("schoolDayID", schoolDayID);
+                    query.first().then(function(day) {
+                        theDay = day;
+                        dayString = ($('label[for="' + day.get("schoolDayID") + '"]')).text();
+                        scheduleType = day.get("scheduleType");
+                        if (scheduleType === "*") {
+                            scheduleName = day.get("customString");
+                            scheduleString = day.get("customSchedule");
+                            return;
+                        } else {
+                            var queryTwo = new Parse.Query("ScheduleType");
+                            queryTwo.equalTo("typeID", scheduleType);
+                            return queryTwo.first();
+                        };
+                    }).then(function(struct) {
+                        if (! scheduleName && ! scheduleString) {
+                            scheduleName = struct.get("fullScheduleString");
+                            scheduleString = struct.get("scheduleString");
+                        };
+                    });
+                };
+            });
+            var newsArray = [];
+            $("input[class='news']").each(function() {
+                if (this.checked) {
+                    newsArray.push(parseInt(this.value));
+                };
+            });
+            var query = new Parse.Query("NewsArticleStructure");
+            query.containedIn("articleID", newsArray);
+            query.find().then(function(ourNews) {
+                theNews = ourNews;
+                var scholArray = [];
+                $("input[class='scholarship']").each(function() {
+                    if (this.checked) {
+                        scholArray.push(parseInt(this.value));
                     };
                 });
-            };
+                var query = new Parse.Query("ScholarshipStructure");
+                query.containedIn("ID", scholArray);
+                return query.find();
+            }).then(function(ourSchol) {
+                theSchol = ourSchol;
+                var communityArray = [];
+                $("input[class='community']").each(function() {
+                    if (this.checked) {
+                        communityArray.push(parseInt(this.value));
+                    };
+                });
+                var query = new Parse.Query("CommunityServiceStructure");
+                query.containedIn("communityServiceID", communityArray);
+                return query.find();
+            }).then(function(ourCommunity) {
+                theCommunity = ourCommunity;
+                var eventArray = [];
+                $("input[class='event']").each(function() {
+                    if (this.checked) {
+                        eventArray.push(parseInt(this.value));
+                    };
+                });
+                var query = new Parse.Query("EventStructure");
+                query.containedIn("ID", eventArray);
+                return query.find();
+            }).then(function(ourEvents) {
+                theEvents = ourEvents;
+                dialog.close();
+                BootstrapDialog.show({
+                    title: 'Daily Announcements',
+                    size: BootstrapDialog.SIZE_WIDE,
+                    message: function(dialogItself) {
+                        var $form = $('<form></form>');
+                        var text = $("<i>These daily announcements are generated by WildcatConnect, Weymouth High School's official iPhone app. <a href='http://app.wildcatconnect.org' target='_blank'>Download today on the App Store!</a> Or, search \"Weymouth High\" ...</i>");
+                        $form.append(text);
+                        var header = $("<b><h3 style='text-align:center;'>" + dayString.toUpperCase() + ", " + scheduleName.toUpperCase() + ", DAILY ANNOUNCEMENTS</h3></b><h5 style='text-align:center;'>(All clubs/activities are held after school unless noted.)</h5>");
+                        console.log(scheduleType);
+                        if (scheduleType === "*") {
+                            scheduleString = scheduleString.replace(/\r?\n/g, '<br />');
+                            header = $("<b><h3 style='text-align:center;'>" + dayString.toUpperCase() + ", " + scheduleName.toUpperCase() + ", DAILY ANNOUNCEMENTS</h3></b><h5 style='text-align:center;'>(All clubs/activities are held after school unless noted.)</h5><div style='text-align:center;'>" + scheduleString + "</div><br>");
+                        };
+                        $form.append(header);
+                        if (theNews.length > 0) {
+                            var newsString = '<b><u><span style="background-color: yellow;">LATEST NEWS</span></u></b><br><br>';
+                            for (var i = 0; i < theNews.length; i++) {
+                                newsString = newsString + '<b>' + theNews[i].get("titleString") + '</b> - ' + theNews[i].get("authorString") + ' - ' + theNews[i].get("summaryString") + '<br>' + textArray[theNews[i].get("articleID")] + '<a href="'+theNews[i].get("archiveURL")+'" target="_blank"> Read more...</a><br><br>';
+                            };
+                            $form.append($(newsString));
+                        };
+                        if (theSchol.length > 0) {
+                            var scholString = '<b><u><span style="background-color: yellow;">SCHOLARSHIP OPPORTUNITIES</span></u></b><br><br>';
+                            for (var i = 0; i < theSchol.length; i++) {
+                                scholString = scholString + '<b>' + theSchol[i].get("titleString") + '</b> - ' + linkifyStr(theSchol[i].get("messageString")) + '<br><br>';
+                            };
+                            //scholString = linkifyStr(scholString);
+                            $form.append($(scholString));
+                        };
+                        if (theCommunity.length > 0) {
+                            var commString = '<b><u><span style="background-color: yellow;">COMMUNITY SERVICE OPPORTUNITIES</span></u></b><br><br>';
+                            for (var i = 0; i < theCommunity.length; i++) {
+                                var date = theCommunity[i].get("startDate");
+                                var string = date.toString('dddd, MMMM d @ h:mm tt');
+                                commString = commString + '<b>' + theCommunity[i].get("commTitleString") + "</b> - " + string + " - " + linkifyStr(theCommunity[i].get("commSummaryString")) + '<br><br>';
+                            };
+                            //commString = linkifyStr(commString);
+                            $form.append($(commString));
+                        };
+                        if (theEvents.length > 0) {
+                            var eventString = '<b><u><span style="background-color: yellow;">UPCOMING EVENTS</span></u></b><br><br>';
+                            for (var i = 0; i < theEvents.length; i++) {
+                                var date = theEvents[i].get("eventDate");
+                                var string = date.toString('dddd, MMMM d @ h:mm tt');
+                                eventString = eventString + '<b>' + theEvents[i].get("titleString") + "</b> - " + string + " - " + linkifyStr(theEvents[i].get("messageString")) + '<br><br>';
+                            };
+                            //commString = linkifyStr(commString);
+                            $form.append($(eventString));
+                        };
+                        return $form;
+                    }
+                });
+            });
+          }
         });
     });
-
+    
 });
 
 function loadAnnouncements() {
+    //Test...
     BootstrapDialog.show({
           title: 'Please wait as we load our database...',
           size: BootstrapDialog.SIZE_SMALL,
@@ -1791,6 +1946,9 @@ function loadAnnouncements() {
                 return queryTwo.find();
             }).then(function(list) {
                 news = list;
+                for (var i = 0; i < list.length; i++) {
+                    textArray[list[i].get("articleID")] = list[i].get("contentURLString");
+                };
                 var queryThree = new Parse.Query("ScholarshipStructure");
                 queryThree.ascending("dueDate");
                 return queryThree.find();
@@ -1814,7 +1972,7 @@ function loadAnnouncements() {
                     var parts = schoolDays[i].get("schoolDate").split('-');
                     var date = new Date(parts[2], parts[0]-1,parts[1]);
                     var string = date.toString('dddd, MMMM d, yyyy');
-                    var radioBtn = $("<input type='radio' name='schoolDay' value='" + schoolDays[i].get("schoolDayID") + "'/> <label>" + string + "</label><br>");
+                    var radioBtn = $("<input type='radio' name='schoolDay' value='" + schoolDays[i].get("schoolDayID") + "'/> <label for='" + schoolDays[i].get("schoolDayID") + "' value='" + string + "'>" + string + "</label><br>");
                     if (i == 0) {
                         radioBtn.attr("checked", "checked");
                     };
@@ -1851,7 +2009,7 @@ function loadAnnouncements() {
                 };
                 for (var i = 0; i < events.length; i++) {
                     var string = events[i].get("titleString");
-                    var radioBtn = $("<input type='checkbox' class='event' value=" + events[i].get("ID") + "/> <a href='javascript:loadCommunity(" + events[i].get("ID") + ");'><label>" + string + "</label></a><br>");
+                    var radioBtn = $("<input type='checkbox' class='event' value=" + events[i].get("ID") + "/> <a href='javascript:loadEvent(" + events[i].get("ID") + ");'><label>" + string + "</label></a><br>");
                     radioBtn.appendTo('#events');
                 };
                 if (events.length == 0) {
@@ -1860,6 +2018,7 @@ function loadAnnouncements() {
                 };
                 dialog.close();
             }, function(error) {
+                dialog.close();
                 errorFunction(error.code.toString() + " - " + error.message.toString(), "ParseError", "Script 4176");
                 BootstrapDialog.show({
                     type: BootstrapDialog.TYPE_DEFAULT,
@@ -1872,15 +2031,107 @@ function loadAnnouncements() {
 }
 
 function loadArticle(ID) {
-    console.log(ID);
+    var query = new Parse.Query("NewsArticleStructure");
+    query.equalTo("articleID", ID);
+    query.first().then(function(article) {
+        var titleString = article.get("titleString");
+        var summaryString = article.get("summaryString");
+        var authorDate = article.get("authorString") + " | " + article.get("dateString");
+        var url = null;
+        if (article.get("imageFile")) {
+            url = article.get("imageFile").url();
+        };
+
+        BootstrapDialog.show({
+              title: 'Article Preview',
+              size: BootstrapDialog.SIZE_WIDE,
+              message: function(dialogItself) {
+                var $form = $('<form></form>');
+                $form.append('<h1 style="margin-top:0;">'+titleString+'</h1><h4><i>'+summaryString+'</i></h4><h5>'+authorDate+'</h5>');
+                if (url) {
+                    $form.append('<img src="'+url+'" style="width:50%;display:block;margin: 0 auto;">');
+                };
+                var textArea = $('<textarea rows="20" style="overflow-y: scroll; resize: none; width:100%;"></textarea>');
+                textArea.val(window.textArray[ID]);
+                $form.append('<hr style="border-color:#561838">').append(textArea);
+                dialogItself.setData('text', textArea);
+                return $form;
+              },// <-- Default value is BootstrapDialog.TYPE_PRIMARY
+              closable: true, // <-- Default value is false
+              draggable: true,
+              buttons: [{
+                   label: 'SAVE',
+                   cssClass: 'btn-primary',
+                    action: function (dialogItself) {
+                        var text = dialogItself.getData('text').val();
+                        console.log(text);
+                        window.textArray[ID] = text;
+                        dialogItself.close();
+                    } 
+                }]
+          });
+    }), function(error) {
+        console.log(error);
+    }
 }
 
 function loadScholarship(ID) {
-    console.log(ID);
+    var query = new Parse.Query("ScholarshipStructure");
+    query.equalTo("ID", ID);
+    query.first().then(function(schol) {
+        var date = schol.get("dueDate");
+        var string = "DUE - " + date.toString("dddd, MMMM d");
+        BootstrapDialog.show({
+            title: 'Scholarship Preview',
+            message: function(dialogItself) {
+                var $form = $('<form></form>');
+                $form.append("<h1 style='margin-top:0px;'>" + schol.get("titleString") + "</h1>" + string + "<hr style='border-color:#561838';></hr>" + linkifyStr(schol.get("messageString")));
+                return $form;
+            }
+        });
+    }), function(error) {
+        console.log(error);
+    }
 }
 
 function loadCommunity(ID) {
-    console.log(ID);
+    var query = new Parse.Query("CommunityServiceStructure");
+    query.equalTo("communityServiceID", ID);
+    query.first().then(function(comm) {
+        var date = comm.get("startDate");
+        var string = "STARTS - " + date.toString("dddd, MMMM d @ h:mm tt");
+        var date = comm.get("endDate");
+       string = string + "<br>ENDS - " + date.toString("dddd, MMMM d @ h:mm tt");
+        BootstrapDialog.show({
+            title: 'Community Service Opportunity Preview',
+            message: function(dialogItself) {
+                var $form = $('<form></form>');
+                $form.append("<h1 style='margin-top:0px;'>" + comm.get("commTitleString") + "</h1>" + string + "<hr style='border-color:#561838';></hr>" + linkifyStr(comm.get("commSummaryString")));
+                return $form;
+            }
+        });
+    }), function(error) {
+        console.log(error);
+    }
+}
+
+function loadEvent(ID) {
+    var query = new Parse.Query("EventStructure");
+    query.equalTo("ID", ID);
+    query.first().then(function(theEvent) {
+        var date = theEvent.get("eventDate");
+        var string = date.toString("dddd, MMMM d @ h:mm tt");
+        BootstrapDialog.show({
+            title: 'Event Preview',
+            message: function(dialogItself) {
+                var $form = $('<form></form>');
+                $form.append("<h1 style='margin-top:0px;'>" + theEvent.get("titleString") + "</h1>" + string + "<hr style='border-color:#561838';></hr>" + linkifyStr(theEvent.get("messageString")));
+                return $form;
+            }
+        });
+    }), function(error) {
+        console.log(error);
+    }
 }
 
 function errorFunction(error, url, line) {
@@ -2543,41 +2794,10 @@ function loadExistingNewsTable() {
 
                         return function(e) {
 
-                            var titleString = structures[count].get("titleString");
-                            var summaryString = structures[count].get("summaryString");
-                            var authorDate = structures[count].get("authorString") + " | " + structures[count].get("dateString");
-                            var content = structures[count].get("contentURLString");
+                            var url = structures[count].get("archiveURL");
 
-                            content = linkifyStr(content);
-
-                            content = content.replace(/\r?\n/g, '<br />');
-
-                            var url = null;
-                            if (structures[count].get("imageFile")) {
-                                url = structures[count].get("imageFile").url();
-                            };
-
-                            BootstrapDialog.show({
-                                  title: 'Article Preview',
-                                  size: BootstrapDialog.SIZE_WIDE,
-                                  message: function(dialogItself) {
-                                    var $form = $('<form></form>');
-                                    $form.append('<h1 style="margin-top:0;">'+titleString+'</h1><h4><i>'+summaryString+'</i></h4><h5>'+authorDate+'</h5>');
-                                    if (url) {
-                                        $form.append('<img src="'+url+'" style="width:50%;display:block;margin: 0 auto;">');
-                                    };
-                                    $form.append('<hr style="border-color:#561838">' + content);
-                                    return $form;
-                                  },// <-- Default value is BootstrapDialog.TYPE_PRIMARY
-                                  closable: true, // <-- Default value is false
-                                  draggable: true, // <-- Default value is false
-                                  buttons: [{
-                                       label: 'OK',
-                                        action: function (dialogItself) {
-                                            dialogItself.close();
-                                        } 
-                                    }]
-                              });
+                            var win = window.open(url, '_blank');
+                            win.focus();
 
                         };
                     })();
@@ -2748,6 +2968,7 @@ function loadNewsTable() {
                             var summaryString = structures[count].get("summaryString");
                             var authorDate = structures[count].get("authorString") + " | " + structures[count].get("dateString");
                             var content = structures[count].get("contentURLString");
+                            content = linkifyStr(content);
                             content = content.replace(/\r?\n/g, '<br />');
                             var url = null;
                             if (structures[count].get("imageFile")) {
@@ -2860,7 +3081,7 @@ function loadNewsTable() {
                                     var $form = $('<form></form>');
                                     var $message = $('<textarea maxlength="400" rows="4" style="overflow-y: scroll; resize: none; width:100%;"></textarea>');
                                     dialogItself.setData('message', $message);
-                                    $form.append('Are you sure you want to deny this Wildcat News Story? Please enter a brief message explaining the reason for the denial. This will be sent in an e-mail to the story\'s creator, '+name+'.<br><br><label>Message</label><br>').append($message);
+                                    $form.append('Are you sure you want to deny this Wildcat News Story? Please enter a brief message explaining the reason for the denial. This will be sent in an e-mail to the story\'s creator, '+name+', as well as to your e-mail for reference.<br><br><label>Message</label><br>').append($message);
                                     return $form;
                                   },// <-- Default value is BootstrapDialog.TYPE_PRIMARY
                                   closable: false, // <-- Default value is false
@@ -3093,7 +3314,7 @@ function loadEventTable() {
                                     var $form = $('<form></form>');
                                     var $message = $('<textarea maxlength="400" rows="4" style="overflow-y: scroll; resize: none; width:100%;"></textarea>');
                                     dialogItself.setData('message', $message);
-                                    $form.append('Are you sure you want to deny this event? Please enter a brief message explaining the reason for the denial. This will be sent in an e-mail to the event\'s creator, '+name+'.<br><br><label>Message</label><br>').append($message);
+                                    $form.append('Are you sure you want to deny this event? Please enter a brief message explaining the reason for the denial. This will be sent in an e-mail to the event\'s creator, '+name+', as well as to your e-mail for reference.<br><br><label>Message</label><br>').append($message);
                                     return $form;
                                   },// <-- Default value is BootstrapDialog.TYPE_PRIMARY
                                   closable: false, // <-- Default value is false
@@ -3486,7 +3707,7 @@ function loadCommunityTable() {
                                     var $form = $('<form></form>');
                                     var $message = $('<textarea maxlength="400" rows="4" style="overflow-y: scroll; resize: none; width:100%;"></textarea>');
                                     dialogItself.setData('message', $message);
-                                    $form.append('Are you sure you want to deny this opportunity? Please enter a brief message explaining the reason for the denial. This will be sent in an e-mail to the opportunity\'s creator, '+name+'.<br><br><label>Message</label><br>').append($message);
+                                    $form.append('Are you sure you want to deny this opportunity? Please enter a brief message explaining the reason for the denial. This will be sent in an e-mail to the opportunity\'s creator, '+name+', as well as to your e-mail for reference.<br><br><label>Message</label><br>').append($message);
                                     return $form;
                                   },// <-- Default value is BootstrapDialog.TYPE_PRIMARY
                                   closable: false, // <-- Default value is false
@@ -3511,6 +3732,92 @@ function loadCommunityTable() {
                                                         $("#spinnerDiv").html("");
                                                         dialogItself.close();
                                                         var alertString = "Opportunity successfully denied. You will receive an e-mail with the denial message, for your reference.";
+                                                        localStorage.setItem("commAlertString", alertString);
+                                                        $(document).ready(loadCommunityTable());
+                                                        $(document).ready(loadExistingCommunityTable());
+                                                      },
+                                                      error: function(error) {
+                                                        dialogItself.close();
+                                                        errorFunction(error.code.toString() + " - " + error.message.toString(), "ParseError", "Script 2020");
+                                                       BootstrapDialog.show({
+                                                            type: BootstrapDialog.TYPE_DEFAULT,
+                                                            title: "Error",
+                                                            message: "Error occurred. Please try again."
+                                                        });
+                                                        $("#spinnerDiv").html("");
+                                                      }
+                                                });
+                                              },
+                                              error: function(error) {
+                                                dialogItself.close();
+                                                errorFunction(error.code.toString() + " - " + error.message.toString(), "ParseError", "Script 1659");
+                                               BootstrapDialog.show({
+                                                    type: BootstrapDialog.TYPE_DEFAULT,
+                                                    title: "Error",
+                                                    message: "Error occurred. Please try again."
+                                                });
+                                                $("#spinnerDiv").html("");
+                                              }
+                                            });
+                                        }
+                                    }]
+                              });
+
+                        };
+                    })();
+                    tdFour.appendChild(buttonTwo);
+
+                    var buttonTwo = document.createElement("INPUT");
+                    buttonTwo.type = "button";
+                    buttonTwo.className = "btn btn-lg btn-primary";
+                    buttonTwo.value = "Send to ILT";
+                    button.name = i;
+                    buttonTwo.style.marginTop = "10px";
+                    buttonTwo.style.backgroundColor = "green";
+                    buttonTwo.style.borderColor = "green";
+                    buttonTwo.onclick = (function() {
+                        var count = i;
+
+                        return function(e) {
+
+                            var name = structures[count].get("userString");
+                            var e = structures[count].get("email");
+                            var title = structures[count].get("commTitleString");
+                            var admin = Parse.User.current().get("firstName") + " " + Parse.User.current().get("lastName");
+                            var adminMail = Parse.User.current().get("email");
+                            var fullText = structures[count].get("commSummaryString");
+
+                            BootstrapDialog.show({
+                                  title: 'Confirmation',
+                                  message: function(dialogItself) {
+                                    var $form = $('<form></form>');
+                                    var $message = $('<textarea maxlength="400" rows="4" style="overflow-y: scroll; resize: none; width:100%;"></textarea>');
+                                    dialogItself.setData('message', $message);
+                                    $form.append('Are you sure you want to send this opportunity to ILT for review? Please enter a brief message explaining the reason for this decision. This will be sent in an e-mail to the opportunity\'s creator, '+name+', as well as to your e-mail for reference.<br><br><label>Message</label><br>').append($message);
+                                    return $form;
+                                  },// <-- Default value is BootstrapDialog.TYPE_PRIMARY
+                                  closable: false, // <-- Default value is false
+                                  draggable: true, // <-- Default value is false
+                                  buttons: [{
+                                       label: 'Cancel',
+                                        action: function (dialogItself) {
+                                            dialogItself.close();
+                                        } 
+                                    }, {
+                                        label: 'Send to ILT',
+                                        cssClass: 'btn-primary',
+                                        action: function (dialogItself) {
+                                            var text = dialogItself.getData('message').val();
+
+                                            $("#spinnerDiv").html('<a><img src="./../spinner.gif" alt="Logo" width="40" style="vertical-align: middle; padding-top:12px; padding-left:10px;"/></a>');
+
+                                            Parse.Cloud.run('denyStructure', { "name" : name , "type" : "ILT" , "email" : e , "message" : text , "title" : title , "admin" : admin , "adminMail" : adminMail , "fullText" : fullText }, {
+                                              success: function() {
+                                                structures[count].destroy({
+                                                    success: function() {
+                                                        $("#spinnerDiv").html("");
+                                                        dialogItself.close();
+                                                        var alertString = "Opportunity successfully set to ILT status. You will receive an e-mail with the message, for your reference.";
                                                         localStorage.setItem("commAlertString", alertString);
                                                         $(document).ready(loadCommunityTable());
                                                         $(document).ready(loadExistingCommunityTable());
@@ -6062,6 +6369,7 @@ function loadScheduleTable() {
                                                 var parts = structures[count].get("schoolDate").split('-');
                                                 var date = new Date(parts[2], parts[0]-1,parts[1]);
                                                 var string = date.toString('dddd, MMMM d, yyyy');
+                                                var ID = structures[count].get("schoolDayID");
 
                                                 BootstrapDialog.show({
                                                   title: 'Edit Custom Schedule',
@@ -6069,7 +6377,7 @@ function loadScheduleTable() {
                                                     var $form = $('<form></form>');
                                                     var $title = $('<input type="text" style="width:100%;">');
                                                     $form.append(string+'<br><br>Schedule Name (i.e. "Day D, Wildcat Way Period")').append($title);
-                                                    var $schedule = $('<textarea maxlength="200" rows="14" style="overflow-y: scroll; resize: none; width:100%;"></textarea>');
+                                                    var $schedule = $('<textarea rows="14" style="overflow-y: scroll; resize: none; width:100%;"></textarea>');
                                                     if (structures[count].get("scheduleType") === "*") {
                                                         $title.val(structures[count].get("customString"));
                                                         $schedule.val(structures[count].get("customSchedule"));
@@ -6117,7 +6425,7 @@ function loadScheduleTable() {
                                                                         if(result) {
                                                                             $("#spinnerDiv").html('<a><img src="./../spinner.gif" alt="Logo" width="40" style="vertical-align: middle; padding-top:12px; padding-left:10px;"/></a>');
                                                                             var query = new Parse.Query("SchoolDayStructure");
-                                                                            query.equalTo("schoolDayID", parseInt(localStorage.getItem("customID")));
+                                                                            query.equalTo("schoolDayID", ID);
                                                                             query.first({
                                                                                 success: function(object) {
                                                                                     object.set("customString", title);
