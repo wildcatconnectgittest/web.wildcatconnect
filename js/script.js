@@ -1765,6 +1765,36 @@ $(function() {
 
     });
 
+    $('#selectSchol').click(function() {
+        var title = $('#selectSchol').text();
+        if (title === "Select All") {
+            $('#selectSchol').text("Deselect All");
+            $("input[class='scholarship']").each(function() {
+                this.checked = true;
+            });
+        } else if (title === "Deselect All") {
+            $('#selectSchol').text("Select All");
+            $("input[class='scholarship']").each(function() {
+                this.checked = false;
+            });
+        }; 
+    });
+
+    $('#selectComm').click(function() {
+        var title = $('#selectComm').text();
+        if (title === "Select All") {
+            $('#selectComm').text("Deselect All");
+            $("input[class='community']").each(function() {
+                this.checked = true;
+            });
+        } else if (title === "Deselect All") {
+            $('#selectComm').text("Select All");
+            $("input[class='community']").each(function() {
+                this.checked = false;
+            });
+        }; 
+    });
+
     $('.generateA').click(function() {
 
         var dayString;

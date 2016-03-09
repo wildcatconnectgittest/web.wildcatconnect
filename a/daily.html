@@ -118,11 +118,11 @@
       <div id="news">
 
       </div>
-      <h2 style="color:#561838;">Scholarship Opportunities</h4>
+      <div><h2 style="color:#561838;">Scholarship Opportunities</h4><button id="selectSchol">Select All</button></div><br>
       <div id="schols">
 
       </div>
-      <h2 style="color:#561838;">Community Service</h4>
+      <div><h2 style="color:#561838;">Community Service</h4><button id="selectComm">Select All</button></div><br>
       <div id="community">
 
       </div>
@@ -156,7 +156,7 @@
 
       Parse.$ = jQuery;
       Parse.initialize("cLBOvwh6ZTQYex37DSwxL1Cvg34MMiRWYAB4vqs0", "tTcV5Ns1GFdDda44FCcG5XHBDMbLA1sxRUzSnDgW");
-      if (Parse.User.current() && Parse.User.current().get("userType") === "Developer") {
+      if (Parse.User.current() && (Parse.User.current().get("userType") === "Developer" || Parse.User.current().get("userType") === "Administration")) {
         //
       } else {
         window.location.replace("./login");
