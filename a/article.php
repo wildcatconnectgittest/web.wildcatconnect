@@ -36,7 +36,7 @@
 		$article = $query->get($ID);
 		echo "<h1>" . $article->get('titleString') . "</h1>";
 		echo "<h4><i>" . $article->get('summaryString') . "</i></h4>";
-		echo "<h5>" . $article->get('authorString') . " | " . $article->get('dateString') . " | " . $article->get('likes') . " likes</h5>";
+		echo "<h5>" . $article->get('authorString') . " | " . $article->get('dateString') . "</h5>";
 		if ($article->get('hasImage') == 1) {
 			echo "<img src='" . $article->get('imageFile')->getURL() . "' style='width:50%;display:block;margin: 0 auto;'/>";
 		}
