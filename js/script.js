@@ -1921,7 +1921,9 @@ $(function() {
                             for (var i = 0; i < theCommunity.length; i++) {
                                 var date = theCommunity[i].get("startDate");
                                 var string = date.toString('dddd, MMMM d @ h:mm tt');
-                                commString = commString + '<b>' + theCommunity[i].get("commTitleString") + "</b> - " + string + " - " + linkifyStr(theCommunity[i].get("commSummaryString")) + '<br><br>';
+                                var dateTwo = theCommunity[i].get("endDate");
+                                var stringTwo = dateTwo.toString('dddd, MMMM d @ h:mm tt');
+                                commString = commString + '<b>' + theCommunity[i].get("commTitleString") + "</b> - " + string + " TO " + stringTwo + " - " + linkifyStr(theCommunity[i].get("commSummaryString")) + '<br><br>';
                             };
                             //commString = linkifyStr(commString);
                             $form.append($(commString));
@@ -5050,7 +5052,12 @@ function loadPollTable() {
                     var tdTwo = document.createElement("TD");
                     var date = structures[i].createdAt;
                     string = date.toString('dddd, MMMM d, yyyy @ h:mm tt');
-                    tdTwo.appendChild(document.createTextNode(string));
+                    if (structures[i].get("isActive") === 0) {
+                        tdTwo.style.color = "red";
+                        tdTwo.appendChild(document.createTextNode(string + " - INACTIVE POLL"));
+                    } else {
+                        tdTwo.appendChild(document.createTextNode(string));
+                    };
                     tr.appendChild(tdTwo);
 
                     var tdOne = document.createElement("TD");
