@@ -1911,7 +1911,9 @@ $(function() {
                         if (theSchol.length > 0) {
                             var scholString = '<b><u><span style="background-color: yellow;">SCHOLARSHIP OPPORTUNITIES</span></u></b><br><br>';
                             for (var i = 0; i < theSchol.length; i++) {
-                                scholString = scholString + '<b>' + theSchol[i].get("titleString") + '</b> - ' + linkifyStr(theSchol[i].get("messageString")) + '<br><br>';
+                                var date = theSchol[i].get("dueDate");
+                                var string = date.toString('dddd, MMMM d');
+                                scholString = scholString + '<b>' + theSchol[i].get("titleString") + ' - DUE ' + string + '</b> - ' + linkifyStr(theSchol[i].get("messageString")) + '<br><br>';
                             };
                             //scholString = linkifyStr(scholString);
                             $form.append($(scholString));
@@ -4089,11 +4091,39 @@ function loadGroupTable() {
             var array = Parse.User.current().get("ownedEC");
             query.containedIn("extracurricularID", array);
           };
-        var structures = new Array();
         query.find({
             success: function(structures) {
 
-                $("#titleLabel").html("Currently Registered Groups (" + structures.length+")");
+                var array = new Array();
+
+                var theDictionary = [];
+
+                for (var j = 0; j < structures.length; j++) {
+                    var value = "E" + structures[j].get("extracurricularID").toString();
+                    theDictionary[value] = 0;
+                };
+        
+                Parse.Cloud.run("getMemberCounts", { "skip" : 0 }, {
+                    success: function(response) {
+                        array = response;
+                        Parse.Cloud.run("getMemberCounts", { "skip" : 1000 }, {
+                            success: function(responseTwo) {
+                                array = array.concat(responseTwo);
+                                for (var i = 0; i < array.length; i++) {
+                                    var installation = array[i];
+                                    var theChannels = installation.get("channels");
+                                    if (theChannels.length > 1) {
+                                        for (var k = 0; k < theChannels.length; k++) {
+                                            if (theChannels[k] != "global" && theChannels[k] != "allNews" && theChannels[k] != "allPolls" && theChannels[k] != "allCS" && theDictionary[theChannels[k]] != null) {
+                                                theDictionary[theChannels[k]]++;
+                                            };
+                                        };
+                                    };
+                                };
+
+                                //HERE WE GO!!!
+
+                                $("#titleLabel").html("Currently Registered Groups (" + structures.length+")");
 
                 var tableDiv = document.getElementById("groups");
                 var table = document.createElement("TABLE");
@@ -4106,8 +4136,9 @@ function loadGroupTable() {
                 var heading = new Array();
                 heading[0] = "Title";
                 heading[1] = "Owner";
-                heading[2] = "Description";
-                heading[3] = "Action";
+                heading[2] = "Subscribers";
+                heading[3] = "Description";
+                heading[4] = "Action";
 
                 //TABLE COLUMNS
 
@@ -4119,9 +4150,9 @@ function loadGroupTable() {
                 for (var i = 0; i < heading.length; i++) {
                     var th = document.createElement("TH");
                     if (i == 2)
-                        th.width = '40%';
+                        th.width = '4%';
                     else
-                        th.width = '20%';
+                        th.width = '24%';
                     th.appendChild(document.createTextNode(heading[i]));
                     tr.appendChild(th);
                 };
@@ -4135,6 +4166,10 @@ function loadGroupTable() {
 
                     var tdOne = document.createElement("TD");
                     tdOne.appendChild(document.createTextNode(structures[i].get("userString")));
+                    tr.appendChild(tdOne);
+
+                    var tdOne = document.createElement("TD");
+                    tdOne.appendChild(document.createTextNode(theDictionary["E" + structures[i].get("extracurricularID").toString()]));
                     tr.appendChild(tdOne);
 
                     var tdOne = document.createElement("TD");
@@ -4273,6 +4308,14 @@ function loadGroupTable() {
                 };
 
                 $("#spinnerDiv").html("");
+                            }, error: function(error) {
+                                console.log(error);
+                            }
+                        });
+                    }, error: function(error) {
+                        console.log(error);
+                    }
+                });
 
             },
             error: function(error) {
