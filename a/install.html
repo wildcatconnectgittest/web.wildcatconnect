@@ -71,7 +71,7 @@
             <!--li><a href="#about">About</a></li>
             <li><a href="#contact">Contact</a></li-->
           </ul>
-          <!--ul class="nav navbar-nav navbar-right">
+          <ul class="nav navbar-nav navbar-right">
             <li class="dropdown">
               <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Account <span class="caret"></span></a>
               <ul class="dropdown-menu">
@@ -83,7 +83,7 @@
                 </li>
               </ul>
             </li>
-          </ul-->
+          </ul>
           <!--ul class="nav navbar-nav navbar-right">
             <li class="dropdown">
               <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Account<span class="caret"></span></a>
@@ -99,18 +99,16 @@
       </div>
     </nav>
 
-    <div class="main-container" style="hor">
+    <div id="errorAlertDiv">
 
-      <form class="form-verify" style="width:400px; margin:0 auto;" role="form">
-          <h2 class="form-signin-heading" style="text-align:center;">Verify Account</h2>
-          <h4 style="text-align:center;"><i>You can find your registration key in the confirmation e-mail from our team.</i></h4>
-          <h4><b>Registration Key...</b></h4>
-          <input type="text" name="key" class="form-control" placeholder="Registration Key" required="" autofocus="" autocorrect="off" autocapitalize="off"><br>
-          <button class="btn btn-lg btn-primary btn-block" type="submit" style="padding-bottom:10px;">Verify</button>
-        <button class="cancel-verify btn btn-lg btn-primary btn-block" type="cancel">Cancel</button>
-        <hr style="border-color:#561838";></hr>
-        <button class="btn btn-lg btn-primary btn-block" type="submit" id="noMail" style="padding-bottom:10px;background-color:red;border-color:red;">Didn't get that message!</button>
-      </div>
+    </div>
+
+    <div class="main-container" style="padding-left:20px; padding-right:20px;">
+
+      <h1 style="text-align:center;" id="mainLabel">Current Installation Count</h1>
+      <h5 style="text-align:center;" id="dateLabel">Updating...</h5>
+      <h1 id="countLabel" style="color:#561838;font-size:300px;text-align:center;">---</h1>
+      <a><img src="./../logoTransparent.gif" alt="Logo" width="84" style="display:block;margin:0 auto;"/></a>
 
     </div> <!-- /container -->
 
@@ -127,21 +125,35 @@
 
     <script type="text/javascript">
 
-      Parse.$ = jQuery;
-      Parse.initialize("cLBOvwh6ZTQYex37DSwxL1Cvg34MMiRWYAB4vqs0", "tTcV5Ns1GFdDda44FCcG5XHBDMbLA1sxRUzSnDgW");
-
-      var isChrome = /Chrome/.test(navigator.userAgent) && /Google Inc/.test(navigator.vendor);
-      var isSafari = /Safari/.test(navigator.userAgent) && /Apple Computer/.test(navigator.vendor);
-
-      if( /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ) {
-       alert("We detect that you are accessing the WildcatConnect Web Portal on a mobile device. Please note that some features may not work correctly on mobile.");
-      } else if (isChrome == false && isSafari == false) {
-        window.location.replace("./browser");
-      };
-
       window.onerror = function(error, url, line) {
           $(document).ready(errorFunction(error, url, line));
       };
+
+      Parse.$ = jQuery;
+      Parse.initialize("cLBOvwh6ZTQYex37DSwxL1Cvg34MMiRWYAB4vqs0", "tTcV5Ns1GFdDda44FCcG5XHBDMbLA1sxRUzSnDgW");
+      if (Parse.User.current() && Parse.User.current().get("userType") === "Developer") {
+        //
+      } else {
+        window.location.replace("./login");
+      };
+    </script>
+    
+    <script>
+
+      Parse.$ = jQuery;
+      Parse.initialize("cLBOvwh6ZTQYex37DSwxL1Cvg34MMiRWYAB4vqs0", "tTcV5Ns1GFdDda44FCcG5XHBDMbLA1sxRUzSnDgW");
+
+      Parse.Cloud.run("countInstallations", null, {
+        success: function(response) {
+          $("#countLabel").html(response);
+          var date = new Date();
+          var string = date.toString("dddd, MMMM d @ h:mm tt");
+          $("#dateLabel").html("Updated " + string);
+        },
+        error: function(error) {
+
+        }
+      });
 
     </script>
     <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
