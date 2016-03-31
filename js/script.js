@@ -1991,14 +1991,13 @@ function loadAnnouncements() {
                 var queryFour = new Parse.Query("CommunityServiceStructure");
                 queryFour.ascending("startDate");
                 queryFour.equalTo("isApproved", 1);
-                queryFour.limit(10);
                 return queryFour.find();
             }).then(function(list) {
                 community = list;
                 var queryFive = new Parse.Query("EventStructure");
                 queryFive.ascending("eventDate");
                 queryFive.equalTo("isApproved", 1);
-                queryFive.limit(5);
+                queryFive.limit(7);
                 return queryFive.find();
             }).then(function(list) {
                 events = list;
